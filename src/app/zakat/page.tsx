@@ -160,16 +160,29 @@ export default function ZakatPage() {
   const handleJenisChange = (val: JenisZakat) => {
     let defNominal = '0';
     let defBeras = '0';
-    let defJiwa = '1';
+    let defJiwa = formData.jumlah_jiwa || '1';
+    const numJiwa = parseInt(defJiwa) || 1;
 
     if (val === 'Zakat Fitrah (uang)') {
-      defNominal = '45000';
+      defNominal = String(45000 * numJiwa);
+      defBeras = '0';
     } else if (val === 'Zakat Fitrah (beras)') {
-      defBeras = '2.5';
+      defBeras = String(2.5 * numJiwa);
+      defNominal = '0';
     } else if (val === 'Qurban Sapi (1/7)') {
-      defNominal = '3200000';
+      defNominal = String(3200000 * numJiwa);
+      defBeras = '0';
     } else if (val === 'Qurban Kambing') {
-      defNominal = '2750000';
+      defNominal = String(2750000 * numJiwa);
+      defBeras = '0';
+    } else if (val === 'Zakat Mal') {
+      defNominal = '0';
+      defBeras = '0';
+      defJiwa = '1';
+    } else if (val === 'Penyaluran') {
+      defNominal = '0';
+      defBeras = '0';
+      defJiwa = '1';
     }
 
     setFormData({
@@ -181,17 +194,60 @@ export default function ZakatPage() {
     });
   };
 
+  const handleEditJenisChange = (val: JenisZakat) => {
+    if (!editItem) return;
+    let defNominal = editItem.nominal;
+    let defBeras = editItem.beras_kg;
+    let defJiwa = editItem.jumlah_jiwa || 1;
+
+    if (val === 'Zakat Fitrah (uang)') {
+      defBeras = 0;
+      if (!defNominal) defNominal = 45000 * defJiwa;
+    } else if (val === 'Zakat Fitrah (beras)') {
+      defNominal = 0;
+      if (!defBeras) defBeras = 2.5 * defJiwa;
+    } else if (val === 'Qurban Sapi (1/7)') {
+      defBeras = 0;
+      if (!defNominal) defNominal = 3200000 * defJiwa;
+    } else if (val === 'Qurban Kambing') {
+      defBeras = 0;
+      if (!defNominal) defNominal = 2750000 * defJiwa;
+    } else if (val === 'Zakat Mal') {
+      defBeras = 0;
+      defJiwa = 1;
+    }
+
+    setEditItem({
+      ...editItem,
+      jenis: val,
+      nominal: defNominal,
+      beras_kg: defBeras,
+      jumlah_jiwa: defJiwa,
+    });
+  };
+
   const handleAddSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.nama || !formData.tanggal) return;
     try {
+      const isBeras = formData.jenis === 'Zakat Fitrah (beras)';
+      const isZakatMal = formData.jenis === 'Zakat Mal';
+
+      const finalJiwa = isZakatMal ? 1 : parseInt(formData.jumlah_jiwa) || 1;
+      const finalBeras = isBeras
+        ? parseFloat(formData.beras_kg) || 0
+        : formData.jenis === 'Penyaluran'
+        ? parseFloat(formData.beras_kg) || 0
+        : 0;
+      const finalNominal = isBeras ? 0 : parseFloat(formData.nominal) || 0;
+
       await DataService.addZakatQurban({
         tanggal: formData.tanggal,
         nama: formData.nama,
         jenis: formData.jenis,
-        jumlah_jiwa: parseInt(formData.jumlah_jiwa) || 1,
-        beras_kg: parseFloat(formData.beras_kg) || 0,
-        nominal: parseFloat(formData.nominal) || 0,
+        jumlah_jiwa: finalJiwa,
+        beras_kg: finalBeras,
+        nominal: finalNominal,
         keterangan: formData.keterangan,
       });
       setShowAddModal(false);
@@ -214,11 +270,22 @@ export default function ZakatPage() {
     e.preventDefault();
     if (!editItem || !editItem.nama) return;
     try {
+      const isBeras = editItem.jenis === 'Zakat Fitrah (beras)';
+      const isZakatMal = editItem.jenis === 'Zakat Mal';
+
+      const finalJiwa = isZakatMal ? 1 : Number(editItem.jumlah_jiwa) || 1;
+      const finalBeras = isBeras
+        ? Number(editItem.beras_kg) || 0
+        : editItem.jenis === 'Penyaluran'
+        ? Number(editItem.beras_kg) || 0
+        : 0;
+      const finalNominal = isBeras ? 0 : Number(editItem.nominal) || 0;
+
       await DataService.updateZakatQurban(editItem.id, {
         ...editItem,
-        jumlah_jiwa: Number(editItem.jumlah_jiwa) || 1,
-        beras_kg: Number(editItem.beras_kg) || 0,
-        nominal: Number(editItem.nominal) || 0,
+        jumlah_jiwa: finalJiwa,
+        beras_kg: finalBeras,
+        nominal: finalNominal,
       });
       setShowEditModal(false);
       setEditItem(null);
@@ -406,9 +473,9 @@ export default function ZakatPage() {
                   </th>
                   <th className="py-3.5 px-4 w-12 text-center">No</th>
                   <th className="py-3.5 px-4">Tanggal</th>
-                  <th className="py-3.5 px-4">Nama Muzakki / Penerima</th>
+                  <th className="py-3.5 px-4">Nama Muzakki / Shobibul Qurban</th>
                   <th className="py-3.5 px-4">Jenis</th>
-                  <th className="py-3.5 px-4 text-center">Jiwa</th>
+                  <th className="py-3.5 px-4 text-center">Jiwa / Bagian</th>
                   <th className="py-3.5 px-4 text-right">Beras (Kg)</th>
                   <th className="py-3.5 px-4 text-right">Nominal Uang</th>
                   <th className="py-3.5 px-4">Keterangan</th>
@@ -463,7 +530,13 @@ export default function ZakatPage() {
                           </span>
                         </td>
                         <td className="py-3 px-4 text-center font-semibold text-slate-700">
-                          {item.jumlah_jiwa || 1}
+                          {item.jenis === 'Qurban Sapi (1/7)'
+                            ? `${item.jumlah_jiwa || 1} Bagian`
+                            : item.jenis === 'Qurban Kambing'
+                            ? `${item.jumlah_jiwa || 1} Ekor`
+                            : item.jenis === 'Zakat Mal'
+                            ? '-'
+                            : `${item.jumlah_jiwa || 1} Jiwa`}
                         </td>
                         <td className="py-3 px-4 text-right font-medium text-amber-700">
                           {item.beras_kg > 0 ? `${item.beras_kg} kg` : '-'}
@@ -540,15 +613,29 @@ export default function ZakatPage() {
 
                 <div>
                   <label className="block font-bold text-slate-700 mb-1">
-                    Nama Muzakki / Donatur / Penerima *
+                    {formData.jenis.startsWith('Qurban')
+                      ? 'Nama Shobibul Qurban (Pekurban) *'
+                      : formData.jenis === 'Penyaluran'
+                      ? 'Nama Mustahiq / Penerima Manfaat *'
+                      : formData.jenis === 'Zakat Mal'
+                      ? 'Nama Muzakki (Pemilik Harta / Usaha) *'
+                      : 'Nama Muzakki / Kepala Keluarga *'}
                   </label>
                   <input
                     type="text"
                     required
-                    placeholder="Contoh: Keluarga Bpk. Ahmad"
+                    placeholder={
+                      formData.jenis.startsWith('Qurban')
+                        ? 'Contoh: Bpk. H. Rahmat bin Abdullah'
+                        : formData.jenis === 'Penyaluran'
+                        ? 'Contoh: Warga Fakir Miskin RT 05'
+                        : formData.jenis === 'Zakat Mal'
+                        ? 'Contoh: H. Hendra / CV Berkah'
+                        : 'Contoh: Keluarga Bpk. Ahmad'
+                    }
                     value={formData.nama}
                     onChange={(e) => setFormData({ ...formData, nama: e.target.value })}
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium"
                   />
                 </div>
 
@@ -557,51 +644,231 @@ export default function ZakatPage() {
                   <select
                     value={formData.jenis}
                     onChange={(e) => handleJenisChange(e.target.value as JenisZakat)}
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium"
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 font-bold text-emerald-950"
                   >
                     <option value="Zakat Fitrah (uang)">Zakat Fitrah (uang)</option>
                     <option value="Zakat Fitrah (beras)">Zakat Fitrah (beras)</option>
                     <option value="Zakat Mal">Zakat Mal (Harta)</option>
-                    <option value="Qurban Sapi (1/7)">Qurban Sapi (1/7)</option>
-                    <option value="Qurban Kambing">Qurban Kambing</option>
+                    <option value="Qurban Sapi (1/7)">Qurban Sapi (1/7 Bagian)</option>
+                    <option value="Qurban Kambing">Qurban Kambing (1 Ekor)</option>
                     <option value="Penyaluran">Penyaluran Mustahiq</option>
                   </select>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="block font-bold text-slate-700 mb-1">Jumlah Jiwa</label>
-                    <input
-                      type="number"
-                      min="1"
-                      value={formData.jumlah_jiwa}
-                      onChange={(e) => setFormData({ ...formData, jumlah_jiwa: e.target.value })}
-                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                    />
+                {/* FORM FIELDS SESUAI JENIS TRANSAKSI */}
+                {/* 1. QURBAN SAPI */}
+                {formData.jenis === 'Qurban Sapi (1/7)' && (
+                  <div className="space-y-3 p-3.5 bg-emerald-50/60 rounded-2xl border border-emerald-100">
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="block font-bold text-slate-700 mb-1">Jumlah Bagian (1/7)</label>
+                        <input
+                          type="number"
+                          min="1"
+                          max="7"
+                          value={formData.jumlah_jiwa}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            const num = parseInt(val) || 1;
+                            setFormData({
+                              ...formData,
+                              jumlah_jiwa: val,
+                              nominal: String(3200000 * num),
+                            });
+                          }}
+                          className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 font-bold"
+                        />
+                        <p className="text-[10px] text-slate-500 mt-1">🐮 1 bagian = 1/7 sapi</p>
+                      </div>
+                      <div>
+                        <label className="block font-bold text-slate-700 mb-1">Iuran / Biaya (Rp)</label>
+                        <input
+                          type="number"
+                          min="0"
+                          value={formData.nominal}
+                          onChange={(e) => setFormData({ ...formData, nominal: e.target.value })}
+                          className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 font-bold text-emerald-900"
+                        />
+                        <p className="text-[10px] text-emerald-700 font-medium mt-1">@ Rp 3.200.000 / bagian</p>
+                      </div>
+                    </div>
                   </div>
-                  <div>
-                    <label className="block font-bold text-slate-700 mb-1">Beras (Kg)</label>
-                    <input
-                      type="number"
-                      step="0.1"
-                      min="0"
-                      value={formData.beras_kg}
-                      onChange={(e) => setFormData({ ...formData, beras_kg: e.target.value })}
-                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                    />
-                  </div>
-                </div>
+                )}
 
-                <div>
-                  <label className="block font-bold text-slate-700 mb-1">Nominal Uang (Rp)</label>
-                  <input
-                    type="number"
-                    min="0"
-                    value={formData.nominal}
-                    onChange={(e) => setFormData({ ...formData, nominal: e.target.value })}
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                  />
-                </div>
+                {/* 2. QURBAN KAMBING */}
+                {formData.jenis === 'Qurban Kambing' && (
+                  <div className="space-y-3 p-3.5 bg-emerald-50/60 rounded-2xl border border-emerald-100">
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="block font-bold text-slate-700 mb-1">Jumlah Hewan (Ekor)</label>
+                        <input
+                          type="number"
+                          min="1"
+                          value={formData.jumlah_jiwa}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            const num = parseInt(val) || 1;
+                            setFormData({
+                              ...formData,
+                              jumlah_jiwa: val,
+                              nominal: String(2750000 * num),
+                            });
+                          }}
+                          className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 font-bold"
+                        />
+                        <p className="text-[10px] text-slate-500 mt-1">🐐 1 ekor kambing qurban</p>
+                      </div>
+                      <div>
+                        <label className="block font-bold text-slate-700 mb-1">Harga / Biaya (Rp)</label>
+                        <input
+                          type="number"
+                          min="0"
+                          value={formData.nominal}
+                          onChange={(e) => setFormData({ ...formData, nominal: e.target.value })}
+                          className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 font-bold text-emerald-900"
+                        />
+                        <p className="text-[10px] text-emerald-700 font-medium mt-1">@ Rp 2.750.000 / ekor</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* 3. ZAKAT FITRAH BERAS */}
+                {formData.jenis === 'Zakat Fitrah (beras)' && (
+                  <div className="space-y-3 p-3.5 bg-amber-50/60 rounded-2xl border border-amber-100">
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="block font-bold text-slate-700 mb-1">Jumlah Jiwa *</label>
+                        <input
+                          type="number"
+                          min="1"
+                          value={formData.jumlah_jiwa}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            const num = parseInt(val) || 1;
+                            setFormData({
+                              ...formData,
+                              jumlah_jiwa: val,
+                              beras_kg: String(2.5 * num),
+                            });
+                          }}
+                          className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 font-bold"
+                        />
+                        <p className="text-[10px] text-slate-500 mt-1">Jumlah anggota keluarga</p>
+                      </div>
+                      <div>
+                        <label className="block font-bold text-slate-700 mb-1">Beras (Kg) *</label>
+                        <input
+                          type="number"
+                          step="0.1"
+                          min="0"
+                          value={formData.beras_kg}
+                          onChange={(e) => setFormData({ ...formData, beras_kg: e.target.value })}
+                          className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 font-bold text-amber-900"
+                        />
+                        <p className="text-[10px] text-amber-700 font-medium mt-1">🌾 Standar 2.5 Kg / jiwa</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* 4. ZAKAT FITRAH UANG */}
+                {formData.jenis === 'Zakat Fitrah (uang)' && (
+                  <div className="space-y-3 p-3.5 bg-emerald-50/60 rounded-2xl border border-emerald-100">
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="block font-bold text-slate-700 mb-1">Jumlah Jiwa *</label>
+                        <input
+                          type="number"
+                          min="1"
+                          value={formData.jumlah_jiwa}
+                          onChange={(e) => {
+                            const val = e.target.value;
+                            const num = parseInt(val) || 1;
+                            setFormData({
+                              ...formData,
+                              jumlah_jiwa: val,
+                              nominal: String(45000 * num),
+                            });
+                          }}
+                          className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 font-bold"
+                        />
+                        <p className="text-[10px] text-slate-500 mt-1">Jumlah anggota keluarga</p>
+                      </div>
+                      <div>
+                        <label className="block font-bold text-slate-700 mb-1">Nominal Uang (Rp) *</label>
+                        <input
+                          type="number"
+                          min="0"
+                          value={formData.nominal}
+                          onChange={(e) => setFormData({ ...formData, nominal: e.target.value })}
+                          className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 font-bold text-emerald-900"
+                        />
+                        <p className="text-[10px] text-emerald-700 font-medium mt-1">💰 Standar Rp 45.000 / jiwa</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* 5. ZAKAT MAL */}
+                {formData.jenis === 'Zakat Mal' && (
+                  <div className="space-y-3 p-3.5 bg-indigo-50/60 rounded-2xl border border-indigo-100">
+                    <div>
+                      <label className="block font-bold text-slate-700 mb-1">Nominal Zakat Mal (Rp) *</label>
+                      <input
+                        type="number"
+                        min="0"
+                        required
+                        placeholder="Contoh: 2500000"
+                        value={formData.nominal}
+                        onChange={(e) => setFormData({ ...formData, nominal: e.target.value })}
+                        className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 font-bold text-sm text-indigo-950"
+                      />
+                      <p className="text-[10px] text-indigo-700 font-medium mt-1">🪙 Zakat 2.5% dari harta simpanan / perniagaan / emas</p>
+                    </div>
+                  </div>
+                )}
+
+                {/* 6. PENYALURAN */}
+                {formData.jenis === 'Penyaluran' && (
+                  <div className="space-y-3 p-3.5 bg-rose-50/60 rounded-2xl border border-rose-100">
+                    <div>
+                      <label className="block font-bold text-slate-700 mb-1">Jumlah Penerima (Jiwa / KK)</label>
+                      <input
+                        type="number"
+                        min="1"
+                        value={formData.jumlah_jiwa}
+                        onChange={(e) => setFormData({ ...formData, jumlah_jiwa: e.target.value })}
+                        className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 font-bold"
+                      />
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="block font-bold text-slate-700 mb-1">Beras Disalurkan (Kg)</label>
+                        <input
+                          type="number"
+                          step="0.1"
+                          min="0"
+                          value={formData.beras_kg}
+                          onChange={(e) => setFormData({ ...formData, beras_kg: e.target.value })}
+                          className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 font-bold"
+                        />
+                        <p className="text-[10px] text-slate-500 mt-1">Isi 0 jika tidak menyalurkan beras</p>
+                      </div>
+                      <div>
+                        <label className="block font-bold text-slate-700 mb-1">Uang Disalurkan (Rp)</label>
+                        <input
+                          type="number"
+                          min="0"
+                          value={formData.nominal}
+                          onChange={(e) => setFormData({ ...formData, nominal: e.target.value })}
+                          className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 font-bold text-rose-900"
+                        />
+                        <p className="text-[10px] text-slate-500 mt-1">Isi 0 jika tidak menyalurkan uang</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 <div>
                   <label className="block font-bold text-slate-700 mb-1">Keterangan / Catatan</label>
@@ -664,14 +931,20 @@ export default function ZakatPage() {
 
                 <div>
                   <label className="block font-bold text-slate-700 mb-1">
-                    Nama Muzakki / Donatur / Penerima *
+                    {editItem.jenis.startsWith('Qurban')
+                      ? 'Nama Shobibul Qurban (Pekurban) *'
+                      : editItem.jenis === 'Penyaluran'
+                      ? 'Nama Mustahiq / Penerima Manfaat *'
+                      : editItem.jenis === 'Zakat Mal'
+                      ? 'Nama Muzakki (Pemilik Harta / Usaha) *'
+                      : 'Nama Muzakki / Kepala Keluarga *'}
                   </label>
                   <input
                     type="text"
                     required
                     value={editItem.nama}
                     onChange={(e) => setEditItem({ ...editItem, nama: e.target.value })}
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium"
                   />
                 </div>
 
@@ -679,60 +952,248 @@ export default function ZakatPage() {
                   <label className="block font-bold text-slate-700 mb-1">Jenis Transaksi *</label>
                   <select
                     value={editItem.jenis}
-                    onChange={(e) =>
-                      setEditItem({ ...editItem, jenis: e.target.value as JenisZakat })
-                    }
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium"
+                    onChange={(e) => handleEditJenisChange(e.target.value as JenisZakat)}
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 font-bold text-emerald-950"
                   >
                     <option value="Zakat Fitrah (uang)">Zakat Fitrah (uang)</option>
                     <option value="Zakat Fitrah (beras)">Zakat Fitrah (beras)</option>
                     <option value="Zakat Mal">Zakat Mal (Harta)</option>
-                    <option value="Qurban Sapi (1/7)">Qurban Sapi (1/7)</option>
-                    <option value="Qurban Kambing">Qurban Kambing</option>
+                    <option value="Qurban Sapi (1/7)">Qurban Sapi (1/7 Bagian)</option>
+                    <option value="Qurban Kambing">Qurban Kambing (1 Ekor)</option>
                     <option value="Penyaluran">Penyaluran Mustahiq</option>
                   </select>
                 </div>
 
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="block font-bold text-slate-700 mb-1">Jumlah Jiwa</label>
-                    <input
-                      type="number"
-                      min="1"
-                      value={editItem.jumlah_jiwa || 1}
-                      onChange={(e) =>
-                        setEditItem({ ...editItem, jumlah_jiwa: parseInt(e.target.value) || 1 })
-                      }
-                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                    />
+                {/* FORM FIELDS SESUAI JENIS TRANSAKSI EDIT */}
+                {/* 1. QURBAN SAPI */}
+                {editItem.jenis === 'Qurban Sapi (1/7)' && (
+                  <div className="space-y-3 p-3.5 bg-emerald-50/60 rounded-2xl border border-emerald-100">
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="block font-bold text-slate-700 mb-1">Jumlah Bagian (1/7)</label>
+                        <input
+                          type="number"
+                          min="1"
+                          max="7"
+                          value={editItem.jumlah_jiwa || 1}
+                          onChange={(e) => {
+                            const val = parseInt(e.target.value) || 1;
+                            setEditItem({
+                              ...editItem,
+                              jumlah_jiwa: val,
+                              nominal: 3200000 * val,
+                              beras_kg: 0,
+                            });
+                          }}
+                          className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 font-bold"
+                        />
+                        <p className="text-[10px] text-slate-500 mt-1">🐮 1 bagian = 1/7 sapi</p>
+                      </div>
+                      <div>
+                        <label className="block font-bold text-slate-700 mb-1">Iuran / Biaya (Rp)</label>
+                        <input
+                          type="number"
+                          min="0"
+                          value={editItem.nominal || 0}
+                          onChange={(e) =>
+                            setEditItem({ ...editItem, nominal: parseFloat(e.target.value) || 0 })
+                          }
+                          className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 font-bold text-emerald-900"
+                        />
+                        <p className="text-[10px] text-emerald-700 font-medium mt-1">@ Rp 3.200.000 / bagian</p>
+                      </div>
+                    </div>
                   </div>
-                  <div>
-                    <label className="block font-bold text-slate-700 mb-1">Beras (Kg)</label>
-                    <input
-                      type="number"
-                      step="0.1"
-                      min="0"
-                      value={editItem.beras_kg || 0}
-                      onChange={(e) =>
-                        setEditItem({ ...editItem, beras_kg: parseFloat(e.target.value) || 0 })
-                      }
-                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                    />
-                  </div>
-                </div>
+                )}
 
-                <div>
-                  <label className="block font-bold text-slate-700 mb-1">Nominal Uang (Rp)</label>
-                  <input
-                    type="number"
-                    min="0"
-                    value={editItem.nominal || 0}
-                    onChange={(e) =>
-                      setEditItem({ ...editItem, nominal: parseFloat(e.target.value) || 0 })
-                    }
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                  />
-                </div>
+                {/* 2. QURBAN KAMBING */}
+                {editItem.jenis === 'Qurban Kambing' && (
+                  <div className="space-y-3 p-3.5 bg-emerald-50/60 rounded-2xl border border-emerald-100">
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="block font-bold text-slate-700 mb-1">Jumlah Hewan (Ekor)</label>
+                        <input
+                          type="number"
+                          min="1"
+                          value={editItem.jumlah_jiwa || 1}
+                          onChange={(e) => {
+                            const val = parseInt(e.target.value) || 1;
+                            setEditItem({
+                              ...editItem,
+                              jumlah_jiwa: val,
+                              nominal: 2750000 * val,
+                              beras_kg: 0,
+                            });
+                          }}
+                          className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 font-bold"
+                        />
+                        <p className="text-[10px] text-slate-500 mt-1">🐐 1 ekor kambing qurban</p>
+                      </div>
+                      <div>
+                        <label className="block font-bold text-slate-700 mb-1">Harga / Biaya (Rp)</label>
+                        <input
+                          type="number"
+                          min="0"
+                          value={editItem.nominal || 0}
+                          onChange={(e) =>
+                            setEditItem({ ...editItem, nominal: parseFloat(e.target.value) || 0 })
+                          }
+                          className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 font-bold text-emerald-900"
+                        />
+                        <p className="text-[10px] text-emerald-700 font-medium mt-1">@ Rp 2.750.000 / ekor</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* 3. ZAKAT FITRAH BERAS */}
+                {editItem.jenis === 'Zakat Fitrah (beras)' && (
+                  <div className="space-y-3 p-3.5 bg-amber-50/60 rounded-2xl border border-amber-100">
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="block font-bold text-slate-700 mb-1">Jumlah Jiwa *</label>
+                        <input
+                          type="number"
+                          min="1"
+                          value={editItem.jumlah_jiwa || 1}
+                          onChange={(e) => {
+                            const val = parseInt(e.target.value) || 1;
+                            setEditItem({
+                              ...editItem,
+                              jumlah_jiwa: val,
+                              beras_kg: 2.5 * val,
+                              nominal: 0,
+                            });
+                          }}
+                          className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 font-bold"
+                        />
+                        <p className="text-[10px] text-slate-500 mt-1">Jumlah anggota keluarga</p>
+                      </div>
+                      <div>
+                        <label className="block font-bold text-slate-700 mb-1">Beras (Kg) *</label>
+                        <input
+                          type="number"
+                          step="0.1"
+                          min="0"
+                          value={editItem.beras_kg || 0}
+                          onChange={(e) =>
+                            setEditItem({ ...editItem, beras_kg: parseFloat(e.target.value) || 0 })
+                          }
+                          className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 font-bold text-amber-900"
+                        />
+                        <p className="text-[10px] text-amber-700 font-medium mt-1">🌾 Standar 2.5 Kg / jiwa</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* 4. ZAKAT FITRAH UANG */}
+                {editItem.jenis === 'Zakat Fitrah (uang)' && (
+                  <div className="space-y-3 p-3.5 bg-emerald-50/60 rounded-2xl border border-emerald-100">
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="block font-bold text-slate-700 mb-1">Jumlah Jiwa *</label>
+                        <input
+                          type="number"
+                          min="1"
+                          value={editItem.jumlah_jiwa || 1}
+                          onChange={(e) => {
+                            const val = parseInt(e.target.value) || 1;
+                            setEditItem({
+                              ...editItem,
+                              jumlah_jiwa: val,
+                              nominal: 45000 * val,
+                              beras_kg: 0,
+                            });
+                          }}
+                          className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 font-bold"
+                        />
+                        <p className="text-[10px] text-slate-500 mt-1">Jumlah anggota keluarga</p>
+                      </div>
+                      <div>
+                        <label className="block font-bold text-slate-700 mb-1">Nominal Uang (Rp) *</label>
+                        <input
+                          type="number"
+                          min="0"
+                          value={editItem.nominal || 0}
+                          onChange={(e) =>
+                            setEditItem({ ...editItem, nominal: parseFloat(e.target.value) || 0 })
+                          }
+                          className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 font-bold text-emerald-900"
+                        />
+                        <p className="text-[10px] text-emerald-700 font-medium mt-1">💰 Standar Rp 45.000 / jiwa</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* 5. ZAKAT MAL */}
+                {editItem.jenis === 'Zakat Mal' && (
+                  <div className="space-y-3 p-3.5 bg-indigo-50/60 rounded-2xl border border-indigo-100">
+                    <div>
+                      <label className="block font-bold text-slate-700 mb-1">Nominal Zakat Mal (Rp) *</label>
+                      <input
+                        type="number"
+                        min="0"
+                        required
+                        placeholder="Contoh: 2500000"
+                        value={editItem.nominal || 0}
+                        onChange={(e) =>
+                          setEditItem({ ...editItem, nominal: parseFloat(e.target.value) || 0 })
+                        }
+                        className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 font-bold text-sm text-indigo-950"
+                      />
+                      <p className="text-[10px] text-indigo-700 font-medium mt-1">🪙 Zakat 2.5% dari harta simpanan / perniagaan / emas</p>
+                    </div>
+                  </div>
+                )}
+
+                {/* 6. PENYALURAN */}
+                {editItem.jenis === 'Penyaluran' && (
+                  <div className="space-y-3 p-3.5 bg-rose-50/60 rounded-2xl border border-rose-100">
+                    <div>
+                      <label className="block font-bold text-slate-700 mb-1">Jumlah Penerima (Jiwa / KK)</label>
+                      <input
+                        type="number"
+                        min="1"
+                        value={editItem.jumlah_jiwa || 1}
+                        onChange={(e) =>
+                          setEditItem({ ...editItem, jumlah_jiwa: parseInt(e.target.value) || 1 })
+                        }
+                        className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 font-bold"
+                      />
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="block font-bold text-slate-700 mb-1">Beras Disalurkan (Kg)</label>
+                        <input
+                          type="number"
+                          step="0.1"
+                          min="0"
+                          value={editItem.beras_kg || 0}
+                          onChange={(e) =>
+                            setEditItem({ ...editItem, beras_kg: parseFloat(e.target.value) || 0 })
+                          }
+                          className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 font-bold"
+                        />
+                        <p className="text-[10px] text-slate-500 mt-1">Isi 0 jika tidak menyalurkan beras</p>
+                      </div>
+                      <div>
+                        <label className="block font-bold text-slate-700 mb-1">Uang Disalurkan (Rp)</label>
+                        <input
+                          type="number"
+                          min="0"
+                          value={editItem.nominal || 0}
+                          onChange={(e) =>
+                            setEditItem({ ...editItem, nominal: parseFloat(e.target.value) || 0 })
+                          }
+                          className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 font-bold text-rose-900"
+                        />
+                        <p className="text-[10px] text-slate-500 mt-1">Isi 0 jika tidak menyalurkan uang</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
 
                 <div>
                   <label className="block font-bold text-slate-700 mb-1">Keterangan / Catatan</label>
