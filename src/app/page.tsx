@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import KhutbahDefaultPoster from '@/components/khutbah-default-poster';
+import KhutbahDefaultPoster, { isCustomPosterImage } from '@/components/khutbah-default-poster';
 import {
   CalendarDays,
   CheckCircle,
@@ -44,6 +44,70 @@ const IconFacebook = ({ size = 18 }: { size?: number }) => (
 );
 import { DataService } from '@/lib/data-service';
 import { InventoryItem, KasItem, KhutbahItem } from '@/types';
+
+function KajianCardMedia({ item }: { item: KhutbahItem }) {
+  const [imgError, setImgError] = useState(false);
+  const hasCustom = isCustomPosterImage(item.image) && !imgError;
+
+  if (!hasCustom) {
+    return (
+      <KhutbahDefaultPoster
+        variant="card"
+        jenisKegiatan={item.jenis_kegiatan}
+        khotib={item.khotib}
+        tema={item.tema}
+        tanggal={new Date(item.tanggal).toLocaleDateString('id-ID', {
+          weekday: 'short',
+          day: 'numeric',
+          month: 'short',
+        })}
+        className="h-full w-full transition-transform duration-700 group-hover:scale-105"
+      />
+    );
+  }
+
+  return (
+    <img
+      src={item.image!}
+      alt={item.khotib}
+      loading="lazy"
+      onError={() => setImgError(true)}
+      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+    />
+  );
+}
+
+function KajianModalMedia({ item }: { item: KhutbahItem }) {
+  const [imgError, setImgError] = useState(false);
+  const hasCustom = isCustomPosterImage(item.image) && !imgError;
+
+  if (!hasCustom) {
+    return (
+      <KhutbahDefaultPoster
+        variant="banner"
+        jenisKegiatan={item.jenis_kegiatan}
+        khotib={item.khotib}
+        tema={item.tema}
+        tanggal={new Date(item.tanggal).toLocaleDateString('id-ID', {
+          weekday: 'long',
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric',
+        })}
+        className="h-full w-full"
+      />
+    );
+  }
+
+  return (
+    <img
+      src={item.image!}
+      alt={item.khotib}
+      onError={() => setImgError(true)}
+      className="h-full w-full object-cover"
+    />
+  );
+}
 
 export default function HomePage() {
   const [jadwal, setJadwal] = useState<KhutbahItem[]>([]);
@@ -496,31 +560,24 @@ export default function HomePage() {
                   >
                     {/* AREA GAMBAR KHATIB */}
                     <div className="relative h-56 w-full overflow-hidden bg-slate-900">
-                      <img
-                        src={item.image || '/images/default-khutbah.jpg'}
-                        alt={item.khotib}
-                        loading="lazy"
-                        onError={(e) => {
-                          e.currentTarget.onerror = null;
-                          e.currentTarget.src = '/images/default-khutbah.jpg';
-                        }}
-                        className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
+                      <KajianCardMedia item={item} />
 
-                      <div className="absolute top-4 right-4">
-                        <span
-                          className={`rounded-full px-3.5 py-1.5 text-[8px] font-black tracking-widest uppercase backdrop-blur-md ${
-                            item.status === 'terjadwal'
-                              ? 'bg-indigo-600/90 text-white'
-                              : item.status === 'selesai'
-                              ? 'bg-emerald-600/90 text-white'
-                              : 'bg-red-500/90 text-white'
-                          }`}
-                        >
-                          {item.status}
-                        </span>
-                      </div>
+                      {/* Overlay status HANYA ditampilkan jika menggunakan foto kustom */}
+                      {isCustomPosterImage(item.image) && (
+                        <div className="absolute top-4 right-4 z-20">
+                          <span
+                            className={`rounded-full px-3.5 py-1.5 text-[8px] font-black tracking-widest uppercase backdrop-blur-md ${
+                              item.status === 'terjadwal'
+                                ? 'bg-indigo-600/90 text-white'
+                                : item.status === 'selesai'
+                                ? 'bg-emerald-600/90 text-white'
+                                : 'bg-red-500/90 text-white'
+                            }`}
+                          >
+                            {item.status}
+                          </span>
+                        </div>
+                      )}
                     </div>
 
                     {/* KONTEN TEXT */}
@@ -587,15 +644,7 @@ export default function HomePage() {
                 </button>
 
                 <div className="h-64 w-full shrink-0 overflow-hidden bg-slate-900 md:h-auto md:w-1/2">
-                  <img
-                    src={selectedKajian.image || '/images/default-khutbah.jpg'}
-                    alt={selectedKajian.khotib}
-                    onError={(e) => {
-                      e.currentTarget.onerror = null;
-                      e.currentTarget.src = '/images/default-khutbah.jpg';
-                    }}
-                    className="h-full w-full object-cover"
-                  />
+                  <KajianModalMedia item={selectedKajian} />
                 </div>
 
                 <div className="flex flex-col justify-between overflow-y-auto p-8 md:w-1/2">

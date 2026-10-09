@@ -369,8 +369,6 @@ const INITIAL_WAKAF: WakafItem[] = [
   },
 ];
 
-export const DEFAULT_KHUTBAH_IMAGE = '/images/default-khutbah.jpg';
-
 const INITIAL_KHUTBAH: KhutbahItem[] = [
   {
     id: 1,
@@ -378,7 +376,7 @@ const INITIAL_KHUTBAH: KhutbahItem[] = [
     jenis_kegiatan: 'Shalat Jumat',
     khotib: 'Ust. Dr. H. Ahmad Farhan, M.Ag',
     tema: 'Merajut Ukhuwah di Tengah Keberagaman',
-    image: DEFAULT_KHUTBAH_IMAGE,
+    image: null,
     status: 'terjadwal',
   },
   {
@@ -396,7 +394,7 @@ const INITIAL_KHUTBAH: KhutbahItem[] = [
     jenis_kegiatan: 'Tabligh Akbar',
     khotib: 'Habib Ali Zainal Abidin Assegaf',
     tema: 'Meneladani Akhlak Mulia Baginda Rasulullah SAW',
-    image: 'https://images.unsplash.com/photo-1585036156171-384164a8c675?auto=format&fit=crop&w=800&q=80',
+    image: null,
     status: 'terjadwal',
   },
 ];
@@ -832,27 +830,27 @@ export const DataService = {
         .from('khutbahs')
         .select('*')
         .order('tanggal', { ascending: true });
-      if (!error && data) {
-        return (data as KhutbahItem[]).map((item) => ({
-          ...item,
-          image: item.image || DEFAULT_KHUTBAH_IMAGE,
-        }));
-      }
+      if (!error && data) return data as KhutbahItem[];
     }
     const rawItems = getStored<KhutbahItem[]>('masjid_khutbah_data', INITIAL_KHUTBAH);
-    // Otomatis bersihkan / perbarui jika ada URL gambar yang rusak atau kosong
-    const fixedItems = rawItems.map((item) => {
-      const isBroken =
-        !item.image ||
-        item.image.includes('photo-1590076215667') ||
-        item.image.trim() === '';
+    // Jika tidak ada gambar kustom atau link placeholder/unsplash, set image = null agar poster otomatis ter-generate
+    const sanitized = rawItems.map((item) => {
+      const isCustomImage =
+        Boolean(item.image) &&
+        !item.image!.includes('unsplash.com') &&
+        !item.image!.includes('default-khutbah') &&
+        !item.image!.startsWith('/images/') &&
+        (item.image!.startsWith('data:image') ||
+          item.image!.includes('supabase.co') ||
+          item.image!.includes('supabase.in') ||
+          item.image!.includes('khutbah-images'));
       return {
         ...item,
-        image: isBroken ? DEFAULT_KHUTBAH_IMAGE : item.image,
+        image: isCustomImage ? item.image : null,
       };
     });
-    setStored('masjid_khutbah_data', fixedItems);
-    return fixedItems;
+    setStored('masjid_khutbah_data', sanitized);
+    return sanitized;
   },
 
   async uploadKhutbahImage(file: File): Promise<string> {
@@ -883,11 +881,7 @@ export const DataService = {
     if (file) {
       imageUrl = await this.uploadKhutbahImage(file);
     }
-    if (!imageUrl || imageUrl.trim() === '') {
-      imageUrl = DEFAULT_KHUTBAH_IMAGE;
-    }
-
-    const payload = { ...item, image: imageUrl };
+    const payload = { ...item, image: imageUrl || null };
     if (isSupabaseConfigured && supabase) {
       const { data, error } = await supabase
         .from('khutbahs')
@@ -917,13 +911,10 @@ export const DataService = {
     if (file) {
       imageUrl = await this.uploadKhutbahImage(file);
     }
-    if (imageUrl === null || imageUrl === '') {
-      imageUrl = DEFAULT_KHUTBAH_IMAGE;
-    }
 
     const payload = {
       ...item,
-      ...(imageUrl !== undefined ? { image: imageUrl } : {}),
+      image: imageUrl !== undefined ? imageUrl : item.image,
       updated_at: new Date().toISOString(),
     };
 

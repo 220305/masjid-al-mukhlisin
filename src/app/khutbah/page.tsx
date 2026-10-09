@@ -16,7 +16,7 @@ import {
   ExternalLink,
 } from 'lucide-react';
 import AdminLayout from '@/components/layout/admin-layout';
-import KhutbahDefaultPoster from '@/components/khutbah-default-poster';
+import KhutbahDefaultPoster, { isCustomPosterImage } from '@/components/khutbah-default-poster';
 import { DataService } from '@/lib/data-service';
 import { KhutbahItem, StatusKhutbah } from '@/types';
 
@@ -119,14 +119,14 @@ export default function KhutbahPage() {
       if (showModal === 'edit' && selectedItem) {
         const payload = {
           ...formData,
-          image: imagePreview ? (imageFile ? undefined : imagePreview) : '/images/default-khutbah.jpg',
+          image: imagePreview ? (imageFile ? undefined : imagePreview) : null,
         };
         await DataService.updateKhutbah(selectedItem.id, payload, imageFile);
       } else {
         await DataService.addKhutbah(
           {
             ...formData,
-            image: imagePreview ? (imageFile ? undefined : imagePreview) : '/images/default-khutbah.jpg',
+            image: imagePreview ? (imageFile ? undefined : imagePreview) : null,
           },
           imageFile
         );
@@ -280,16 +280,20 @@ export default function KhutbahPage() {
                           />
                         </td>
                         <td className="px-6 py-4">
-                          <div className="h-12 w-12 rounded-xl overflow-hidden bg-slate-100 border border-slate-200 shrink-0 shadow-xs">
-                            <img
-                              src={item.image || '/images/default-khutbah.jpg'}
-                              alt={item.khotib}
-                              onError={(e) => {
-                                e.currentTarget.onerror = null;
-                                e.currentTarget.src = '/images/default-khutbah.jpg';
-                              }}
-                              className="h-full w-full object-cover"
-                            />
+                          <div className="h-12 w-12 rounded-xl overflow-hidden border border-emerald-900/15 shrink-0 shadow-xs">
+                            {isCustomPosterImage(item.image) ? (
+                              <img
+                                src={item.image!}
+                                alt={item.khotib}
+                                className="h-full w-full object-cover"
+                              />
+                            ) : (
+                              <KhutbahDefaultPoster
+                                variant="thumbnail"
+                                jenisKegiatan={item.jenis_kegiatan}
+                                khotib={item.khotib}
+                              />
+                            )}
                           </div>
                         </td>
                         <td className="px-6 py-4">
@@ -336,7 +340,7 @@ export default function KhutbahPage() {
                                   link: item.link || '',
                                   status: item.status,
                                 });
-                                setImagePreview(item.image || '');
+                                setImagePreview(isCustomPosterImage(item.image) ? (item.image || '') : '');
                                 setImageFile(null);
                                 setShowModal('edit');
                               }}
@@ -570,16 +574,23 @@ export default function KhutbahPage() {
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             <div className="fixed inset-0 bg-black/50 backdrop-blur-xs" onClick={() => setShowModal(null)} />
             <div className="animate-pop relative z-10 w-full max-w-md rounded-[2.5rem] bg-white overflow-hidden shadow-2xl">
-              <div className="relative h-56 bg-slate-900">
-                <img
-                  src={selectedItem.image || '/images/default-khutbah.jpg'}
-                  alt={selectedItem.khotib}
-                  onError={(e) => {
-                    e.currentTarget.onerror = null;
-                    e.currentTarget.src = '/images/default-khutbah.jpg';
-                  }}
-                  className="h-full w-full object-cover"
-                />
+              <div className="relative h-60 bg-slate-900">
+                {isCustomPosterImage(selectedItem.image) ? (
+                  <img
+                    src={selectedItem.image!}
+                    alt={selectedItem.khotib}
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <KhutbahDefaultPoster
+                    variant="banner"
+                    jenisKegiatan={selectedItem.jenis_kegiatan}
+                    khotib={selectedItem.khotib}
+                    tema={selectedItem.tema}
+                    tanggal={selectedItem.tanggal}
+                    className="h-full w-full"
+                  />
+                )}
                 <button
                   onClick={() => setShowModal(null)}
                   className="absolute top-4 right-4 h-9 w-9 bg-black/40 text-white rounded-full flex items-center justify-center hover:bg-black/60 transition-colors z-20 backdrop-blur-xs"

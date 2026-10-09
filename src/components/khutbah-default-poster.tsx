@@ -12,6 +12,21 @@ export interface KhutbahDefaultPosterProps {
   className?: string;
 }
 
+export function isCustomPosterImage(image?: string | null): boolean {
+  if (!image) return false;
+  const trimmed = image.trim();
+  if (!trimmed) return false;
+  if (trimmed.includes('unsplash.com')) return false;
+  if (trimmed.includes('default-khutbah')) return false;
+  if (trimmed.startsWith('/images/')) return false;
+  return (
+    trimmed.startsWith('data:image') ||
+    trimmed.includes('khutbah-images') ||
+    trimmed.includes('supabase.co') ||
+    trimmed.includes('supabase.in')
+  );
+}
+
 export function MosqueDomeIcon({ className = 'w-6 h-6 text-amber-300' }: { className?: string }) {
   return (
     <svg
@@ -211,7 +226,7 @@ export default function KhutbahDefaultPoster({
   // Public Landing Page Card (variant === 'card')
   return (
     <div
-      className={`relative h-full w-full overflow-hidden bg-gradient-to-br from-[#064e3b] via-[#043326] to-[#011a12] p-6 text-white flex flex-col justify-between select-none ${className}`}
+      className={`relative h-full w-full overflow-hidden bg-gradient-to-br from-[#064e3b] via-[#043627] to-[#011d14] p-5 text-white flex flex-col justify-between select-none ${className}`}
     >
       {/* Geometric Islamic Star Pattern Watermark */}
       <div className="absolute inset-0 opacity-[0.08] pointer-events-none">
@@ -230,43 +245,44 @@ export default function KhutbahDefaultPoster({
       <div className="absolute -top-12 -right-12 w-40 h-40 bg-emerald-400/10 rounded-full blur-2xl pointer-events-none" />
 
       {/* Top Header */}
-      <div className="relative z-10 flex items-center justify-between gap-2">
+      <div className="relative z-10 flex items-center justify-between gap-2 border-b border-emerald-500/20 pb-2.5">
         <div className="flex items-center gap-2">
-          <div className="h-8 w-8 rounded-lg bg-emerald-800/80 border border-emerald-500/30 flex items-center justify-center">
-            <MosqueDomeIcon className="w-5 h-5 text-amber-300" />
-          </div>
+          <MosqueDomeIcon className="w-5 h-5 text-amber-300 shrink-0" />
           <div>
-            <p className="text-[10px] font-black uppercase tracking-widest text-emerald-300 leading-none">
+            <p className="text-[10px] font-black tracking-widest text-emerald-300 uppercase leading-none">
               Masjid Al-Mukhlisin
             </p>
-            <p className="text-[8px] text-emerald-200/60 leading-tight">Lagadar</p>
+            <p className="text-[8px] font-mono text-emerald-100/60 leading-tight mt-0.5">
+              Lagadar, Margaasih
+            </p>
           </div>
         </div>
-        <span className="rounded-full bg-emerald-900/90 border border-emerald-500/40 px-2.5 py-1 text-[8px] font-black tracking-widest uppercase text-emerald-200">
-          {jenisKegiatan}
+        <span className="rounded-full bg-emerald-800/80 px-2.5 py-0.5 text-[8px] font-black uppercase tracking-wider text-emerald-200 border border-emerald-500/30">
+          {jenisKegiatan || 'Shalat Jumat'}
         </span>
       </div>
 
       {/* Center Subject */}
       <div className="relative z-10 my-auto text-center py-2 px-2">
-        <span className="text-[8px] font-black tracking-widest text-amber-300 uppercase block mb-1">
-          Majelis Ilmu & Dakwah
-        </span>
-        <h4 className="font-serif-elegant text-lg md:text-xl font-black text-white drop-shadow line-clamp-2">
+        <p className="text-[9px] font-black tracking-widest text-amber-300 uppercase mb-1">
+          Jadwal Khutbah & Majelis Ilmu
+        </p>
+        <h4 className="font-serif-elegant text-lg md:text-xl font-black text-white drop-shadow leading-tight line-clamp-1">
           {khotib}
         </h4>
-        {tema && (
-          <p className="text-[11px] text-emerald-200/80 italic mt-1 line-clamp-1">
-            "{tema}"
-          </p>
-        )}
+        <p className="text-[11px] text-emerald-200/90 italic mt-1 line-clamp-1">
+          "{tema || 'Tema Khutbah / Kajian'}"
+        </p>
       </div>
 
       {/* Bottom Footer */}
-      <div className="relative z-10 flex items-center justify-between text-[9px] text-emerald-200/80 border-t border-emerald-500/20 pt-2">
-        <span className="font-bold">{tanggal || 'Jadwal Kajian'}</span>
-        <span className="text-[8px] font-mono uppercase text-emerald-300/80">
-          Poster Resmi
+      <div className="relative z-10 flex items-center justify-between text-[9px] text-emerald-200/80 border-t border-emerald-500/20 pt-2.5">
+        <div className="flex items-center gap-1">
+          <CalendarDays size={11} className="text-amber-300" />
+          <span className="font-bold">{tanggal || 'Jadwal Kajian'}</span>
+        </div>
+        <span className="text-[8px] tracking-wider uppercase font-black text-amber-300/90">
+          Poster Default Resmi
         </span>
       </div>
     </div>
