@@ -905,12 +905,22 @@ export default function HomePage() {
                 dengan amanah demi kemakmuran masjid dan jamaah.
               </p>
 
-              <button
-                onClick={() => setActiveKeuanganSlide(1)}
-                className="mt-6 inline-flex items-center gap-1.5 text-xs font-bold text-white/90 hover:text-white underline underline-offset-4"
-              >
-                Lihat 4 Aliran Dana Terakhir <ArrowRight size={14} />
-              </button>
+              <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+                <Link
+                  href="/keuangan"
+                  className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-xs font-black text-emerald-950 hover:bg-emerald-100 transition-all shadow-lg hover:shadow-xl active:scale-95"
+                >
+                  <span>Buka Halaman Detail Transparansi</span>
+                  <ArrowRight size={14} />
+                </Link>
+
+                <button
+                  onClick={() => setActiveKeuanganSlide(1)}
+                  className="inline-flex items-center gap-1.5 rounded-full bg-white/10 hover:bg-white/20 px-4 py-2.5 text-xs font-bold text-white transition-colors"
+                >
+                  Lihat 4 Aliran Terakhir <ArrowRight size={13} />
+                </button>
+              </div>
             </div>
 
             {/* SLIDE 2: TABEL TRANSAKSI TERAKHIR */}
@@ -921,9 +931,18 @@ export default function HomePage() {
                   : 'pointer-events-none absolute inset-0 translate-y-10 opacity-0'
               }`}
             >
-              <div className="mb-6">
-                <p className="text-[10px] font-black tracking-widest text-emerald-200 uppercase">Aktivitas Terakhir</p>
-                <h2 className="font-serif-elegant text-2xl font-bold md:text-4xl">Aliran Arus Kas</h2>
+              <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3 max-w-3xl mx-auto">
+                <div>
+                  <p className="text-[10px] font-black tracking-widest text-emerald-200 uppercase">Aktivitas Terakhir</p>
+                  <h2 className="font-serif-elegant text-2xl font-bold md:text-4xl">Aliran Arus Kas</h2>
+                </div>
+                <Link
+                  href="/keuangan"
+                  className="inline-flex items-center gap-1.5 rounded-full bg-white/15 hover:bg-white/25 px-4 py-2 text-xs font-bold text-white transition-colors self-start sm:self-auto"
+                >
+                  <span>Lihat Seluruh Mutasi Kas</span>
+                  <ArrowRight size={13} />
+                </Link>
               </div>
 
               <div className="mx-auto max-w-3xl overflow-hidden rounded-2xl border border-white/15 bg-emerald-900/40 backdrop-blur-md">
