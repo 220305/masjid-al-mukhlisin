@@ -119,14 +119,14 @@ export default function KhutbahPage() {
       if (showModal === 'edit' && selectedItem) {
         const payload = {
           ...formData,
-          image: imagePreview ? (imageFile ? undefined : imagePreview) : null,
+          image: imagePreview ? (imageFile ? undefined : imagePreview) : '/images/default-khutbah.jpg',
         };
         await DataService.updateKhutbah(selectedItem.id, payload, imageFile);
       } else {
         await DataService.addKhutbah(
           {
             ...formData,
-            image: imagePreview ? (imageFile ? undefined : imagePreview) : null,
+            image: imagePreview ? (imageFile ? undefined : imagePreview) : '/images/default-khutbah.jpg',
           },
           imageFile
         );
@@ -281,19 +281,15 @@ export default function KhutbahPage() {
                         </td>
                         <td className="px-6 py-4">
                           <div className="h-12 w-12 rounded-xl overflow-hidden bg-slate-100 border border-slate-200 shrink-0 shadow-xs">
-                            {item.image ? (
-                              <img
-                                src={item.image}
-                                alt={item.khotib}
-                                className="h-full w-full object-cover"
-                              />
-                            ) : (
-                              <KhutbahDefaultPoster
-                                variant="thumbnail"
-                                jenisKegiatan={item.jenis_kegiatan}
-                                khotib={item.khotib}
-                              />
-                            )}
+                            <img
+                              src={item.image || '/images/default-khutbah.jpg'}
+                              alt={item.khotib}
+                              onError={(e) => {
+                                e.currentTarget.onerror = null;
+                                e.currentTarget.src = '/images/default-khutbah.jpg';
+                              }}
+                              className="h-full w-full object-cover"
+                            />
                           </div>
                         </td>
                         <td className="px-6 py-4">
@@ -575,21 +571,15 @@ export default function KhutbahPage() {
             <div className="fixed inset-0 bg-black/50 backdrop-blur-xs" onClick={() => setShowModal(null)} />
             <div className="animate-pop relative z-10 w-full max-w-md rounded-[2.5rem] bg-white overflow-hidden shadow-2xl">
               <div className="relative h-56 bg-slate-900">
-                {selectedItem.image ? (
-                  <img
-                    src={selectedItem.image}
-                    alt={selectedItem.khotib}
-                    className="h-full w-full object-cover"
-                  />
-                ) : (
-                  <KhutbahDefaultPoster
-                    variant="banner"
-                    jenisKegiatan={selectedItem.jenis_kegiatan}
-                    khotib={selectedItem.khotib}
-                    tema={selectedItem.tema}
-                    tanggal={selectedItem.tanggal}
-                  />
-                )}
+                <img
+                  src={selectedItem.image || '/images/default-khutbah.jpg'}
+                  alt={selectedItem.khotib}
+                  onError={(e) => {
+                    e.currentTarget.onerror = null;
+                    e.currentTarget.src = '/images/default-khutbah.jpg';
+                  }}
+                  className="h-full w-full object-cover"
+                />
                 <button
                   onClick={() => setShowModal(null)}
                   className="absolute top-4 right-4 h-9 w-9 bg-black/40 text-white rounded-full flex items-center justify-center hover:bg-black/60 transition-colors z-20 backdrop-blur-xs"

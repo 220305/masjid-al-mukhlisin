@@ -495,29 +495,18 @@ export default function HomePage() {
                     className="group flex cursor-pointer flex-col overflow-hidden rounded-[2.5rem] border border-slate-200 bg-white shadow-sm transition-all hover:-translate-y-2 hover:border-[#0d8a5e]/30 hover:shadow-2xl hover:shadow-emerald-900/5"
                   >
                     {/* AREA GAMBAR KHATIB */}
-                    <div className="relative h-56 w-full overflow-hidden bg-slate-100">
-                      {item.image ? (
-                        <img
-                          src={item.image}
-                          alt={item.khotib}
-                          loading="lazy"
-                          className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
-                        />
-                      ) : (
-                        <KhutbahDefaultPoster
-                          variant="card"
-                          jenisKegiatan={item.jenis_kegiatan}
-                          khotib={item.khotib}
-                          tema={item.tema}
-                          tanggal={new Date(item.tanggal).toLocaleDateString('id-ID', {
-                            weekday: 'short',
-                            day: 'numeric',
-                            month: 'short',
-                          })}
-                          className="transition-transform duration-700 group-hover:scale-105"
-                        />
-                      )}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none" />
+                    <div className="relative h-56 w-full overflow-hidden bg-slate-900">
+                      <img
+                        src={item.image || '/images/default-khutbah.jpg'}
+                        alt={item.khotib}
+                        loading="lazy"
+                        onError={(e) => {
+                          e.currentTarget.onerror = null;
+                          e.currentTarget.src = '/images/default-khutbah.jpg';
+                        }}
+                        className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
 
                       <div className="absolute top-4 right-4">
                         <span
@@ -598,26 +587,15 @@ export default function HomePage() {
                 </button>
 
                 <div className="h-64 w-full shrink-0 overflow-hidden bg-slate-900 md:h-auto md:w-1/2">
-                  {selectedKajian.image ? (
-                    <img
-                      src={selectedKajian.image}
-                      alt={selectedKajian.khotib}
-                      className="h-full w-full object-cover"
-                    />
-                  ) : (
-                    <KhutbahDefaultPoster
-                      variant="banner"
-                      jenisKegiatan={selectedKajian.jenis_kegiatan}
-                      khotib={selectedKajian.khotib}
-                      tema={selectedKajian.tema}
-                      tanggal={new Date(selectedKajian.tanggal).toLocaleDateString('id-ID', {
-                        weekday: 'long',
-                        day: 'numeric',
-                        month: 'long',
-                        year: 'numeric',
-                      })}
-                    />
-                  )}
+                  <img
+                    src={selectedKajian.image || '/images/default-khutbah.jpg'}
+                    alt={selectedKajian.khotib}
+                    onError={(e) => {
+                      e.currentTarget.onerror = null;
+                      e.currentTarget.src = '/images/default-khutbah.jpg';
+                    }}
+                    className="h-full w-full object-cover"
+                  />
                 </div>
 
                 <div className="flex flex-col justify-between overflow-y-auto p-8 md:w-1/2">

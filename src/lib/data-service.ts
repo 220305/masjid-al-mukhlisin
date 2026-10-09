@@ -369,6 +369,8 @@ const INITIAL_WAKAF: WakafItem[] = [
   },
 ];
 
+export const DEFAULT_KHUTBAH_IMAGE = '/images/default-khutbah.jpg';
+
 const INITIAL_KHUTBAH: KhutbahItem[] = [
   {
     id: 1,
@@ -376,7 +378,7 @@ const INITIAL_KHUTBAH: KhutbahItem[] = [
     jenis_kegiatan: 'Shalat Jumat',
     khotib: 'Ust. Dr. H. Ahmad Farhan, M.Ag',
     tema: 'Merajut Ukhuwah di Tengah Keberagaman',
-    image: null,
+    image: DEFAULT_KHUTBAH_IMAGE,
     status: 'terjadwal',
   },
   {
@@ -830,9 +832,27 @@ export const DataService = {
         .from('khutbahs')
         .select('*')
         .order('tanggal', { ascending: true });
-      if (!error && data) return data as KhutbahItem[];
+      if (!error && data) {
+        return (data as KhutbahItem[]).map((item) => ({
+          ...item,
+          image: item.image || DEFAULT_KHUTBAH_IMAGE,
+        }));
+      }
     }
-    return getStored<KhutbahItem[]>('masjid_khutbah_data', INITIAL_KHUTBAH);
+    const rawItems = getStored<KhutbahItem[]>('masjid_khutbah_data', INITIAL_KHUTBAH);
+    // Otomatis bersihkan / perbarui jika ada URL gambar yang rusak atau kosong
+    const fixedItems = rawItems.map((item) => {
+      const isBroken =
+        !item.image ||
+        item.image.includes('photo-1590076215667') ||
+        item.image.trim() === '';
+      return {
+        ...item,
+        image: isBroken ? DEFAULT_KHUTBAH_IMAGE : item.image,
+      };
+    });
+    setStored('masjid_khutbah_data', fixedItems);
+    return fixedItems;
   },
 
   async uploadKhutbahImage(file: File): Promise<string> {
@@ -862,6 +882,9 @@ export const DataService = {
     let imageUrl = item.image;
     if (file) {
       imageUrl = await this.uploadKhutbahImage(file);
+    }
+    if (!imageUrl || imageUrl.trim() === '') {
+      imageUrl = DEFAULT_KHUTBAH_IMAGE;
     }
 
     const payload = { ...item, image: imageUrl };
@@ -893,6 +916,9 @@ export const DataService = {
     let imageUrl = item.image;
     if (file) {
       imageUrl = await this.uploadKhutbahImage(file);
+    }
+    if (imageUrl === null || imageUrl === '') {
+      imageUrl = DEFAULT_KHUTBAH_IMAGE;
     }
 
     const payload = {
