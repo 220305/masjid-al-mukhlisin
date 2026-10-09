@@ -20,6 +20,17 @@ import AdminLayout from '@/components/layout/admin-layout';
 import { DataService } from '@/lib/data-service';
 import { KasItem, TipeKas } from '@/types';
 
+const KETERANGAN_OPTIONS = [
+  'Infaq Jumat',
+  'Donasi',
+  'Zakat',
+  'Operasional',
+  'Listrik & Air',
+  'Honor',
+  'Perawatan',
+  'Lainnya',
+];
+
 export default function FinancePage() {
   const [dataKas, setDataKas] = useState<KasItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -41,7 +52,8 @@ export default function FinancePage() {
 
   // Add Form State
   const [formData, setFormData] = useState({
-    keterangan: '',
+    keterangan: 'Infaq Jumat',
+    keteranganCustom: '',
     nominal: '',
     tipe: 'masuk' as TipeKas,
     tanggal: '',
@@ -89,16 +101,22 @@ export default function FinancePage() {
   const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.keterangan || !formData.nominal) return;
+    const finalKeterangan =
+      formData.keterangan === 'Lainnya' && formData.keteranganCustom.trim()
+        ? `Lainnya: ${formData.keteranganCustom.trim()}`
+        : formData.keterangan;
+
     try {
       await DataService.addKas({
-        keterangan: formData.keterangan,
+        keterangan: finalKeterangan,
         nominal: parseFloat(formData.nominal),
         tipe: formData.tipe,
         tanggal: formData.tanggal,
       });
       setShowAddModal(false);
       setFormData({
-        keterangan: '',
+        keterangan: 'Infaq Jumat',
+        keteranganCustom: '',
         nominal: '',
         tipe: 'masuk',
         tanggal: new Date().toISOString().split('T')[0],
@@ -400,14 +418,37 @@ export default function FinancePage() {
                   <label className="text-[10px] font-black tracking-widest text-slate-400 uppercase block mb-1">
                     Keterangan
                   </label>
-                  <input
-                    type="text"
+                  <select
                     required
-                    placeholder="Contoh: Infaq Kotak Amal Shalat Jumat"
-                    className="w-full rounded-2xl border border-slate-100 bg-slate-50 p-3.5 text-xs font-bold outline-none focus:bg-white focus:border-emerald-500 text-slate-900"
+                    className="w-full rounded-2xl border border-slate-100 bg-slate-50 p-3.5 text-xs font-bold outline-none focus:bg-white focus:border-emerald-500 text-slate-900 cursor-pointer"
                     value={formData.keterangan}
-                    onChange={(e) => setFormData({ ...formData, keterangan: e.target.value })}
-                  />
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      let newTipe = formData.tipe;
+                      if (['Infaq Jumat', 'Donasi', 'Zakat'].includes(val)) {
+                        newTipe = 'masuk';
+                      } else if (['Operasional', 'Listrik & Air', 'Honor', 'Perawatan'].includes(val)) {
+                        newTipe = 'keluar';
+                      }
+                      setFormData({ ...formData, keterangan: val, tipe: newTipe });
+                    }}
+                  >
+                    {KETERANGAN_OPTIONS.map((opt) => (
+                      <option key={opt} value={opt}>
+                        {opt}
+                      </option>
+                    ))}
+                  </select>
+
+                  {formData.keterangan === 'Lainnya' && (
+                    <input
+                      type="text"
+                      placeholder="Tuliskan rincian keterangan lainnya..."
+                      className="mt-2 w-full rounded-2xl border border-slate-100 bg-slate-50 p-3 text-xs font-bold outline-none focus:bg-white focus:border-emerald-500 text-slate-900"
+                      value={formData.keteranganCustom}
+                      onChange={(e) => setFormData({ ...formData, keteranganCustom: e.target.value })}
+                    />
+                  )}
                 </div>
 
                 <div>
@@ -480,13 +521,34 @@ export default function FinancePage() {
                   <label className="text-[10px] font-black tracking-widest text-slate-400 uppercase block mb-1">
                     Keterangan
                   </label>
-                  <input
-                    type="text"
+                  <select
                     required
-                    className="w-full rounded-2xl border border-slate-100 bg-slate-50 p-3.5 text-xs font-bold outline-none focus:bg-white focus:border-emerald-500 text-slate-900"
-                    value={editData.keterangan}
-                    onChange={(e) => setEditData({ ...editData, keterangan: e.target.value })}
-                  />
+                    className="w-full rounded-2xl border border-slate-100 bg-slate-50 p-3.5 text-xs font-bold outline-none focus:bg-white focus:border-emerald-500 text-slate-900 cursor-pointer"
+                    value={
+                      KETERANGAN_OPTIONS.includes(editData.keterangan)
+                        ? editData.keterangan
+                        : 'Lainnya'
+                    }
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      let newTipe = editData.tipe;
+                      if (['Infaq Jumat', 'Donasi', 'Zakat'].includes(val)) {
+                        newTipe = 'masuk';
+                      } else if (['Operasional', 'Listrik & Air', 'Honor', 'Perawatan'].includes(val)) {
+                        newTipe = 'keluar';
+                      }
+                      setEditData({ ...editData, keterangan: val, tipe: newTipe });
+                    }}
+                  >
+                    {KETERANGAN_OPTIONS.map((opt) => (
+                      <option key={opt} value={opt}>
+                        {opt}
+                      </option>
+                    ))}
+                    {!KETERANGAN_OPTIONS.includes(editData.keterangan) && (
+                      <option value={editData.keterangan}>{editData.keterangan}</option>
+                    )}
+                  </select>
                 </div>
 
                 <div>
