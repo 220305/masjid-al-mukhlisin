@@ -183,64 +183,11 @@ DROP POLICY IF EXISTS "Auth Upload Khutbah Images" ON storage.objects;
 CREATE POLICY "Auth Upload Khutbah Images" ON storage.objects FOR INSERT WITH CHECK (bucket_id = 'khutbah-images' AND auth.role() = 'authenticated');
 
 -- ==============================================================================
--- INITIAL SEED DATA
+-- INITIAL SETUP (Hanya Profil Identitas Masjid)
 -- ==============================================================================
 
--- Identitas Awal
+-- Profil Resmi Masjid (Data Transaksi Kas, Jamaah, Inventaris dll dimulai bersih dari 0)
 INSERT INTO public.identitas_masjid (id, nama, nomor_id_kemenag, alamat, ketua_dkm, bendahara)
 VALUES (1, 'Al-Mukhlisin', '01.4.13.04.06.000158', 'Kp. Jalan Cagak RT.005 RW.004 Desa Lagadar', 'Ustadz H. Ahmad Sobari', 'H. Mulyadi, S.E.')
 ON CONFLICT (id) DO NOTHING;
 
--- Kas Awal
-INSERT INTO public.kas (keterangan, nominal, tipe, kategori, tanggal) VALUES
-('Infaq Kotak Amal Shalat Jumat', 4850000, 'masuk', 'Infaq Jumat', CURRENT_DATE - INTERVAL '5 days'),
-('Sedekah Operasional Hamba Allah', 2500000, 'masuk', 'Donasi', CURRENT_DATE - INTERVAL '4 days'),
-('Pembayaran Tagihan Listrik PLN & Air PDAM', 850000, 'keluar', 'Listrik & Air', CURRENT_DATE - INTERVAL '3 days'),
-('Bisyarah Ustadz Khotib Jumat', 500000, 'keluar', 'Honor', CURRENT_DATE - INTERVAL '2 days'),
-('Infaq Donasi QRIS Al-Mukhlisin', 1200000, 'masuk', 'Donasi', CURRENT_DATE - INTERVAL '1 day'),
-('Pembelian Sabun Cuci & Pembersih Lantai Masjid', 175000, 'keluar', 'Perawatan', CURRENT_DATE)
-ON CONFLICT DO NOTHING;
-
--- Jamaah Awal
-INSERT INTO public.jamaah (nama, no_hp, alamat, peran) VALUES
-('Ustadz H. Ahmad Sobari', '081223344556', 'Kp. Jalan Cagak RT 05/04', 'Pengurus DKM'),
-('H. Mulyadi, S.E.', '081399887766', 'Kp. Jalan Cagak RT 05/04', 'Pengurus DKM'),
-('Ustadz Rahmat Hidayat', '082155667788', 'Komplek Griya Lagadar Indah B-12', 'Imam'),
-('Kang Asep Sunandar', '085711223344', 'Kp. Jalan Cagak RT 02/04', 'Muadzin'),
-('Haji Dedi Kurniawan', '081234567890', 'Jl. Utama Lagadar No. 15', 'Donatur'),
-('Rizky Maulana', '087812345678', 'Kp. Babakan RT 01/04', 'Remaja Masjid'),
-('Bapak Hendra Wijaya', '081987654321', 'Kp. Jalan Cagak RT 04/04', 'Jamaah')
-ON CONFLICT DO NOTHING;
-
--- Petugas Jumat Awal
-INSERT INTO public.petugas_jumat (tanggal, imam, khatib, muadzin) VALUES
-(CURRENT_DATE + INTERVAL '1 day', 'Ust. Rahmat Hidayat', 'Ust. Dr. H. Ahmad Farhan, M.Ag', 'Kang Asep Sunandar'),
-(CURRENT_DATE + INTERVAL '8 days', 'Ust. H. Ahmad Sobari', 'K.H. Syarif Hidayatullah', 'Kang Ujang Marbot'),
-(CURRENT_DATE + INTERVAL '15 days', 'Ust. Rahmat Hidayat', 'Habib Ali Zainal Abidin Assegaf', 'Kang Asep Sunandar')
-ON CONFLICT DO NOTHING;
-
--- Zakat & Qurban Awal
-INSERT INTO public.zakat_qurban (tanggal, nama, jenis, jumlah_jiwa, beras_kg, nominal, keterangan) VALUES
-(CURRENT_DATE - INTERVAL '10 days', 'Keluarga Bpk. Hendra (4 Jiwa)', 'Zakat Fitrah (uang)', 4, 0, 180000, 'Zakat Fitrah 4 jiwa @ Rp 45.000'),
-(CURRENT_DATE - INTERVAL '8 days', 'Keluarga Ibu Hj. Siti Aminah (3 Jiwa)', 'Zakat Fitrah (beras)', 3, 7.5, 0, 'Zakat Fitrah 3 jiwa @ 2.5 kg'),
-(CURRENT_DATE - INTERVAL '6 days', 'H. Dedi Kurniawan', 'Zakat Mal', 1, 0, 5000000, 'Zakat Harta Perniagaan'),
-(CURRENT_DATE - INTERVAL '5 days', 'Keluarga Bpk. H. Mulyadi', 'Qurban Sapi (1/7)', 1, 0, 3200000, 'Bagian 1/7 Sapi Qurban A'),
-(CURRENT_DATE - INTERVAL '3 days', 'Ibu Ratna Dewi', 'Qurban Kambing', 1, 0, 2750000, 'Kambing Qurban Tipe B'),
-(CURRENT_DATE - INTERVAL '1 day', 'Penyaluran Santunan 15 Mustahiq RT 05', 'Penyaluran', 15, 37.5, 3000000, 'Penyaluran beras dan sembako/uang tunai')
-ON CONFLICT DO NOTHING;
-
--- Inventaris Awal
-INSERT INTO public.inventories (nama_barang, jumlah, kondisi, lokasi) VALUES
-('Sound System Amplifier Yamaha EMX5014C', 1, 'baik', 'Ruang Kontrol Audio'),
-('Microphone Wireless Shure BLX288/PG58', 4, 'baik', 'Mimbar Utama'),
-('Karpet Sajadah Tebal Turki Grade A (Roll)', 12, 'baik', 'Ruang Shalat Utama'),
-('Pendingin Ruangan AC Daikin Standing 5 PK', 4, 'baik', 'Ruang Shalat Utama'),
-('Genset Silent Honda 7500 Watt', 1, 'baik', 'Gudang Belakang')
-ON CONFLICT DO NOTHING;
-
--- Wakaf Awal
-INSERT INTO public.wakaf (tanggal, wakif, jenis, nilai, keterangan) VALUES
-(CURRENT_DATE - INTERVAL '30 days', 'Hamba Allah', 'Tanah', 50000000, 'Wakaf tanah perluasan selasar samping seluas 40m2'),
-(CURRENT_DATE - INTERVAL '20 days', 'Alm. Bpk. H. Sukarna (Keluarga)', 'Al-Qur''an', 5000000, '50 Mushaf Al-Qur''an Terjemah Standar Madinah'),
-(CURRENT_DATE - INTERVAL '10 days', 'Komunitas Alumni 98', 'Peralatan', 8500000, '1 Set Proyektor HD & Screen Otomatis')
-ON CONFLICT DO NOTHING;
