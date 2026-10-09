@@ -163,18 +163,10 @@ export default function HomePage() {
         >
           <div className="flex items-center justify-between px-4 py-3 md:px-8">
             {/* Logo & Brand */}
-            <Link href="/" className="flex items-center gap-3 group">
-              <div className="font-serif-elegant flex h-8 w-8 items-center justify-center rounded-full bg-emerald-600 text-lg font-bold text-white md:h-10 md:w-10 shadow-md group-hover:scale-105 transition-transform">
-                M
-              </div>
-              <div className="leading-tight">
-                <span className="font-serif-elegant text-lg font-bold tracking-wide text-white md:text-xl block">
-                  Al-Mukhlisin
-                </span>
-                <span className="text-[9px] font-bold text-emerald-300 tracking-widest uppercase block -mt-1">
-                  Masjid Jami'
-                </span>
-              </div>
+            <Link href="/" className="flex items-center group">
+              <span className="font-serif-elegant text-xl font-bold tracking-wide text-white md:text-2xl block group-hover:text-emerald-300 transition-colors">
+                Al-Mukhlisin
+              </span>
             </Link>
 
             {/* Navigation Links (Desktop) */}
@@ -920,18 +912,10 @@ export default function HomePage() {
           <div className="mb-16 grid gap-12 md:grid-cols-4">
             {/* Info Masjid */}
             <div className="md:col-span-2">
-              <div className="mb-6 flex items-center gap-3">
-                <div className="font-serif-elegant flex h-10 w-10 items-center justify-center rounded-2xl bg-[#0a1f18] text-xl font-bold text-white">
-                  M
-                </div>
-                <div>
-                  <span className="font-serif-elegant text-2xl font-bold text-[#0a1f18] block leading-none">
-                    Al-Mukhlisin
-                  </span>
-                  <span className="text-[10px] font-bold text-emerald-700 tracking-widest uppercase">
-                    Masjid Jami'
-                  </span>
-                </div>
+              <div className="mb-6">
+                <span className="font-serif-elegant text-2xl md:text-3xl font-bold text-[#0a1f18] block leading-none">
+                  Al-Mukhlisin
+                </span>
               </div>
               <p className="mb-8 max-w-md text-sm leading-relaxed font-medium text-slate-500">
                 Menjadi pusat ibadah yang makmur, melayani jamaah dengan sistem modern, transparansi penuh, dan
