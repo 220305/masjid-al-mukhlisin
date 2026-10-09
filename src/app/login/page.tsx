@@ -54,8 +54,8 @@ export default function LoginPage() {
 
       <div className="w-full max-w-md rounded-[3rem] bg-white p-8 md:p-10 shadow-2xl relative z-10">
         <div className="mb-8 text-center">
-          <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-800 shadow-inner">
-            <Shield size={28} />
+          <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-900 border border-emerald-500/30 shadow-md overflow-hidden">
+            <img src="/icon.svg" alt="Masjid Al-Mukhlisin" className="h-10 w-10" />
           </div>
           <h2 className="text-3xl font-black text-emerald-950 font-serif-elegant">Al-Mukhlisin</h2>
           <p className="text-[10px] font-black tracking-widest text-slate-400 uppercase mt-1">

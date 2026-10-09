@@ -6,6 +6,14 @@ export const metadata: Metadata = {
   title: 'Masjid Al-Mukhlisin - Portal Resmi & Pusat Komando',
   description:
     'Sistem Informasi dan Manajemen Masjid Al-Mukhlisin. Transparansi kas umat, jadwal kajian & khutbah, serta manajemen inventaris terpadu.',
+  icons: {
+    icon: [
+      { url: '/icon.svg', type: 'image/svg+xml' },
+      { url: '/favicon.ico' },
+    ],
+    shortcut: '/icon.svg',
+    apple: '/icon.svg',
+  },
 };
 
 export default function RootLayout({

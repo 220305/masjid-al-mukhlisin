@@ -55,9 +55,14 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     <div className="min-h-screen bg-[#f8fafc] text-slate-800 flex flex-col md:flex-row font-sans">
       {/* Mobile Top Header */}
       <header className="md:hidden flex items-center justify-between px-5 py-4 bg-[#0a1f18] text-white border-b border-emerald-900/40 sticky top-0 z-40">
-        <div>
-          <h1 className="font-serif-elegant text-lg font-bold leading-none tracking-wide text-white">Al-Mukhlisin</h1>
-          <p className="text-[9px] font-mono text-emerald-300 mt-1">ID 01.4.13.04.06.000158 | Desa Lagadar</p>
+        <div className="flex items-center gap-2.5">
+          <div className="h-8 w-8 rounded-lg bg-emerald-800/80 border border-emerald-500/30 flex items-center justify-center shrink-0 overflow-hidden">
+            <img src="/icon.svg" alt="Masjid Al-Mukhlisin" className="h-6 w-6" />
+          </div>
+          <div>
+            <h1 className="font-serif-elegant text-lg font-bold leading-none tracking-wide text-white">Al-Mukhlisin</h1>
+            <p className="text-[9px] font-mono text-emerald-300 mt-1">ID 01.4.13.04.06.000158 | Desa Lagadar</p>
+          </div>
         </div>
         <button
           onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -83,15 +88,19 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         }`}
       >
         <div className="space-y-8">
-          {/* Mosque Brand & System Title */}
           <div className="flex items-center justify-between">
-            <div>
-              <span className="font-serif-elegant text-2xl font-bold tracking-wide text-white block leading-tight">
-                Al-Mukhlisin
-              </span>
-              <span className="text-[10px] font-black tracking-widest text-emerald-400 uppercase flex items-center gap-1 mt-1">
-                <Shield size={11} /> Admin Portal
-              </span>
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 rounded-xl bg-emerald-800/80 border border-emerald-500/30 flex items-center justify-center shrink-0 shadow overflow-hidden">
+                <img src="/icon.svg" alt="Masjid Al-Mukhlisin" className="h-8 w-8" />
+              </div>
+              <div>
+                <span className="font-serif-elegant text-2xl font-bold tracking-wide text-white block leading-tight">
+                  Al-Mukhlisin
+                </span>
+                <span className="text-[10px] font-black tracking-widest text-emerald-400 uppercase flex items-center gap-1 mt-0.5">
+                  <Shield size={11} /> Admin Portal
+                </span>
+              </div>
             </div>
             <button
               onClick={() => setSidebarOpen(false)}

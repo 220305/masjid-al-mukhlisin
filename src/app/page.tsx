@@ -241,7 +241,10 @@ export default function HomePage() {
         >
           <div className="flex items-center justify-between px-4 py-3 md:px-8">
             {/* Logo & Brand */}
-            <Link href="/" className="flex items-center group">
+            <Link href="/" className="flex items-center gap-2.5 group">
+              <div className="h-9 w-9 rounded-xl bg-emerald-800/80 border border-emerald-500/30 flex items-center justify-center shadow-inner group-hover:scale-105 transition-transform overflow-hidden">
+                <img src="/icon.svg" alt="Masjid Al-Mukhlisin" className="h-7 w-7" />
+              </div>
               <span className="font-serif-elegant text-xl font-bold tracking-wide text-white md:text-2xl block group-hover:text-emerald-300 transition-colors">
                 Al-Mukhlisin
               </span>
@@ -1018,7 +1021,10 @@ export default function HomePage() {
           <div className="mb-16 grid gap-12 md:grid-cols-4">
             {/* Info Masjid */}
             <div className="md:col-span-2">
-              <div className="mb-6">
+              <div className="mb-6 flex items-center gap-3">
+                <div className="h-10 w-10 rounded-2xl bg-[#0a1f18] border border-emerald-900/40 flex items-center justify-center shadow-sm overflow-hidden">
+                  <img src="/icon.svg" alt="Masjid Al-Mukhlisin" className="h-8 w-8" />
+                </div>
                 <span className="font-serif-elegant text-2xl md:text-3xl font-bold text-[#0a1f18] block leading-none">
                   Al-Mukhlisin
                 </span>
@@ -1089,7 +1095,7 @@ export default function HomePage() {
               &copy; {currentYear} Masjid Al-Mukhlisin. All rights reserved.
             </p>
             <p className="text-[10px] font-black tracking-widest text-slate-400 uppercase">
-              Next.js + Supabase Architecture (Vercel Ready)
+              Sistem Informasi & Manajemen Masjid Terpadu
             </p>
           </div>
         </div>
