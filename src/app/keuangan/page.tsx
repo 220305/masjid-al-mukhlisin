@@ -8,30 +8,13 @@ import {
   TrendingDown,
   ArrowLeft,
   Search,
-  Filter,
   Download,
   Printer,
   CalendarDays,
   CheckCircle2,
-  ArrowRight,
-  Clock,
-  Building2,
-  Sparkles,
   Shield,
   X,
-  FileText,
   PieChart,
-  Info,
-  QrCode,
-  CreditCard,
-  ChevronDown,
-  Layers,
-  RefreshCw,
-  ExternalLink,
-  MapPin,
-  HelpCircle,
-  Copy,
-  Check,
 } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import { DataService } from '@/lib/data-service';
@@ -51,8 +34,6 @@ export default function KeuanganDetailPage() {
 
   // Modals
   const [selectedTrx, setSelectedTrx] = useState<KasItem | null>(null);
-  const [showDonasiModal, setShowDonasiModal] = useState(false);
-  const [copiedBank, setCopiedBank] = useState<string | null>(null);
 
   // Dates
   const [todayDateStr, setTodayDateStr] = useState('');
@@ -262,12 +243,6 @@ export default function KeuanganDetailPage() {
     XLSX.writeFile(wb, `Buku_Kas_Masjid_Al_Mukhlisin_${dateStr}.xlsx`);
   };
 
-  const handleCopy = (text: string, id: string) => {
-    navigator.clipboard.writeText(text);
-    setCopiedBank(id);
-    setTimeout(() => setCopiedBank(null), 2500);
-  };
-
   return (
     <div className="min-h-screen bg-[#f4f7f6] font-sans text-slate-900 selection:bg-emerald-200">
       {/* --- TOP BAR HEADER --- */}
@@ -308,14 +283,6 @@ export default function KeuanganDetailPage() {
                 )}
               </div>
             )}
-
-            <button
-              onClick={() => setShowDonasiModal(true)}
-              className="flex items-center gap-1.5 rounded-full bg-gradient-to-r from-amber-500 to-amber-600 px-3.5 py-1.5 text-xs font-black text-slate-950 shadow-md transition-all hover:brightness-110 active:scale-95"
-            >
-              <QrCode size={13} />
-              <span>Infaq / Donasi</span>
-            </button>
 
             <Link
               href="/login"
@@ -784,76 +751,7 @@ export default function KeuanganDetailPage() {
           </div>
         )}
 
-        {/* --- 5. POJOK DONASI & INFAQ QRIS --- */}
-        <section className="rounded-[2.5rem] bg-gradient-to-r from-emerald-900 to-[#0a1f18] p-8 md:p-12 text-white shadow-xl relative overflow-hidden">
-          <div className="absolute right-0 bottom-0 opacity-10 pointer-events-none">
-            <QrCode size={300} />
-          </div>
-
-          <div className="relative z-10 grid grid-cols-1 gap-8 lg:grid-cols-2 items-center">
-            <div>
-              <span className="rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/30 px-3 py-1 text-[10px] font-black uppercase tracking-widest inline-block mb-3">
-                Salurkan Kebaikan
-              </span>
-              <h3 className="font-serif-elegant text-3xl font-bold md:text-4xl text-white mb-3">
-                Mari Makmurkan Rumah Allah
-              </h3>
-              <p className="text-sm text-slate-300 max-w-lg leading-relaxed mb-6">
-                Infaq dan sedekah Anda mengalir langsung untuk perawatan sarana ibadah, kenyamanan jamaah,
-                santunan dhuafa, dan kelancaran kegiatan dakwah Masjid Al-Mukhlisin.
-              </p>
-
-              <div className="flex flex-wrap gap-3">
-                <button
-                  onClick={() => setShowDonasiModal(true)}
-                  className="rounded-2xl bg-amber-400 hover:bg-amber-500 text-slate-950 font-black text-xs px-6 py-3.5 shadow-lg transition-transform active:scale-95 flex items-center gap-2"
-                >
-                  <QrCode size={16} />
-                  <span>Buka Rekening & QRIS Resmi</span>
-                </button>
-              </div>
-            </div>
-
-            {/* Rekening Info Card */}
-            <div className="rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur-md space-y-4">
-              <h4 className="text-xs font-black tracking-widest text-emerald-300 uppercase">
-                Rekening Resmi DKM Al-Mukhlisin
-              </h4>
-
-              <div className="rounded-2xl bg-black/30 p-4 border border-white/10 flex items-center justify-between">
-                <div>
-                  <p className="text-[10px] font-bold text-slate-400 uppercase">Bank Syariah Indonesia (BSI)</p>
-                  <p className="font-mono text-base font-black text-white mt-0.5">712 3456 789</p>
-                  <p className="text-[10px] text-emerald-300 mt-0.5">a.n. DKM Masjid Al-Mukhlisin Lagadar</p>
-                </div>
-                <button
-                  onClick={() => handleCopy('7123456789', 'bsi')}
-                  className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-slate-200 transition-colors"
-                  title="Salin Nomor Rekening"
-                >
-                  {copiedBank === 'bsi' ? <Check size={16} className="text-emerald-400" /> : <Copy size={16} />}
-                </button>
-              </div>
-
-              <div className="rounded-2xl bg-black/30 p-4 border border-white/10 flex items-center justify-between">
-                <div>
-                  <p className="text-[10px] font-bold text-slate-400 uppercase">Bank Mandiri</p>
-                  <p className="font-mono text-base font-black text-white mt-0.5">130 0012 3456 78</p>
-                  <p className="text-[10px] text-emerald-300 mt-0.5">a.n. Masjid Al-Mukhlisin</p>
-                </div>
-                <button
-                  onClick={() => handleCopy('1300012345678', 'mandiri')}
-                  className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-slate-200 transition-colors"
-                  title="Salin Nomor Rekening"
-                >
-                  {copiedBank === 'mandiri' ? <Check size={16} className="text-emerald-400" /> : <Copy size={16} />}
-                </button>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* --- 6. PENGESAHAN DKM & AKUNTABILITAS --- */}
+        {/* --- 5. PENGESAHAN DKM & AKUNTABILITAS --- */}
         <section className="rounded-3xl border border-slate-200/80 bg-white p-6 md:p-8 text-center text-xs text-slate-600 shadow-2xs">
           <div className="max-w-2xl mx-auto space-y-3">
             <div className="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3.5 py-1 text-[10px] font-black text-emerald-800 uppercase tracking-widest border border-emerald-200">
@@ -949,61 +847,8 @@ export default function KeuanganDetailPage() {
           </div>
         </div>
       )}
-
-      {/* --- MODAL DONASI QRIS --- */}
-      {showDonasiModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <div className="fixed inset-0 bg-black/60 backdrop-blur-xs" onClick={() => setShowDonasiModal(false)} />
-          <div className="animate-pop relative z-10 w-full max-w-md rounded-[2.5rem] bg-white p-8 shadow-2xl text-center space-y-5">
-            <button
-              onClick={() => setShowDonasiModal(false)}
-              className="absolute top-5 right-5 h-8 w-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 transition-colors"
-            >
-              <X size={16} />
-            </button>
-
-            <div>
-              <span className="rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 px-3 py-1 text-[10px] font-black uppercase tracking-widest inline-block mb-2">
-                QRIS & Rekening Resmi
-              </span>
-              <h3 className="font-serif-elegant text-2xl font-bold text-slate-900">
-                Infaq & Sedekah
-              </h3>
-              <p className="text-xs text-slate-500 mt-1">
-                Scan kode QRIS melalui e-wallet / mobile banking apa saja
-              </p>
-            </div>
-
-            <div className="mx-auto w-56 h-56 rounded-2xl border-2 border-dashed border-emerald-300 p-4 bg-emerald-50/50 flex flex-col items-center justify-center">
-              <QrCode size={160} className="text-emerald-950" />
-              <span className="text-[10px] font-mono font-bold text-emerald-800 mt-2">
-                NMID: ID1020030040050
-              </span>
-            </div>
-
-            <div className="rounded-2xl bg-slate-50 p-4 text-xs text-left space-y-2 border border-slate-100">
-              <div className="flex justify-between items-center">
-                <span className="text-slate-500">Bank BSI:</span>
-                <span className="font-mono font-bold text-slate-800">712 3456 789</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-slate-500">Bank Mandiri:</span>
-                <span className="font-mono font-bold text-slate-800">130 0012 3456 78</span>
-              </div>
-              <div className="text-[11px] text-emerald-800 font-semibold pt-1 border-t border-slate-200/60">
-                Atas Nama: DKM Masjid Al-Mukhlisin
-              </div>
-            </div>
-
-            <button
-              onClick={() => setShowDonasiModal(false)}
-              className="w-full rounded-2xl bg-[#0a1f18] py-3.5 text-xs font-black tracking-widest text-white hover:bg-emerald-800 transition-colors"
-            >
-              SELESAI
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
+
+
