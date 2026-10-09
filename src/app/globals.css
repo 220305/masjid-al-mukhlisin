@@ -1,0 +1,130 @@
+@import url('https://fonts.googleapis.com/css2?family=Lobster+Two:ital,wght@0,400;0,700;1,400;1,700&family=Plus+Jakarta+Sans:ital,wght@0,300..800;1,300..800&display=swap');
+@import "tailwindcss";
+
+:root {
+  --background: #f8fafc;
+  --foreground: #0f172a;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.font-serif-elegant {
+  font-family: 'Lobster Two', cursive, sans-serif;
+}
+
+/* Sembunyikan scrollbar tapi tetap bisa swipe/scroll */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Animasi Pop Up Modal */
+@keyframes pop {
+  0% {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-pop {
+  animation: pop 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-slide-up {
+  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* PRINT MEDIA STYLES KHUSUS LAPORAN KEUANGAN & INVENTARIS */
+@media print {
+  nav,
+  aside,
+  header,
+  footer,
+  .no-print,
+  button,
+  input[type='checkbox'],
+  input[type='text'],
+  input[type='date'],
+  .filters-container {
+    display: none !important;
+  }
+
+  body,
+  html {
+    background: white !important;
+    margin: 0 !important;
+    padding: 10mm !important;
+    color: black !important;
+  }
+
+  .print-only-title {
+    display: block !important;
+    visibility: visible !important;
+    font-size: 20pt !important;
+    font-weight: bold !important;
+    margin-bottom: 12px !important;
+    text-align: center !important;
+  }
+
+  #printable-area {
+    display: block !important;
+    width: 100% !important;
+    margin-top: 15px !important;
+  }
+
+  table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+  }
+
+  th {
+    border-bottom: 2px solid #111 !important;
+    padding: 8px 4px !important;
+    text-align: left !important;
+    text-transform: uppercase !important;
+    font-size: 10pt !important;
+  }
+
+  td {
+    border-bottom: 1px solid #e2e8f0 !important;
+    padding: 8px 4px !important;
+    vertical-align: top !important;
+    font-size: 10pt !important;
+  }
+
+  .no-print-row {
+    display: none !important;
+  }
+
+  tr {
+    background: transparent !important;
+  }
+
+  a[href]:after {
+    content: none !important;
+  }
+}
