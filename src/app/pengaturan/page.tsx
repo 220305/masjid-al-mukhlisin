@@ -12,6 +12,7 @@ import {
   RefreshCw,
   KeyRound,
   Lock,
+  Trash2,
 } from 'lucide-react';
 import AdminLayout from '@/components/layout/admin-layout';
 import { DataService } from '@/lib/data-service';
@@ -125,6 +126,18 @@ export default function PengaturanPage() {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
+  };
+
+  const handleClearAllData = async () => {
+    if (
+      confirm(
+        'Apakah Anda yakin ingin mengosongkan seluruh data transaksi (Kas, Jamaah, Inventaris, Zakat, dll)? Data akan bersih dimulai dari nol (0).'
+      )
+    ) {
+      await DataService.clearAllData();
+      alert('Seluruh data transaksi lokal telah berhasil dikosongkan.');
+      window.location.reload();
+    }
   };
 
   return (
@@ -306,6 +319,15 @@ export default function PengaturanPage() {
                 </button>
               </>
             )}
+
+            <button
+              type="button"
+              onClick={handleClearAllData}
+              className="px-4 py-2.5 border border-rose-200 text-rose-700 bg-rose-50 hover:bg-rose-100 text-xs font-bold rounded-xl flex items-center gap-2 transition"
+              title="Kosongkan seluruh data transaksi agar bersih dari 0"
+            >
+              <Trash2 size={14} /> Kosongkan Data Transaksi (Mulai dari 0)
+            </button>
           </div>
 
           {backupJson && (
