@@ -130,6 +130,30 @@ const INITIAL_JAMAAH: JamaahItem[] = [
     peran: 'Jamaah',
     created_at: new Date().toISOString(),
   },
+  {
+    id: 8,
+    nama: 'K.H. Syarif Hidayatullah',
+    no_hp: '081298765432',
+    alamat: 'Komplek Islamic Center Lagadar',
+    peran: 'Imam',
+    created_at: new Date().toISOString(),
+  },
+  {
+    id: 9,
+    nama: 'Ust. Dr. H. Ahmad Farhan, M.Ag',
+    no_hp: '081387654321',
+    alamat: 'Jl. Pesantren No. 08 Lagadar',
+    peran: 'Imam',
+    created_at: new Date().toISOString(),
+  },
+  {
+    id: 10,
+    nama: 'Kang Bilal Fauzi',
+    no_hp: '085612349876',
+    alamat: 'Kp. Jalan Cagak RT 01/04',
+    peran: 'Muadzin',
+    created_at: new Date().toISOString(),
+  },
 ];
 
 const INITIAL_PETUGAS_JUMAT: PetugasJumatItem[] = [

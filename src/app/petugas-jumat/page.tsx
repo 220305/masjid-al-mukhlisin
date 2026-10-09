@@ -18,16 +18,26 @@ import {
 } from 'lucide-react';
 import AdminLayout from '@/components/layout/admin-layout';
 import { DataService } from '@/lib/data-service';
-import { PetugasJumatItem } from '@/types';
+import { PetugasJumatItem, JamaahItem } from '@/types';
 
 export default function PetugasJumatPage() {
   const [dataPetugas, setDataPetugas] = useState<PetugasJumatItem[]>([]);
+  const [dataJamaah, setDataJamaah] = useState<JamaahItem[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Modals
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [editItem, setEditItem] = useState<PetugasJumatItem | null>(null);
+
+  // Custom Input Toggles
+  const [customKhatib, setCustomKhatib] = useState(false);
+  const [customImam, setCustomImam] = useState(false);
+  const [customMuadzin, setCustomMuadzin] = useState(false);
+
+  const [editCustomKhatib, setEditCustomKhatib] = useState(false);
+  const [editCustomImam, setEditCustomImam] = useState(false);
+  const [editCustomMuadzin, setEditCustomMuadzin] = useState(false);
 
   // Filters
   const [searchTerm, setSearchTerm] = useState('');
@@ -44,8 +54,12 @@ export default function PetugasJumatPage() {
   const loadData = async () => {
     setLoading(true);
     try {
-      const items = await DataService.getPetugasJumat();
+      const [items, jamaahList] = await Promise.all([
+        DataService.getPetugasJumat(),
+        DataService.getJamaah(),
+      ]);
       setDataPetugas(items);
+      setDataJamaah(jamaahList);
     } catch (error) {
       console.error('Failed to load petugas jumat:', error);
     } finally {
@@ -65,6 +79,23 @@ export default function PetugasJumatPage() {
     }));
     loadData();
   }, []);
+
+  // Filter kandidat berdasarkan peran jamaah
+  const kandidatImam = useMemo(() => {
+    return dataJamaah.filter((j) => j.peran === 'Imam');
+  }, [dataJamaah]);
+
+  const kandidatDkm = useMemo(() => {
+    return dataJamaah.filter((j) => j.peran === 'Pengurus DKM');
+  }, [dataJamaah]);
+
+  const kandidatMuadzin = useMemo(() => {
+    return dataJamaah.filter((j) => j.peran === 'Muadzin');
+  }, [dataJamaah]);
+
+  const kandidatRemaja = useMemo(() => {
+    return dataJamaah.filter((j) => j.peran === 'Remaja Masjid');
+  }, [dataJamaah]);
 
   // Filtered
   const filteredPetugas = useMemo(() => {
@@ -403,38 +434,183 @@ export default function PetugasJumatPage() {
                   />
                 </div>
 
+                {/* Khatib Dropdown / Input */}
                 <div>
-                  <label className="block font-bold text-slate-700 mb-1">Khatib Shalat Jumat *</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="Contoh: K.H. Syarif Hidayatullah"
-                    value={formData.khatib}
-                    onChange={(e) => setFormData({ ...formData, khatib: e.target.value })}
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                  />
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="block font-bold text-slate-700">Khatib Shalat Jumat *</label>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setCustomKhatib(!customKhatib);
+                        if (!customKhatib) setFormData({ ...formData, khatib: '' });
+                      }}
+                      className="text-[10px] text-emerald-600 font-bold hover:underline"
+                    >
+                      {customKhatib ? '← Pilih dari Data Jamaah' : '+ Input Manual / Tamu'}
+                    </button>
+                  </div>
+
+                  {!customKhatib ? (
+                    <select
+                      required
+                      value={formData.khatib}
+                      onChange={(e) => {
+                        if (e.target.value === '__custom__') {
+                          setCustomKhatib(true);
+                          setFormData({ ...formData, khatib: '' });
+                        } else {
+                          setFormData({ ...formData, khatib: e.target.value });
+                        }
+                      }}
+                      className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium text-slate-800 cursor-pointer"
+                    >
+                      <option value="">-- Pilih Khatib (Peran: Imam) --</option>
+                      <optgroup label="Imam Masjid (Peran: Imam)">
+                        {kandidatImam.map((j) => (
+                          <option key={j.id} value={j.nama}>
+                            {j.nama}
+                          </option>
+                        ))}
+                      </optgroup>
+                      {kandidatDkm.length > 0 && (
+                        <optgroup label="Pengurus DKM">
+                          {kandidatDkm.map((j) => (
+                            <option key={j.id} value={j.nama}>
+                              {j.nama} (DKM)
+                            </option>
+                          ))}
+                        </optgroup>
+                      )}
+                      <option value="__custom__">+ Input Manual (Ustadz Tamu Luar)...</option>
+                    </select>
+                  ) : (
+                    <input
+                      type="text"
+                      required
+                      placeholder="Ketik nama khatib / ustadz tamu luar..."
+                      value={formData.khatib}
+                      onChange={(e) => setFormData({ ...formData, khatib: e.target.value })}
+                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium"
+                    />
+                  )}
                 </div>
 
+                {/* Imam Dropdown / Input */}
                 <div>
-                  <label className="block font-bold text-slate-700 mb-1">Imam Shalat (kosongkan jika sama dengan Khatib)</label>
-                  <input
-                    type="text"
-                    placeholder="Contoh: Ust. Rahmat Hidayat"
-                    value={formData.imam}
-                    onChange={(e) => setFormData({ ...formData, imam: e.target.value })}
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                  />
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="block font-bold text-slate-700">Imam Shalat (kosongkan jika sama dengan Khatib)</label>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setCustomImam(!customImam);
+                        if (!customImam) setFormData({ ...formData, imam: '' });
+                      }}
+                      className="text-[10px] text-emerald-600 font-bold hover:underline"
+                    >
+                      {customImam ? '← Pilih dari Data Jamaah' : '+ Input Manual'}
+                    </button>
+                  </div>
+
+                  {!customImam ? (
+                    <select
+                      value={formData.imam}
+                      onChange={(e) => {
+                        if (e.target.value === '__custom__') {
+                          setCustomImam(true);
+                          setFormData({ ...formData, imam: '' });
+                        } else {
+                          setFormData({ ...formData, imam: e.target.value });
+                        }
+                      }}
+                      className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium text-slate-800 cursor-pointer"
+                    >
+                      <option value="">(Sama dengan Khatib)</option>
+                      <optgroup label="Imam Masjid (Peran: Imam)">
+                        {kandidatImam.map((j) => (
+                          <option key={j.id} value={j.nama}>
+                            {j.nama}
+                          </option>
+                        ))}
+                      </optgroup>
+                      {kandidatDkm.length > 0 && (
+                        <optgroup label="Pengurus DKM">
+                          {kandidatDkm.map((j) => (
+                            <option key={j.id} value={j.nama}>
+                              {j.nama} (DKM)
+                            </option>
+                          ))}
+                        </optgroup>
+                      )}
+                      <option value="__custom__">+ Input Manual (Imam Lain)...</option>
+                    </select>
+                  ) : (
+                    <input
+                      type="text"
+                      placeholder="Ketik nama imam shalat..."
+                      value={formData.imam}
+                      onChange={(e) => setFormData({ ...formData, imam: e.target.value })}
+                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium"
+                    />
+                  )}
                 </div>
 
+                {/* Muadzin Dropdown / Input */}
                 <div>
-                  <label className="block font-bold text-slate-700 mb-1">Muadzin / Bilal</label>
-                  <input
-                    type="text"
-                    placeholder="Contoh: Kang Asep Sunandar"
-                    value={formData.muadzin}
-                    onChange={(e) => setFormData({ ...formData, muadzin: e.target.value })}
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                  />
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="block font-bold text-slate-700">Muadzin / Bilal</label>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setCustomMuadzin(!customMuadzin);
+                        if (!customMuadzin) setFormData({ ...formData, muadzin: '' });
+                      }}
+                      className="text-[10px] text-emerald-600 font-bold hover:underline"
+                    >
+                      {customMuadzin ? '← Pilih dari Data Jamaah' : '+ Input Manual'}
+                    </button>
+                  </div>
+
+                  {!customMuadzin ? (
+                    <select
+                      value={formData.muadzin}
+                      onChange={(e) => {
+                        if (e.target.value === '__custom__') {
+                          setCustomMuadzin(true);
+                          setFormData({ ...formData, muadzin: '' });
+                        } else {
+                          setFormData({ ...formData, muadzin: e.target.value });
+                        }
+                      }}
+                      className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium text-slate-800 cursor-pointer"
+                    >
+                      <option value="">-- Pilih Muadzin (Peran: Muadzin) --</option>
+                      <optgroup label="Muadzin Masjid (Peran: Muadzin)">
+                        {kandidatMuadzin.map((j) => (
+                          <option key={j.id} value={j.nama}>
+                            {j.nama}
+                          </option>
+                        ))}
+                      </optgroup>
+                      {kandidatRemaja.length > 0 && (
+                        <optgroup label="Remaja Masjid (Kader Bilal)">
+                          {kandidatRemaja.map((j) => (
+                            <option key={j.id} value={j.nama}>
+                              {j.nama} (Remaja)
+                            </option>
+                          ))}
+                        </optgroup>
+                      )}
+                      <option value="__custom__">+ Input Manual (Bilal Lain)...</option>
+                    </select>
+                  ) : (
+                    <input
+                      type="text"
+                      placeholder="Ketik nama muadzin / bilal..."
+                      value={formData.muadzin}
+                      onChange={(e) => setFormData({ ...formData, muadzin: e.target.value })}
+                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium"
+                    />
+                  )}
                 </div>
 
                 <div className="pt-3 flex items-center justify-end gap-2 border-t border-slate-100">
@@ -485,35 +661,186 @@ export default function PetugasJumatPage() {
                   />
                 </div>
 
+                {/* Edit Khatib */}
                 <div>
-                  <label className="block font-bold text-slate-700 mb-1">Khatib Shalat Jumat *</label>
-                  <input
-                    type="text"
-                    required
-                    value={editItem.khatib}
-                    onChange={(e) => setEditItem({ ...editItem, khatib: e.target.value })}
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                  />
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="block font-bold text-slate-700">Khatib Shalat Jumat *</label>
+                    <button
+                      type="button"
+                      onClick={() => setEditCustomKhatib(!editCustomKhatib)}
+                      className="text-[10px] text-emerald-600 font-bold hover:underline"
+                    >
+                      {editCustomKhatib ? '← Pilih dari Data Jamaah' : '+ Input Manual'}
+                    </button>
+                  </div>
+
+                  {!editCustomKhatib ? (
+                    <select
+                      required
+                      value={editItem.khatib}
+                      onChange={(e) => {
+                        if (e.target.value === '__custom__') {
+                          setEditCustomKhatib(true);
+                          setEditItem({ ...editItem, khatib: '' });
+                        } else {
+                          setEditItem({ ...editItem, khatib: e.target.value });
+                        }
+                      }}
+                      className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium text-slate-800 cursor-pointer"
+                    >
+                      <option value="">-- Pilih Khatib (Peran: Imam) --</option>
+                      {editItem.khatib &&
+                        !kandidatImam.some((j) => j.nama === editItem.khatib) &&
+                        !kandidatDkm.some((j) => j.nama === editItem.khatib) && (
+                          <option value={editItem.khatib}>{editItem.khatib} (Tersimpan)</option>
+                        )}
+                      <optgroup label="Imam Masjid (Peran: Imam)">
+                        {kandidatImam.map((j) => (
+                          <option key={j.id} value={j.nama}>
+                            {j.nama}
+                          </option>
+                        ))}
+                      </optgroup>
+                      {kandidatDkm.length > 0 && (
+                        <optgroup label="Pengurus DKM">
+                          {kandidatDkm.map((j) => (
+                            <option key={j.id} value={j.nama}>
+                              {j.nama} (DKM)
+                            </option>
+                          ))}
+                        </optgroup>
+                      )}
+                      <option value="__custom__">+ Input Manual (Lainnya)...</option>
+                    </select>
+                  ) : (
+                    <input
+                      type="text"
+                      required
+                      value={editItem.khatib}
+                      onChange={(e) => setEditItem({ ...editItem, khatib: e.target.value })}
+                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    />
+                  )}
                 </div>
 
+                {/* Edit Imam */}
                 <div>
-                  <label className="block font-bold text-slate-700 mb-1">Imam Shalat</label>
-                  <input
-                    type="text"
-                    value={editItem.imam}
-                    onChange={(e) => setEditItem({ ...editItem, imam: e.target.value })}
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                  />
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="block font-bold text-slate-700">Imam Shalat</label>
+                    <button
+                      type="button"
+                      onClick={() => setEditCustomImam(!editCustomImam)}
+                      className="text-[10px] text-emerald-600 font-bold hover:underline"
+                    >
+                      {editCustomImam ? '← Pilih dari Data Jamaah' : '+ Input Manual'}
+                    </button>
+                  </div>
+
+                  {!editCustomImam ? (
+                    <select
+                      value={editItem.imam}
+                      onChange={(e) => {
+                        if (e.target.value === '__custom__') {
+                          setEditCustomImam(true);
+                          setEditItem({ ...editItem, imam: '' });
+                        } else {
+                          setEditItem({ ...editItem, imam: e.target.value });
+                        }
+                      }}
+                      className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium text-slate-800 cursor-pointer"
+                    >
+                      <option value="">(Sama dengan Khatib)</option>
+                      {editItem.imam &&
+                        !kandidatImam.some((j) => j.nama === editItem.imam) &&
+                        !kandidatDkm.some((j) => j.nama === editItem.imam) && (
+                          <option value={editItem.imam}>{editItem.imam} (Tersimpan)</option>
+                        )}
+                      <optgroup label="Imam Masjid (Peran: Imam)">
+                        {kandidatImam.map((j) => (
+                          <option key={j.id} value={j.nama}>
+                            {j.nama}
+                          </option>
+                        ))}
+                      </optgroup>
+                      {kandidatDkm.length > 0 && (
+                        <optgroup label="Pengurus DKM">
+                          {kandidatDkm.map((j) => (
+                            <option key={j.id} value={j.nama}>
+                              {j.nama} (DKM)
+                            </option>
+                          ))}
+                        </optgroup>
+                      )}
+                      <option value="__custom__">+ Input Manual (Lainnya)...</option>
+                    </select>
+                  ) : (
+                    <input
+                      type="text"
+                      value={editItem.imam}
+                      onChange={(e) => setEditItem({ ...editItem, imam: e.target.value })}
+                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    />
+                  )}
                 </div>
 
+                {/* Edit Muadzin */}
                 <div>
-                  <label className="block font-bold text-slate-700 mb-1">Muadzin / Bilal</label>
-                  <input
-                    type="text"
-                    value={editItem.muadzin}
-                    onChange={(e) => setEditItem({ ...editItem, muadzin: e.target.value })}
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                  />
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="block font-bold text-slate-700">Muadzin / Bilal</label>
+                    <button
+                      type="button"
+                      onClick={() => setEditCustomMuadzin(!editCustomMuadzin)}
+                      className="text-[10px] text-emerald-600 font-bold hover:underline"
+                    >
+                      {editCustomMuadzin ? '← Pilih dari Data Jamaah' : '+ Input Manual'}
+                    </button>
+                  </div>
+
+                  {!editCustomMuadzin ? (
+                    <select
+                      value={editItem.muadzin}
+                      onChange={(e) => {
+                        if (e.target.value === '__custom__') {
+                          setEditCustomMuadzin(true);
+                          setEditItem({ ...editItem, muadzin: '' });
+                        } else {
+                          setEditItem({ ...editItem, muadzin: e.target.value });
+                        }
+                      }}
+                      className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium text-slate-800 cursor-pointer"
+                    >
+                      <option value="">-- Pilih Muadzin (Peran: Muadzin) --</option>
+                      {editItem.muadzin &&
+                        !kandidatMuadzin.some((j) => j.nama === editItem.muadzin) &&
+                        !kandidatRemaja.some((j) => j.nama === editItem.muadzin) && (
+                          <option value={editItem.muadzin}>{editItem.muadzin} (Tersimpan)</option>
+                        )}
+                      <optgroup label="Muadzin Masjid (Peran: Muadzin)">
+                        {kandidatMuadzin.map((j) => (
+                          <option key={j.id} value={j.nama}>
+                            {j.nama}
+                          </option>
+                        ))}
+                      </optgroup>
+                      {kandidatRemaja.length > 0 && (
+                        <optgroup label="Remaja Masjid (Kader Bilal)">
+                          {kandidatRemaja.map((j) => (
+                            <option key={j.id} value={j.nama}>
+                              {j.nama} (Remaja)
+                            </option>
+                          ))}
+                        </optgroup>
+                      )}
+                      <option value="__custom__">+ Input Manual (Lainnya)...</option>
+                    </select>
+                  ) : (
+                    <input
+                      type="text"
+                      value={editItem.muadzin}
+                      onChange={(e) => setEditItem({ ...editItem, muadzin: e.target.value })}
+                      className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    />
+                  )}
                 </div>
 
                 <div className="pt-3 flex items-center justify-end gap-2 border-t border-slate-100">
