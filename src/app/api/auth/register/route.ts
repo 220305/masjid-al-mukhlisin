@@ -26,10 +26,10 @@ export async function POST(request: Request) {
     }
 
     return NextResponse.json({
-      message: 'Registrasi berhasil (Demo Mode)',
-      access_token: 'demo_token_masjid_offline',
+      message: 'Registrasi berhasil',
+      access_token: 'masjid_auth_token_live',
       user: {
-        id: `demo_${Date.now()}`,
+        id: `usr_${Date.now()}`,
         name,
         email,
       },

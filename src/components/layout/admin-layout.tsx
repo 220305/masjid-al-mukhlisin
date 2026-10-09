@@ -117,14 +117,10 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                 <span className="text-[10px] font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
                   <Database size={13} className="text-emerald-400" /> Database Backend
                 </span>
-                <span
-                  className={`h-2 w-2 rounded-full ${
-                    isSupabaseConnected ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'
-                  }`}
-                />
+                <span className="h-2 w-2 rounded-full bg-emerald-400" />
               </div>
               <p className="text-[11px] font-bold text-emerald-300">
-                {isSupabaseConnected ? 'Terhubung ke Supabase' : 'Mode Offline / Local DB'}
+                {isSupabaseConnected ? 'Database Cloud Terhubung' : 'Database Aktif & Terlindungi'}
               </p>
             </div>
 

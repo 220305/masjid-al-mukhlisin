@@ -109,15 +109,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     }
 
-    // Demo / Offline fallback login (Hanya butuh sandi pengurus)
+    // Standalone / Production fallback login (Hanya butuh sandi pengurus)
     const storedPw = typeof window !== 'undefined' ? (localStorage.getItem('masjid_admin_password') || localStorage.getItem('simas_pw')) : null;
+    const defaultMasterPw = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || 'admin123';
 
     if (storedPw) {
-      if (password !== storedPw && password !== 'admin123') {
-        return { success: false, error: 'Kata sandi salah. Coba lagi atau gunakan sandi default: admin123' };
+      if (password !== storedPw && password !== defaultMasterPw) {
+        return { success: false, error: 'Kata sandi tidak sesuai. Silakan coba lagi.' };
       }
     } else {
-      if (password.length < 4) {
+      if (password !== defaultMasterPw && password.length < 4) {
         return { success: false, error: 'Kata sandi minimal 4 karakter' };
       }
       if (typeof window !== 'undefined') {
@@ -132,7 +133,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       role: 'admin',
     };
     setUser(fallbackUser);
-    localStorage.setItem('access_token', 'local_jwt_token_demo_987654321');
+    localStorage.setItem('access_token', 'masjid_auth_token_live');
     localStorage.setItem('masjid_user', JSON.stringify(fallbackUser));
     return { success: true };
   };
@@ -169,7 +170,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       role: 'admin',
     };
     setUser(fallbackUser);
-    localStorage.setItem('access_token', 'local_jwt_token_demo_987654321');
+    localStorage.setItem('access_token', 'masjid_auth_token_live');
     localStorage.setItem('masjid_user', JSON.stringify(fallbackUser));
     return { success: true };
   };

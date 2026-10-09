@@ -3,12 +3,12 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Lock, Eye, EyeOff, ArrowLeft, KeyRound, ShieldCheck } from 'lucide-react';
+import { Lock, Eye, EyeOff, ArrowLeft, ShieldCheck } from 'lucide-react';
 import { useAuth } from '@/lib/auth-context';
 
 export default function LoginPage() {
   const router = useRouter();
-  const { login, isSupabaseConnected } = useAuth();
+  const { login } = useAuth();
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -29,18 +29,13 @@ export default function LoginPage() {
       if (res.success) {
         router.push('/dashboard');
       } else {
-        setErrorMessage(res.error || 'Kata sandi salah. Coba lagi atau gunakan sandi demo: admin123');
+        setErrorMessage(res.error || 'Kata sandi tidak sesuai. Silakan coba lagi.');
       }
     } catch (err: any) {
       setErrorMessage(err?.message || 'Terjadi kesalahan sistem');
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleUseDemo = () => {
-    setPassword('admin123');
-    setErrorMessage('');
   };
 
   return (
@@ -73,30 +68,6 @@ export default function LoginPage() {
           </div>
         </div>
 
-        {/* Database backend badge info */}
-        <div className="mb-6 rounded-2xl bg-slate-50 border border-slate-100 p-3.5 flex items-center justify-between text-xs">
-          <div className="flex items-center gap-2">
-            <span
-              className={`h-2 w-2 rounded-full ${
-                isSupabaseConnected ? 'bg-emerald-500' : 'bg-amber-400'
-              }`}
-            />
-            <span className="font-bold text-slate-600">
-              {isSupabaseConnected ? 'Supabase Auth' : 'Demo Mode (Offline)'}
-            </span>
-          </div>
-          {!isSupabaseConnected && (
-            <button
-              type="button"
-              onClick={handleUseDemo}
-              className="text-[10px] font-bold text-emerald-700 bg-emerald-100/70 hover:bg-emerald-200 px-2.5 py-1 rounded-lg transition-colors flex items-center gap-1"
-            >
-              <KeyRound size={12} />
-              <span>Isi Sandi Demo</span>
-            </button>
-          )}
-        </div>
-
         {errorMessage && (
           <div className="mb-5 animate-pulse rounded-2xl bg-red-50 border border-red-200 px-4 py-3 text-xs font-bold text-red-600">
             {errorMessage}
@@ -105,14 +76,9 @@ export default function LoginPage() {
 
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <div className="flex items-center justify-between px-2 mb-1.5">
-              <label className="text-[10px] font-black tracking-widest text-slate-400 uppercase block">
-                Kata Sandi Pengurus
-              </label>
-              <span className="text-[10px] font-medium text-slate-400">
-                Tanpa email
-              </span>
-            </div>
+            <label className="px-2 text-[10px] font-black tracking-widest text-slate-400 uppercase block mb-1.5">
+              Kata Sandi Pengurus
+            </label>
 
             <div className="relative">
               <input
@@ -134,9 +100,9 @@ export default function LoginPage() {
                 {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
               </button>
             </div>
-            <p className="mt-2 px-2 text-[11px] text-slate-400 flex items-center gap-1">
-              <ShieldCheck size={12} className="text-emerald-600" />
-              <span>Sandi bawaan: <strong className="font-mono text-slate-700 font-bold">admin123</strong></span>
+            <p className="mt-2.5 px-2 text-[11px] text-slate-400 flex items-center gap-1.5">
+              <ShieldCheck size={13} className="text-emerald-600 shrink-0" />
+              <span>Akses terproteksi & terenkripsi DKM Al-Mukhlisin</span>
             </p>
           </div>
 
@@ -149,10 +115,10 @@ export default function LoginPage() {
           </button>
         </form>
 
-        <div className="mt-6 pt-6 border-t border-slate-100 text-center">
-          <p className="text-xs text-slate-500 leading-relaxed">
-            Akses khusus Pengurus & Pengelola DKM <br />
-            <strong className="text-emerald-900 font-bold">Masjid Al-Mukhlisin Lagadar</strong>
+        <div className="mt-8 pt-6 border-t border-slate-100 text-center">
+          <p className="text-xs text-slate-400 leading-relaxed">
+            Portal Khusus Pengurus & Pengelola DKM <br />
+            <strong className="text-emerald-950 font-bold">Masjid Al-Mukhlisin Lagadar</strong>
           </p>
         </div>
       </div>

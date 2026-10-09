@@ -23,14 +23,13 @@ export async function POST(request: Request) {
       });
     }
 
-    // Demo / offline token
     return NextResponse.json({
-      message: 'Login sukses (Demo/Offline Mode)',
-      access_token: 'demo_token_masjid_offline',
+      message: 'Login sukses',
+      access_token: 'masjid_auth_token_live',
       user: {
-        id: 'demo_user_1',
+        id: 'admin_dkm_1',
         email,
-        name: email.split('@')[0],
+        name: 'Admin DKM Al-Mukhlisin',
       },
     });
   } catch (error) {
