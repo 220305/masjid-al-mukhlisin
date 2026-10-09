@@ -30,10 +30,36 @@ const INITIAL_INVENTORY: InventoryItem[] = [];
 const INITIAL_WAKAF: WakafItem[] = [];
 const INITIAL_KHUTBAH: KhutbahItem[] = [];
 
-// Helper local storage
+// Helper local storage & Auto-purge cache lama agar mulai bersih dari 0
+const STORAGE_DATA_VERSION = 'v2_clean_zero_production';
+
+function checkAndPurgeLegacyData(): void {
+  if (typeof window === 'undefined') return;
+  try {
+    const currentVer = localStorage.getItem('masjid_data_version');
+    if (currentVer !== STORAGE_DATA_VERSION) {
+      localStorage.removeItem('masjid_kas_data');
+      localStorage.removeItem('masjid_jamaah_data');
+      localStorage.removeItem('masjid_inventory_data');
+      localStorage.removeItem('masjid_khutbah_data');
+      localStorage.removeItem('masjid_zakat_qurban_data');
+      localStorage.removeItem('masjid_wakaf_data');
+      localStorage.removeItem('masjid_petugas_jumat_data');
+      localStorage.setItem('masjid_data_version', STORAGE_DATA_VERSION);
+    }
+  } catch (err) {
+    console.warn('Auto purge error:', err);
+  }
+}
+
+if (typeof window !== 'undefined') {
+  checkAndPurgeLegacyData();
+}
+
 function getStored<T>(key: string, fallback: T): T {
   if (typeof window === 'undefined') return fallback;
   try {
+    checkAndPurgeLegacyData();
     const raw = localStorage.getItem(key);
     if (!raw) {
       localStorage.setItem(key, JSON.stringify(fallback));
