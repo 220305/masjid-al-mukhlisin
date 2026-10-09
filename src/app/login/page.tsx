@@ -63,7 +63,7 @@ export default function LoginPage() {
           </p>
           <div className="mt-2 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 text-[10px] font-semibold border border-emerald-100">
             <span className="font-mono font-bold">ID 01.4.13.04.06.000158</span>
-            <span>·</span>
+            <span className="text-emerald-300">|</span>
             <span>Desa Lagadar</span>
           </div>
         </div>

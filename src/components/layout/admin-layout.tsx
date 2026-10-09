@@ -57,7 +57,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       <header className="md:hidden flex items-center justify-between px-5 py-4 bg-[#0a1f18] text-white border-b border-emerald-900/40 sticky top-0 z-40">
         <div>
           <h1 className="font-serif-elegant text-lg font-bold leading-none tracking-wide text-white">Al-Mukhlisin</h1>
-          <p className="text-[9px] font-mono text-emerald-300 mt-1">ID 01.4.13.04.06.000158 · Desa Lagadar</p>
+          <p className="text-[9px] font-mono text-emerald-300 mt-1">ID 01.4.13.04.06.000158 | Desa Lagadar</p>
         </div>
         <button
           onClick={() => setSidebarOpen(!sidebarOpen)}

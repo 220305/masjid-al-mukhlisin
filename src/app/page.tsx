@@ -260,10 +260,9 @@ export default function HomePage() {
             {/* Subteks Atas dengan Garis Emas & ID Kemenag */}
             <div className="mb-4 flex flex-wrap items-center gap-3">
               <span className="h-[2px] w-8 bg-[#d4af37]" />
-              <div className="inline-flex items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-950/70 px-3.5 py-1 text-[11px] font-semibold text-emerald-300 backdrop-blur-md shadow-inner">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              <div className="inline-flex items-center gap-2.5 rounded-full border border-emerald-400/30 bg-emerald-950/70 px-4 py-1 text-[11px] font-semibold text-emerald-300 backdrop-blur-md shadow-inner">
                 <span className="tracking-wide">Kartu Masjid Kemenag RI</span>
-                <span className="text-white/40">·</span>
+                <span className="text-white/30">|</span>
                 <span className="font-mono text-white tracking-wider font-bold">ID 01.4.13.04.06.000158</span>
               </div>
             </div>
