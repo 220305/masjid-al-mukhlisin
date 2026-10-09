@@ -18,6 +18,7 @@ import {
   Sparkles,
   ArrowRight,
   RefreshCw,
+  ExternalLink,
 } from 'lucide-react';
 
 const IconInstagram = ({ size = 18 }: { size?: number }) => (
@@ -700,12 +701,21 @@ export default function HomePage() {
                   <p className="mt-3 border-t border-[#0d8a5e]/30 pt-3 text-[10px] font-black tracking-widest text-[#0d8a5e] uppercase">
                     Aset Utama Tercatat
                   </p>
-                  <button
-                    onClick={() => setActiveSlide(1)}
-                    className="mt-6 text-[10px] font-bold text-[#d4af37] hover:text-white uppercase tracking-wider underline flex items-center justify-center gap-1 mx-auto"
-                  >
-                    Buka Daftar Aset <ArrowRight size={12} />
-                  </button>
+                  <div className="mt-6 flex flex-col items-center gap-2">
+                    <button
+                      onClick={() => setActiveSlide(1)}
+                      className="text-[10px] font-bold text-[#d4af37] hover:text-white uppercase tracking-wider underline flex items-center justify-center gap-1"
+                    >
+                      Buka Pratinjau Aset <ArrowRight size={12} />
+                    </button>
+                    <Link
+                      href="/fasilitas"
+                      className="text-[10px] font-bold text-emerald-400 hover:text-white uppercase tracking-wider flex items-center justify-center gap-1 bg-emerald-950/60 px-3 py-1 rounded-full border border-emerald-800/40 hover:bg-emerald-900/60 transition-colors"
+                    >
+                      <span>Lihat Halaman Detail Penuh</span>
+                      <ExternalLink size={11} />
+                    </Link>
+                  </div>
                 </div>
               </div>
             </div>
@@ -723,12 +733,21 @@ export default function HomePage() {
                   <p className="text-[10px] font-black tracking-widest text-[#d4af37] uppercase">Daftar Terverifikasi</p>
                   <h2 className="font-serif-elegant text-2xl font-bold md:text-3xl">Inventaris Fasilitas</h2>
                 </div>
-                <button
-                  onClick={() => setActiveSlide(0)}
-                  className="rounded-full bg-white/10 px-4 py-2 text-xs font-bold text-white hover:bg-white/20 transition-colors"
-                >
-                  Kembali ke Ringkasan
-                </button>
+                <div className="flex items-center gap-2">
+                  <Link
+                    href="/fasilitas"
+                    className="flex items-center gap-1.5 rounded-full bg-[#0d8a5e] px-4 py-2 text-xs font-bold text-white hover:bg-emerald-500 shadow-md transition-all active:scale-95"
+                  >
+                    <span>Buka Halaman Detail</span>
+                    <ArrowRight size={13} />
+                  </Link>
+                  <button
+                    onClick={() => setActiveSlide(0)}
+                    className="rounded-full bg-white/10 px-4 py-2 text-xs font-bold text-white hover:bg-white/20 transition-colors"
+                  >
+                    Kembali ke Ringkasan
+                  </button>
+                </div>
               </div>
 
               <div className="overflow-x-auto rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xs">

@@ -1,4 +1,4 @@
-export type KondisiBarang = 'baik' | 'pemeliharaan' | 'dipinjamkan' | 'rusak';
+export type KondisiBarang = 'baik' | 'pemeliharaan' | 'dipinjamkan' | 'rusak' | 'rusak_ringan' | 'rusak_berat';
 export type TipeKas = 'masuk' | 'keluar';
 export type KategoriKas =
   | 'Infaq Jumat'
