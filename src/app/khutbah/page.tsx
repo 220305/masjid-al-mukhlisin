@@ -16,6 +16,7 @@ import {
   ExternalLink,
 } from 'lucide-react';
 import AdminLayout from '@/components/layout/admin-layout';
+import KhutbahDefaultPoster from '@/components/khutbah-default-poster';
 import { DataService } from '@/lib/data-service';
 import { KhutbahItem, StatusKhutbah } from '@/types';
 
@@ -116,9 +117,19 @@ export default function KhutbahPage() {
 
     try {
       if (showModal === 'edit' && selectedItem) {
-        await DataService.updateKhutbah(selectedItem.id, formData, imageFile);
+        const payload = {
+          ...formData,
+          image: imagePreview ? (imageFile ? undefined : imagePreview) : null,
+        };
+        await DataService.updateKhutbah(selectedItem.id, payload, imageFile);
       } else {
-        await DataService.addKhutbah(formData, imageFile);
+        await DataService.addKhutbah(
+          {
+            ...formData,
+            image: imagePreview ? (imageFile ? undefined : imagePreview) : null,
+          },
+          imageFile
+        );
       }
       setShowModal(null);
       setImageFile(null);
@@ -269,15 +280,20 @@ export default function KhutbahPage() {
                           />
                         </td>
                         <td className="px-6 py-4">
-                          <div className="h-12 w-12 rounded-xl overflow-hidden bg-slate-100 border border-slate-200 shrink-0">
-                            <img
-                              src={
-                                item.image ||
-                                'https://images.unsplash.com/photo-1590076215667-875d4ef2d7ee?auto=format&fit=crop&w=800&q=80'
-                              }
-                              alt={item.khotib}
-                              className="h-full w-full object-cover"
-                            />
+                          <div className="h-12 w-12 rounded-xl overflow-hidden bg-slate-100 border border-slate-200 shrink-0 shadow-xs">
+                            {item.image ? (
+                              <img
+                                src={item.image}
+                                alt={item.khotib}
+                                className="h-full w-full object-cover"
+                              />
+                            ) : (
+                              <KhutbahDefaultPoster
+                                variant="thumbnail"
+                                jenisKegiatan={item.jenis_kegiatan}
+                                khotib={item.khotib}
+                              />
+                            )}
                           </div>
                         </td>
                         <td className="px-6 py-4">
@@ -461,28 +477,85 @@ export default function KhutbahPage() {
                   </div>
                 </div>
 
-                {/* Upload Poster Image */}
-                <div>
-                  <label className="text-[10px] font-black tracking-widest text-slate-400 uppercase block mb-1.5">
-                    Poster / Foto Khotib (Supabase Storage)
-                  </label>
-                  <div className="flex items-center gap-4">
-                    {imagePreview && (
-                      <div className="h-16 w-16 rounded-xl overflow-hidden bg-slate-100 border border-slate-200 shrink-0">
-                        <img src={imagePreview} alt="Preview" className="h-full w-full object-cover" />
-                      </div>
-                    )}
-                    <label className="flex-1 flex items-center justify-center gap-2 p-3.5 border-2 border-dashed border-slate-200 rounded-2xl hover:border-emerald-500 cursor-pointer bg-slate-50/70 text-xs font-bold text-slate-600 transition-colors">
-                      <Upload size={16} className="text-emerald-600" />
-                      <span>{imageFile ? imageFile.name : 'Pilih File Gambar Poster'}</span>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        onChange={handleFileChange}
-                      />
+                {/* Upload Poster Image dengan Pratinjau Default */}
+                <div className="space-y-2.5">
+                  <div className="flex items-center justify-between">
+                    <label className="text-[10px] font-black tracking-widest text-slate-400 uppercase">
+                      Poster / Foto Khotib (Supabase Storage)
                     </label>
+                    <span
+                      className={`text-[9px] font-black uppercase px-2.5 py-0.5 rounded-full ${
+                        imagePreview
+                          ? 'bg-amber-100 text-amber-800'
+                          : 'bg-emerald-100 text-emerald-800'
+                      }`}
+                    >
+                      {imagePreview ? 'Foto Kustom Terpilih' : 'Tampilan Default Aktif'}
+                    </span>
                   </div>
+
+                  {/* PREVIEW AREA: TAMPILKAN POSTER DEFAULT OTOMATIS JIKA TIDAK ADA GAMBAR */}
+                  {imagePreview ? (
+                    <div className="rounded-2xl border border-emerald-200 bg-emerald-50/50 p-3 flex items-center gap-3.5">
+                      <div className="h-20 w-20 rounded-xl overflow-hidden bg-slate-900 border border-emerald-300 shrink-0 shadow-xs">
+                        <img src={imagePreview} alt="Pratinjau Foto" className="h-full w-full object-cover" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs font-bold text-slate-800 truncate">
+                          {imageFile ? imageFile.name : 'Poster khusus tersimpan'}
+                        </p>
+                        <p className="text-[10px] text-slate-400 mt-0.5">
+                          Gambar kustom akan digunakan untuk publikasi agenda.
+                        </p>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setImagePreview('');
+                            setImageFile(null);
+                          }}
+                          className="mt-2 text-[10px] font-black uppercase tracking-wider text-red-600 hover:text-red-700 hover:underline flex items-center gap-1"
+                        >
+                          <X size={12} />
+                          Hapus & Gunakan Poster Default
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      {/* Live Default Poster Preview */}
+                      <KhutbahDefaultPoster
+                        variant="preview"
+                        jenisKegiatan={formData.jenis_kegiatan}
+                        khotib={formData.khotib}
+                        tema={formData.tema}
+                        tanggal={formData.tanggal}
+                      />
+                      <div className="flex items-start gap-1.5 px-1 text-[11px] text-slate-500">
+                        <span className="text-emerald-600 text-xs shrink-0">✨</span>
+                        <p>
+                          <strong className="text-slate-700">Tampilan Default:</strong> Jika tidak memilih file gambar, sistem otomatis menampilkan poster resmi Masjid Al-Mukhlisin di atas.
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Tombol Input File */}
+                  <label className="flex items-center justify-center gap-2 p-3.5 border-2 border-dashed border-slate-200 rounded-2xl hover:border-emerald-500 cursor-pointer bg-slate-50/70 text-xs font-bold text-slate-600 hover:text-emerald-700 hover:bg-emerald-50/30 transition-all">
+                    <Upload size={16} className="text-emerald-600" />
+                    <span>
+                      {imageFile
+                        ? `Ganti File: ${imageFile.name}`
+                        : imagePreview
+                        ? 'Ganti Gambar Poster'
+                        : 'Pilih File Gambar Poster (Opsional)'}
+                    </span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={handleFileChange}
+                    />
+                  </label>
                 </div>
 
                 <button
@@ -501,18 +574,25 @@ export default function KhutbahPage() {
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
             <div className="fixed inset-0 bg-black/50 backdrop-blur-xs" onClick={() => setShowModal(null)} />
             <div className="animate-pop relative z-10 w-full max-w-md rounded-[2.5rem] bg-white overflow-hidden shadow-2xl">
-              <div className="relative h-52 bg-slate-100">
-                <img
-                  src={
-                    selectedItem.image ||
-                    'https://images.unsplash.com/photo-1590076215667-875d4ef2d7ee?auto=format&fit=crop&w=800&q=80'
-                  }
-                  alt={selectedItem.khotib}
-                  className="h-full w-full object-cover"
-                />
+              <div className="relative h-56 bg-slate-900">
+                {selectedItem.image ? (
+                  <img
+                    src={selectedItem.image}
+                    alt={selectedItem.khotib}
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <KhutbahDefaultPoster
+                    variant="banner"
+                    jenisKegiatan={selectedItem.jenis_kegiatan}
+                    khotib={selectedItem.khotib}
+                    tema={selectedItem.tema}
+                    tanggal={selectedItem.tanggal}
+                  />
+                )}
                 <button
                   onClick={() => setShowModal(null)}
-                  className="absolute top-4 right-4 h-9 w-9 bg-black/40 text-white rounded-full flex items-center justify-center hover:bg-black/60 transition-colors"
+                  className="absolute top-4 right-4 h-9 w-9 bg-black/40 text-white rounded-full flex items-center justify-center hover:bg-black/60 transition-colors z-20 backdrop-blur-xs"
                 >
                   <X size={18} />
                 </button>

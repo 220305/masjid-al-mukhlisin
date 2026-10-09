@@ -376,7 +376,7 @@ const INITIAL_KHUTBAH: KhutbahItem[] = [
     jenis_kegiatan: 'Shalat Jumat',
     khotib: 'Ust. Dr. H. Ahmad Farhan, M.Ag',
     tema: 'Merajut Ukhuwah di Tengah Keberagaman',
-    image: 'https://images.unsplash.com/photo-1590076215667-875d4ef2d7ee?auto=format&fit=crop&w=800&q=80',
+    image: null,
     status: 'terjadwal',
   },
   {
@@ -385,7 +385,7 @@ const INITIAL_KHUTBAH: KhutbahItem[] = [
     jenis_kegiatan: 'Kajian Ahad Subuh',
     khotib: 'K.H. Muhammad Ridwan',
     tema: 'Tafsir Surat Al-Kahfi: Menjaga Aqidah Akhir Zaman',
-    image: 'https://images.unsplash.com/photo-1564769625905-50e93615e769?auto=format&fit=crop&w=800&q=80',
+    image: null,
     status: 'terjadwal',
   },
   {
@@ -897,7 +897,7 @@ export const DataService = {
 
     const payload = {
       ...item,
-      ...(imageUrl ? { image: imageUrl } : {}),
+      ...(imageUrl !== undefined ? { image: imageUrl } : {}),
       updated_at: new Date().toISOString(),
     };
 
