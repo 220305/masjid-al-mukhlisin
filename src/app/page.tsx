@@ -127,7 +127,7 @@ export default function HomePage() {
 
     const fetchShalat = async () => {
       try {
-        const res = await fetch('https://api.aladhan.com/v1/timingsByCity?city=Batujajar&country=Indonesia&method=20');
+        const res = await fetch('https://api.aladhan.com/v1/timingsByCity?city=Bandung&country=Indonesia&method=20');
         const json = await res.json();
         if (json?.data?.timings) {
           setJadwalShalat(json.data.timings);
@@ -257,18 +257,27 @@ export default function HomePage() {
         {/* Konten Hero (Rata Kiri) */}
         <div className="relative z-10 mx-auto w-full max-w-7xl pt-24 pb-12">
           <div className="max-w-3xl">
-            {/* Subteks Atas dengan Garis Emas */}
-            <div className="mb-6 flex items-center gap-4">
-              <span className="h-[2px] w-12 bg-[#d4af37]" />
-              <p className="text-[10px] font-black tracking-[0.2em] text-[#d4af37] uppercase md:text-xs">
-                Kebanggaan Umat Islam
-              </p>
+            {/* Subteks Atas dengan Garis Emas & ID Kemenag */}
+            <div className="mb-4 flex flex-wrap items-center gap-3">
+              <span className="h-[2px] w-8 bg-[#d4af37]" />
+              <div className="inline-flex items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-950/70 px-3.5 py-1 text-[11px] font-semibold text-emerald-300 backdrop-blur-md shadow-inner">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                <span className="tracking-wide">Kartu Masjid Kemenag RI</span>
+                <span className="text-white/40">·</span>
+                <span className="font-mono text-white tracking-wider font-bold">ID 01.4.13.04.06.000158</span>
+              </div>
             </div>
 
             {/* Judul Utama Serif */}
-            <h1 className="font-serif-elegant mb-4 text-5xl leading-tight font-bold text-white md:text-7xl lg:text-[5.5rem] drop-shadow-md">
+            <h1 className="font-serif-elegant mb-2 text-5xl leading-tight font-bold text-white md:text-7xl lg:text-[5.5rem] drop-shadow-md">
               Masjid Al-Mukhlisin
             </h1>
+
+            {/* Alamat Resmi Hero */}
+            <p className="mb-6 flex items-center gap-2 text-xs md:text-sm text-emerald-200/90 font-medium">
+              <MapPin size={16} className="text-[#d4af37] shrink-0" />
+              <span>Kp. Jalan Cagak RT.005 RW.004 Desa Lagadar</span>
+            </p>
 
             {/* Subjudul Dua Warna */}
             <h2 className="font-serif-elegant mb-8 text-3xl leading-tight font-bold md:text-4xl lg:text-5xl">
@@ -313,7 +322,7 @@ export default function HomePage() {
                   Waktu Shalat Hari Ini
                 </h2>
                 <p className="mt-2 flex items-center justify-center gap-1.5 text-xs font-bold text-slate-500 md:justify-start">
-                  <MapPin size={15} className="text-[#0d8a5e]" /> Wilayah Batujajar, Kabupaten Bandung Barat
+                  <MapPin size={15} className="text-[#0d8a5e]" /> Kp. Jalan Cagak RT.005 RW.004 Desa Lagadar
                 </p>
               </div>
               <div className="flex items-center gap-2 text-xs font-bold text-emerald-800 bg-emerald-50 px-4 py-2 rounded-full border border-emerald-100">
@@ -374,7 +383,7 @@ export default function HomePage() {
                 <div className="space-y-4 text-sm leading-relaxed text-slate-600 font-medium md:text-base">
                   <p>
                     Masjid Al-Mukhlisin hadir sebagai pusat ibadah dan pembinaan umat di kawasan
-                    Batujajar, Bandung Barat. Mengusung konsep transparansi modern berbasis teknologi, kami berdedikasi
+                    Kp. Jalan Cagak RT.005 RW.004 Desa Lagadar. Mengusung konsep transparansi modern berbasis teknologi, kami berdedikasi
                     untuk menghadirkan akuntabilitas penuh bagi setiap donasi jamaah.
                   </p>
                   <p>
@@ -927,7 +936,12 @@ export default function HomePage() {
               <ul className="space-y-4">
                 <li className="flex gap-3 text-sm text-slate-500">
                   <MapPin className="mt-0.5 shrink-0 text-[#0d8a5e]" size={18} />
-                  <span>Jl. Raya Batujajar, Kabupaten Bandung Barat, Jawa Barat, Indonesia.</span>
+                  <div>
+                    <span className="block font-medium text-slate-700">Kp. Jalan Cagak RT.005 RW.004 Desa Lagadar</span>
+                    <span className="inline-block mt-1.5 font-mono text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded border border-emerald-200">
+                      ID 01.4.13.04.06.000158
+                    </span>
+                  </div>
                 </li>
                 <li className="flex gap-3 text-sm text-slate-500">
                   <Clock className="mt-0.5 shrink-0 text-[#0d8a5e]" size={18} />

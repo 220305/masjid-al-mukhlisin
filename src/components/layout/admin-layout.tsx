@@ -20,6 +20,7 @@ import {
   UserCheck,
   FileText,
   Settings,
+  MapPin,
 } from 'lucide-react';
 import { useAuth } from '@/lib/auth-context';
 
@@ -56,7 +57,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       <header className="md:hidden flex items-center justify-between px-5 py-4 bg-[#0a1f18] text-white border-b border-emerald-900/40 sticky top-0 z-40">
         <div>
           <h1 className="font-serif-elegant text-lg font-bold leading-none tracking-wide text-white">Al-Mukhlisin</h1>
-          <p className="text-[9px] font-bold tracking-widest text-emerald-300 uppercase mt-1">Pusat Komando</p>
+          <p className="text-[9px] font-mono text-emerald-300 mt-1">ID 01.4.13.04.06.000158 · Desa Lagadar</p>
         </div>
         <button
           onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -101,25 +102,31 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           </div>
 
           {/* Database Connection Status Badge */}
-          <div className="rounded-2xl bg-emerald-950/60 border border-emerald-800/40 p-3.5">
-            <div className="flex items-center justify-between mb-1.5">
-              <span className="text-[10px] font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
-                <Database size={13} className="text-emerald-400" /> Database Backend
-              </span>
-              <span
-                className={`h-2 w-2 rounded-full ${
-                  isSupabaseConnected ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'
-                }`}
-              />
+          <div className="rounded-2xl bg-emerald-950/60 border border-emerald-800/40 p-3.5 space-y-2.5">
+            <div>
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-[10px] font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+                  <Database size={13} className="text-emerald-400" /> Database Backend
+                </span>
+                <span
+                  className={`h-2 w-2 rounded-full ${
+                    isSupabaseConnected ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'
+                  }`}
+                />
+              </div>
+              <p className="text-[11px] font-bold text-emerald-300">
+                {isSupabaseConnected ? 'Terhubung ke Supabase' : 'Mode Offline / Local DB'}
+              </p>
             </div>
-            <p className="text-[11px] font-bold text-emerald-300">
-              {isSupabaseConnected ? 'Terhubung ke Supabase' : 'Mode Offline / Local DB'}
-            </p>
-            <p className="text-[9px] text-slate-400 mt-0.5">
-              {isSupabaseConnected
-                ? 'Sinkronisasi real-time cloud aktif'
-                : 'Data disimpan lokal (isi .env.local untuk Supabase)'}
-            </p>
+
+            {/* Identitas SIMAS & Alamat */}
+            <div className="border-t border-emerald-900/40 pt-2 text-[10px] space-y-0.5">
+              <span className="font-mono font-bold text-emerald-400 block">ID 01.4.13.04.06.000158</span>
+              <p className="text-slate-300 flex items-start gap-1 leading-tight">
+                <MapPin size={11} className="shrink-0 text-emerald-500 mt-0.5" />
+                <span>Kp. Jalan Cagak RT.005 RW.004 Desa Lagadar</span>
+              </p>
+            </div>
           </div>
 
           {/* Navigation Links */}

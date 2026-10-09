@@ -10,7 +10,7 @@ Project ini menggantikan arsitektur *microservices* Laravel sebelumnya menjadi a
 
 1. **Portal Publik (Landing Page)**:
    - Hero Section sinematik dengan latar belakang video masjid (`/videos/masjid-cinematic.mp4`).
-   - Jadwal Shalat Real-Time terintegrasi otomatis dengan API Aladhan (Wilayah Batujajar / Bandung Barat).
+   - Jadwal Shalat Real-Time terintegrasi otomatis dengan API Aladhan (Kp. Jalan Cagak RT.005 RW.004 Desa Lagadar / ID SIMAS: 01.4.13.04.06.000158).
    - Visi, Misi, dan Profil Sejarah Masjid.
    - Agenda Majelis Ilmu & Khutbah Jumat lengkap dengan status dan modal detail poster kajian.
    - Manajemen Fasilitas & Inventaris dengan slider otomatis (Ringkasan unit & tabel daftar aset).

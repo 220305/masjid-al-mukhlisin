@@ -22,10 +22,10 @@ import { IdentitasMasjid } from '@/types';
 export default function PengaturanPage() {
   const [identitas, setIdentitas] = useState<IdentitasMasjid>({
     nama: 'Al-Mukhlisin',
-    nomor_id_kemenag: '',
-    alamat: '',
-    ketua_dkm: '',
-    bendahara: '',
+    nomor_id_kemenag: '01.4.13.04.06.000158',
+    alamat: 'Kp. Jalan Cagak RT.005 RW.004 Desa Lagadar',
+    ketua_dkm: 'Ustadz H. Ahmad Sobari',
+    bendahara: 'H. Mulyadi, S.E.',
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
