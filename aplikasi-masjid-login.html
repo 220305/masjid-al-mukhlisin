@@ -1,0 +1,159 @@
+<!DOCTYPE html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>APLIKASI TERPADU Masjid Al-Mukhlisin</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#f1f5f2;--cd:#fff;--tx:#12231b;--mu:#5d7167;--ac:#0e7a4b;--ac2:#dff1e6;--bd:#d7e2db;--gd:#c99a2e;--rd:#b4381f}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d1612;--cd:#16231d;--tx:#e5f0ea;--mu:#8da699;--ac:#46c88b;--ac2:#173a2a;--bd:#25382f;--gd:#e0b64f;--rd:#f08a70}}
+:root[data-theme="dark"]{--bg:#0d1612;--cd:#16231d;--tx:#e5f0ea;--mu:#8da699;--ac:#46c88b;--ac2:#173a2a;--bd:#25382f;--gd:#e0b64f;--rd:#f08a70}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.5 "Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+main{max-width:860px;margin:auto;padding:12px 14px 96px}
+h2{font:700 17px Georgia,serif;margin:0 0 10px}
+.hero{position:relative;overflow:hidden;color:#fff;border-radius:18px;padding:20px;margin-bottom:14px;background:radial-gradient(circle at 105% -10%,rgba(255,255,255,.16) 0 110px,transparent 111px),radial-gradient(circle at -5% 120%,rgba(201,154,46,.35) 0 90px,transparent 91px),linear-gradient(135deg,#075c38,#0f8a55)}
+.hero small{opacity:.85;display:block}.hero h1{font:700 26px Georgia,serif;margin:2px 0 4px}
+.next{display:flex;align-items:baseline;gap:10px;margin-top:14px;flex-wrap:wrap}.next b{font-size:34px;font-variant-numeric:tabular-nums}.next span{font-size:15px}
+.pt{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-top:14px}
+.pt div{background:rgba(255,255,255,.14);border-radius:10px;padding:6px 2px;text-align:center;font-size:12px}.pt div b{display:block;font-size:15px}.pt .on{background:#fff;color:#075c38}
+.box{background:var(--cd);border:1px solid var(--bd);border-radius:14px;padding:14px;margin-bottom:12px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:12px}
+.grid .box{margin:0}.st b{display:block;font-size:20px;line-height:1.2}.st span{color:var(--mu);font-size:12.5px}
+.f{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-bottom:10px}.f label{font-size:12px;color:var(--mu);display:block;margin-bottom:2px}
+input,select{font:inherit;color:var(--tx);background:var(--cd);border:1px solid var(--bd);border-radius:9px;padding:9px 10px;width:100%}
+.btn{background:var(--ac);color:#fff;border:0;border-radius:9px;padding:9px 16px;font:inherit;font-weight:600;cursor:pointer}.btn.x{background:none;color:var(--rd);padding:2px 8px}
+.tw{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:14px}th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--bd);white-space:nowrap}th{color:var(--mu);font-size:12.5px}
+.tag{display:inline-block;padding:1px 9px;border-radius:10px;background:var(--ac2);color:var(--ac);font-size:12px;font-weight:600}
+.ok{color:var(--ac)}.no{color:var(--rd)}.mu{color:var(--mu)}
+.bars{display:flex;gap:10px;align-items:flex-end;height:110px}.bars div{flex:1;text-align:center;font-size:11px;color:var(--mu)}.bars i{display:inline-block;width:42%;border-radius:4px 4px 0 0;margin:0 1px}
+nav{position:fixed;left:0;right:0;bottom:0;background:var(--cd);border-top:1px solid var(--bd);display:flex;justify-content:center;padding-bottom:env(safe-area-inset-bottom,0px);z-index:5}
+nav button{flex:1;max-width:150px;border:0;background:none;color:var(--mu);padding:9px 2px 8px;font:inherit;font-size:12px;cursor:pointer}nav button b{display:block;font-size:19px;line-height:1.2}nav .on{color:var(--ac);font-weight:700}
+</style></head><body><main id="m"></main><nav id="nv"></nav>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script>
+var LAT=-6.95,LON=107.55,TZ=7,D,tab="home",q="",curN="";
+var TABS=[["home","🕌","Beranda"],["kas","💰","Kas"],["jam","👥","Jamaah"],["ag","📅","Agenda"],["zk","🌙","Zakat"],["aset","📦","Aset"],["lap","📄","Laporan"]];
+var S={
+kas:{t:"Kas masjid",r:3,d:1,sr:1,f:[["t","Tanggal","date"],["j","Jenis","sel:Masuk,Keluar"],["c","Kategori","sel:Infaq Jumat,Donasi,Zakat,Operasional,Listrik & Air,Honor,Perawatan,Lainnya"],["k","Keterangan"],["v","Jumlah (Rp)","num"]]},
+jam:{t:"Data jamaah",r:0,sr:1,f:[["n","Nama"],["h","No. HP"],["a","Alamat / RT"],["r","Peran","sel:Jamaah,Pengurus DKM,Imam,Muadzin,Remaja Masjid,Donatur"]]},
+ag:{t:"Agenda & kajian",r:2,d:1,sr:1,f:[["t","Tanggal","date"],["w","Waktu","time"],["n","Kegiatan"],["p","Penceramah / PJ"]]},
+zk:{t:"Zakat & qurban",r:0,sr:1,f:[["n","Nama"],["j","Jenis","sel:Zakat Fitrah (uang),Zakat Fitrah (beras),Zakat Mal,Qurban Sapi (1/7),Qurban Kambing,Penyaluran"],["s","Jumlah jiwa","num"],["o","Beras (kg) / jumlah","num"],["v","Nominal (Rp)","num"]]},
+inv:{t:"Inventaris",r:0,sr:1,f:[["n","Nama barang"],["o","Jumlah","num"],["c","Kondisi","sel:Baik,Rusak Ringan,Rusak Berat"],["l","Lokasi"]]},
+wk:{t:"Wakaf & donasi aset",r:1,d:1,sr:1,f:[["t","Tanggal","date"],["n","Wakif / donatur"],["j","Jenis","sel:Tanah,Bangunan,Uang,Al-Qur'an,Peralatan,Lainnya"],["v","Nilai (Rp)","num"],["k","Keterangan"]]},
+jd:{t:"Petugas Jumat",r:2,d:1,f:[["t","Tanggal","date"],["i","Imam"],["k","Khatib"],["m","Muadzin"]]}};
+function ld(){try{D=JSON.parse(localStorage.getItem("simas"))}catch(x){}
+if(!D)D={id:{n:"Al-Mukhlisin",no:"01.4.13.04.06.000158",al:"Kp. Jalan Cagak RT.005 RW.004 Desa Lagadar"},kas:[],jam:[],ag:[],zk:[],inv:[],wk:[],jd:[]};["kas","jam","ag","zk","inv","wk","jd"].forEach(k=>D[k]=D[k]||[])}
+function sv(){try{localStorage.setItem("simas",JSON.stringify(D))}catch(x){}push()}
+function e(s){return String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
+function rp(n){return"Rp"+(+n||0).toLocaleString("id-ID")}
+function td(){var d=new Date();return d.getFullYear()+"-"+p2(d.getMonth()+1)+"-"+p2(d.getDate())}
+function p2(n){return(n<10?"0":"")+n}
+function fm(h){var m=Math.round((((h%24)+24)%24)*60);return p2(Math.floor(m/60)%24)+":"+p2(m%60)}
+function times(d){var r=Math.PI/180,J=Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())/864e5+2440587.5+(12-TZ)/24,n=J-2451545,
+L=((280.46+.9856474*n)%360+360)%360,g=((357.528+.9856003*n)%360+360)%360,lam=L+1.915*Math.sin(g*r)+.02*Math.sin(2*g*r),ep=23.439-4e-7*n,
+dec=Math.asin(Math.sin(ep*r)*Math.sin(lam*r)),ra=Math.atan2(Math.cos(ep*r)*Math.sin(lam*r),Math.cos(lam*r))/r/15,
+eq=L/15-((ra%24)+24)%24;eq=((eq+12)%24+24)%24-12;var dh=12+TZ-LON/15-eq;
+function H(a){var c=(Math.sin(a*r)-Math.sin(LAT*r)*Math.sin(dec))/(Math.cos(LAT*r)*Math.cos(dec));return Math.acos(Math.max(-1,Math.min(1,c)))/r/15}
+var as=Math.atan(1/(1+Math.tan(Math.abs(LAT*r-dec))))/r,i=.034;
+return[["Subuh",dh-H(-20)+i],["Terbit",dh-H(-.833)-i],["Dzuhur",dh+i],["Ashar",dh+H(as)+i],["Maghrib",dh+H(-.833)+i],["Isya",dh+H(-18)+i]]}
+function nextP(){var d=new Date(),T=times(d),h=d.getHours()+d.getMinutes()/60+d.getSeconds()/3600;
+for(var i=0;i<T.length;i++)if(i!=1&&T[i][1]>h)return{n:T[i][0],s:(T[i][1]-h)*3600};return{n:"Subuh",s:(T[0][1]+24-h)*3600}}
+function hj(d){try{return new Intl.DateTimeFormat("id-ID-u-ca-islamic-civil",{day:"numeric",month:"long",year:"numeric"}).format(d)}catch(x){return""}}
+function cdt(s){s=Math.max(0,Math.floor(s));return p2(Math.floor(s/3600))+":"+p2(Math.floor(s%3600/60))+":"+p2(s%60)}
+function sum(k,f){return D[k].filter(f||(()=>1)).reduce((a,x)=>a+(+x.v||0),0)}
+function kasS(){var i=sum("kas",x=>x.j=="Masuk"),o=sum("kas",x=>x.j=="Keluar");return{i:i,o:o,s:i-o}}
+var V={
+home:()=>{var d=new Date(),T=times(d),n=nextP(),k=kasS(),up=D.ag.filter(x=>x.t>=td()).sort((a,b)=>a.t>b.t?1:-1).slice(0,3);curN=n.n;
+var zu=sum("zk",x=>/uang|Mal/.test(x.j)),zb=sum("zk",x=>/beras/.test(x.j)&&0);
+return`<div class="hero"><small>Kartu Masjid · Kemenag RI</small><h1>Masjid ${e(D.id.n)}</h1><small>ID ${e(D.id.no)}</small><small>${e(D.id.al)}</small>
+<div class="next"><span>Menuju <b id="nn" style="font-size:inherit">${n.n}</b></span><b id="cd">${cdt(n.s)}</b></div>
+<small>${d.toLocaleDateString("id-ID",{weekday:"long",day:"numeric",month:"long",year:"numeric"})} · ${hj(d)} H</small>
+<div class="pt">${T.map(t=>`<div class="${t[0]==n.n?"on":""}">${t[0]}<b>${fm(t[1])}</b></div>`).join("")}</div></div>
+<div class="grid"><div class="box st"><b class="${k.s<0?"no":"ok"}">${rp(k.s)}</b><span>Saldo kas</span></div><div class="box st"><b>${D.jam.length}</b><span>Jamaah terdata</span></div><div class="box st"><b>${rp(zu)}</b><span>Zakat terkumpul (uang)</span></div><div class="box st"><b>${up.length}</b><span>Agenda mendatang</span></div></div>
+<div class="box"><h2>Agenda terdekat</h2>${up.map(x=>`<p style="margin:0 0 6px"><span class="tag">${x.t.slice(5).split("-").reverse().join("/")} ${e(x.w||"")}</span> <b>${e(x.n)}</b> <span class="mu">${e(x.p||"")}</span></p>`).join("")||'<p class="mu" style="margin:0">Belum ada agenda. Tambahkan di menu Agenda.</p>'}</div>
+<details class="box"><summary><b>Ubah identitas masjid</b></summary><div class="f" style="margin-top:10px"><div><label>Nama masjid</label><input value="${e(D.id.n)}" onchange="D.id.n=this.value;sv();R()"></div><div><label>Nomor ID Kemenag</label><input value="${e(D.id.no)}" onchange="D.id.no=this.value;sv();R()"></div><div><label>Alamat</label><input value="${e(D.id.al)}" onchange="D.id.al=this.value;sv();R()"></div><div><label>Ketua DKM</label><input value="${e(D.id.k)}" onchange="D.id.k=this.value;sv()"></div><div><label>Bendahara</label><input value="${e(D.id.b)}" onchange="D.id.b=this.value;sv()"></div></div></details>
+<p class="mu" style="font-size:12.5px">Jadwal sholat dihitung otomatis untuk lokasi sekitar Lagadar (metode Kemenag, ±2 menit ihtiyat). Tanggal Hijriah bersifat perkiraan. Status data: <b id="cs">${CS}</b>.</p>`},
+kas:()=>{var k=kasS(),ms={};D.kas.forEach(x=>{var m=(x.t||"").slice(0,7);ms[m]=ms[m]||[0,0];ms[m][x.j=="Masuk"?0:1]+=+x.v||0});
+var ks=Object.keys(ms).sort().slice(-6),mx=Math.max(1,...ks.map(m=>Math.max(ms[m][0],ms[m][1])));
+return`<div class="grid"><div class="box st"><b class="ok">${rp(k.i)}</b><span>Pemasukan</span></div><div class="box st"><b class="no">${rp(k.o)}</b><span>Pengeluaran</span></div><div class="box st"><b>${rp(k.s)}</b><span>Saldo</span></div></div>`+
+(ks.length?`<div class="box"><h2>6 bulan terakhir</h2><div class="bars">${ks.map(m=>`<div><i style="height:${ms[m][0]/mx*90}px;background:var(--ac)"></i><i style="height:${ms[m][1]/mx*90}px;background:var(--gd)"></i><br>${m.slice(5)}/${m.slice(2,4)}</div>`).join("")}</div><p class="mu" style="margin:6px 0 0;font-size:12px">Hijau: masuk · Emas: keluar</p></div>`:"")+crud("kas")},
+jam:()=>crud("jam"),ag:()=>crud("jd")+crud("ag"),
+zk:()=>{var f=sum("zk",x=>/uang/.test(x.j)),m=sum("zk",x=>/Mal/.test(x.j)),b=D.zk.filter(x=>/beras/.test(x.j)).reduce((a,x)=>a+(+x.o||0),0),qs=D.zk.filter(x=>/Qurban/.test(x.j)).length,sl=sum("zk",x=>x.j=="Penyaluran");
+return`<div class="grid"><div class="box st"><b>${rp(f)}</b><span>Fitrah (uang)</span></div><div class="box st"><b>${b} kg</b><span>Fitrah (beras)</span></div><div class="box st"><b>${rp(m)}</b><span>Zakat mal</span></div><div class="box st"><b>${qs}</b><span>Peserta qurban</span></div><div class="box st"><b>${rp(sl)}</b><span>Sudah disalurkan</span></div><div class="box st"><b>${js(/Zakat/)}</b><span>Jiwa pemberi zakat</span></div><div class="box st"><b>${js(/^Penyaluran$/)}</b><span>Jiwa penerima</span></div></div>`+crud("zk")}};
+function fld(c,k){var t=c[2]||"",id="f_"+k+"_"+c[0];if(t.indexOf("sel:")==0)return`<select id="${id}">${t.slice(4).split(",").map(o=>`<option>${o}</option>`).join("")}</select>`;
+return`<input id="${id}" type="${t=="num"?"number":t||"text"}"${t=="num"?' inputmode="numeric"':""}${t=="date"?` value="${td()}"`:""}>`}
+function crud(k){var s=S[k],rows=D[k].slice();if(s.d)rows.sort((a,b)=>a.t<b.t?1:-1);else rows.reverse();
+if(s.sr)rows=rows.filter(x=>JSON.stringify(x).toLowerCase().indexOf(q.toLowerCase())>-1);
+return(RO?"":`<div class="box"><h2>Tambah — ${s.t}</h2><div class="f">${s.f.map(c=>`<div><label>${c[1]}</label>${fld(c,k)}</div>`).join("")}</div><button class="btn" onclick="add('${k}')">Simpan</button></div>`)+
+`<div class="box"><h2>${s.t} (${rows.length})</h2>${s.sr?`<input id="qi_${k}" placeholder="Cari…" value="${e(q)}" oninput="q=this.value;R();var i=document.getElementById('qi_${k}');i.focus();i.setSelectionRange(q.length,q.length)" style="margin-bottom:8px">`:""}<div class="tw"><table><tr>${s.f.map(c=>`<th>${c[1]}</th>`).join("")}${RO?"":"<th></th>"}</tr>${rows.map(x=>`<tr>${s.f.map(c=>{var v=x[c[0]];if(c[0]=="v")v=rp(v);if(k=="kas"&&c[0]=="j")return`<td class="${v=="Masuk"?"ok":"no"}"><b>${v}</b></td>`;return`<td>${e(v)}</td>`}).join("")}${RO?"":`<td><button class="btn x" onclick="del('${k}','${x.id}')">Hapus</button></td>`}</tr>`).join("")||`<tr><td class="mu" colspan="${s.f.length+1}">Belum ada data.</td></tr>`}</table></div></div>`}
+function add(k){if(RO)return;var s=S[k],o={id:Date.now()+""+Math.floor(Math.random()*99)};s.f.forEach(c=>{var v=document.getElementById("f_"+k+"_"+c[0]).value.trim();o[c[0]]=c[2]=="num"?+v||0:v});
+if(!o[s.f[s.r][0]]){alert("Kolom "+s.f[s.r][1]+" wajib diisi.");return}if(k=="kas"&&!o.v){alert("Isi jumlah lebih dari 0.");return}D[k].push(o);sv();R()}
+function del(k,id){if(RO)return;if(confirm("Hapus data ini?")){D[k]=D[k].filter(x=>x.id!=id);sv();R()}}
+function R(){document.getElementById("nv").innerHTML=TABS.map(t=>`<button class="${t[0]==tab?"on":""}" onclick="tab='${t[0]}';q='';R();scrollTo(0,0)"><b>${t[1]}</b>${t[2]}</button>`).join("");document.getElementById("m").innerHTML=V[tab]();if(RO)[].forEach.call(document.querySelectorAll("#m details input"),i=>i.disabled=true)}
+setInterval(()=>{if(tab!="home")return;var n=nextP(),c=document.getElementById("cd");if(n.n!=curN){R();return}if(c)c.textContent=cdt(n.s)},1000);
+var CK=["id","kas","jam","ag","zk","inv","wk","jd"],cdb=null,last={},tm,RO=false,CS="Mode lokal",RP={m:"month",d:new Date().toISOString().slice(0,7)};
+/* ===== UNTUK LOGIN SUNGGUHAN: ISI DUA BARIS INI (Supabase > Project Settings > API) ===== */
+var SB_URL="ISI_URL_PROYEK",SB_KEY="ISI_ANON_KEY";
+/* Jika tidak diisi, aplikasi berjalan dalam mode lokal dengan kata sandi admin di perangkat ini. */
+var sb=null,ROLE=null,ready=false;
+function LOCAL(){return SB_URL.indexOf("ISI_")==0||!window.supabase}
+function chip(t,ok){var c=document.getElementById("chip");if(!c){c=document.createElement("div");c.id="chip";c.style.cssText="position:fixed;top:calc(env(safe-area-inset-top,0px) + 6px);right:8px;z-index:9;font-size:11px;padding:3px 10px;border-radius:12px;background:var(--cd);border:1px solid var(--bd)";document.body.appendChild(c)}
+c.style.color=ok?"var(--ac)":"var(--rd)";c.innerHTML=(ok?"● ":"○ ")+e(t)+(ROLE?' · <a href="#" onclick="logout();return false" style="color:inherit">Keluar</a>':"")}
+function stt(t){CS=t;var x=document.getElementById("cs");if(x)x.textContent=t;chip(t,!!ROLE&&!/gagal/i.test(t))}
+function who(){return ROLE=="admin"?"Admin":"User (lihat saja)"}
+function logout(){if(sb)sb.auth.signOut();location.reload()}
+function hh(s){var h=5381;for(var i=0;i<s.length;i++)h=((h<<5)+h+s.charCodeAt(i))|0;return""+h}
+function loginUI(msg){var o=document.getElementById("lg");if(!o){o=document.createElement("div");o.id="lg";o.style.cssText="position:fixed;inset:0;z-index:20;background:linear-gradient(160deg,#075c38,#0f8a55);display:flex;align-items:center;justify-content:center;padding:20px";document.body.appendChild(o)}
+var np=true;try{np=!localStorage.getItem("simas_pw")}catch(x){}
+o.innerHTML=`<div class="box" style="width:100%;max-width:360px;margin:0"><div style="text-align:center;margin-bottom:10px"><div style="font-size:40px">🕌</div><h2 style="margin:0">APLIKASI TERPADU</h2><div class="mu">Masjid ${e(D.id.n)}</div></div><p class="no" style="margin:0 0 8px">${msg||""}</p>`+
+(LOCAL()?`<button class="btn" style="width:100%;margin-bottom:12px" onclick="goLocal('user')">Masuk sebagai User (lihat saja)</button><hr style="border:0;border-top:1px solid var(--bd)"><label class="mu">Kata sandi admin</label><input id="lpw" type="password" autocomplete="current-password"><br><br><button class="btn" style="width:100%" onclick="goLocal('admin')">${np?"Buat kata sandi dan masuk sebagai Admin":"Masuk sebagai Admin"}</button><p class="mu" style="font-size:12px">Mode lokal: kata sandi hanya mencegah salah input di perangkat ini, bukan pengaman data. Untuk login sungguhan dan data bersama, hubungkan Supabase (lihat panduan).</p>`
+:`<label class="mu">Email</label><input id="le" type="email" autocomplete="username"><label class="mu">Kata sandi</label><input id="lp" type="password" autocomplete="current-password"><br><br><button class="btn" style="width:100%" onclick="goSB()">Masuk</button>`)+`</div>`}
+function enter(r){ROLE=r;RO=r!="admin";var l=document.getElementById("lg");if(l)l.remove();R();stt(who()+(LOCAL()?" · mode lokal":" · Tersinkron"))}
+function goLocal(r){if(r=="admin"){var p=document.getElementById("lpw").value,s=null;try{s=localStorage.getItem("simas_pw")}catch(x){}
+if(!p){loginUI("Isi kata sandi.");return}
+if(!s){try{localStorage.setItem("simas_pw",hh(p))}catch(x){}}else if(s!=hh(p)){loginUI("Kata sandi salah.");return}}
+enter(r)}
+async function goSB(){var r=await sb.auth.signInWithPassword({email:document.getElementById("le").value.trim(),password:document.getElementById("lp").value});if(r.error){loginUI("Email atau kata sandi salah.");return}await startSB()}
+async function startSB(){var u=(await sb.auth.getUser()).data.user;if(!u){loginUI();return}
+var p=await sb.from("profiles").select("role").eq("user_id",u.id).maybeSingle();
+if(!p.data){await sb.auth.signOut();loginUI("Akun ini belum diberi peran. Hubungi admin.");return}
+ROLE=p.data.role=="admin"?"admin":"user";RO=ROLE!="admin";
+var r=await sb.from("masjid_docs").select("k,j"),have={};(r.data||[]).forEach(x=>{have[x.k]=1;try{D[x.k]=JSON.parse(x.j);last[x.k]=x.j}catch(e2){}});
+ready=true;var l=document.getElementById("lg");if(l)l.remove();R();stt(r.error?"Gagal membaca: "+r.error.message:who()+" · Tersinkron");
+if(!RO)CK.forEach(k=>{if(!have[k])wr(k)});
+sb.channel("md").on("postgres_changes",{event:"*",schema:"public",table:"masjid_docs"},pl=>{var x=pl.new;if(!x||!x.k||x.j===last[x.k])return;try{D[x.k]=JSON.parse(x.j);last[x.k]=x.j}catch(e2){return}var a=document.activeElement;if(!a||!/INPUT|TEXTAREA|SELECT/.test(a.tagName))R()}).subscribe()}
+function push(){clearTimeout(tm);tm=setTimeout(()=>{if(LOCAL()||!sb||RO||!ready)return;CK.forEach(wr)},500)}
+function wr(k){var j=JSON.stringify(D[k]);if(j===last[k])return;last[k]=j;sb.from("masjid_docs").upsert({k:k,j:j}).then(r=>{if(r.error){last[k]=null;stt("Gagal sinkron: "+r.error.message)}else stt(who()+" · Tersinkron")})}
+function cloud(){if(LOCAL()){loginUI();return}sb=supabase.createClient(SB_URL,SB_KEY);sb.auth.getSession().then(r=>{r.data.session?startSB():loginUI()})}
+var RCSS=".paper{background:#fff;color:#111;padding:22px;font:14px/1.55 Georgia,serif}.paper h2{font:700 17px Georgia,serif;text-align:center;margin:0}.paper h3{font-size:14px;margin:16px 0 6px}.paper table{width:100%;border-collapse:collapse;font-size:13px}.paper th,.paper td{border:1px solid #bbb;padding:4px 6px;color:#111;white-space:normal}.paper th{background:#eee}.paper .c{text-align:center}.paper hr{border:0;border-top:2px solid #111}.sg{display:flex;justify-content:space-around;margin-top:36px;text-align:center}";
+(function(){var t=document.createElement("style");t.textContent=RCSS+".btn.g{background:var(--ac2);color:var(--ac)}.paper{border:1px solid var(--bd);border-radius:10px;margin-bottom:12px}@media print{body *{visibility:hidden}.paper,.paper *{visibility:visible}.paper{position:absolute;left:0;top:0;width:100%;border:0}}";document.head.appendChild(t)})();
+function sA(a,j){return a.filter(x=>x.j==j).reduce((s,x)=>s+(+x.v||0),0)}
+function inP(t){t=t||"";return RP.m=="all"||(RP.m=="year"?t.slice(0,4)==RP.d.slice(0,4):t.slice(0,7)==RP.d)}
+function per(){return RP.m=="all"?"Seluruh periode":RP.m=="year"?"Tahun "+RP.d.slice(0,4):new Date(RP.d+"-01").toLocaleDateString("id-ID",{month:"long",year:"numeric"})}
+function tb(h,r){return"<table><tr>"+h.map(x=>"<th>"+x+"</th>").join("")+"</tr>"+(r.map(w=>"<tr>"+w.map(c=>"<td>"+c+"</td>").join("")+"</tr>").join("")||'<tr><td colspan="'+h.length+'" class="c">Tidak ada data</td></tr>')+"</table>"}
+function rep(){var kp=D.kas.filter(x=>inP(x.t)).sort((a,b)=>a.t>b.t?1:-1),i=sA(kp,"Masuk"),o=sA(kp,"Keluar"),aw=0,s0=RP.m=="year"?RP.d.slice(0,4)+"-01-01":RP.d+"-01";
+if(RP.m!="all")D.kas.filter(x=>x.t<s0).forEach(x=>aw+=(x.j=="Masuk"?1:-1)*(+x.v||0));
+var cat={};kp.forEach(x=>{var c=x.c+" ("+x.j+")";cat[c]=(cat[c]||0)+(+x.v||0)});
+var zk=D.zk,z=(f,g)=>zk.filter(x=>f.test(x.j)).reduce((s,x)=>s+(+x[g]||0),0),bk=D.inv.filter(x=>x.c=="Baik").length,jp=D.jd.filter(x=>inP(x.t)).sort((a,b)=>a.t>b.t?1:-1),I=D.id;
+return`<h2>LAPORAN PENGELOLAAN MASJID ${e(I.n.toUpperCase())}</h2><p class="c" style="margin:2px 0">${e(I.al)}<br>Nomor ID Kemenag: ${e(I.no)}<br>Periode: <b>${per()}</b></p><hr>
+<h3>I. Ringkasan keuangan</h3>${tb(["Uraian","Jumlah"],[["Saldo awal",rp(aw)],["Total pemasukan",rp(i)],["Total pengeluaran",rp(o)],["<b>Saldo akhir</b>","<b>"+rp(aw+i-o)+"</b>"]])}
+<h3>II. Rincian per kategori</h3>${tb(["Kategori","Jumlah"],Object.keys(cat).map(c=>[e(c),rp(cat[c])]))}
+<h3>III. Daftar transaksi</h3>${tb(["Tanggal","Jenis","Kategori","Keterangan","Jumlah"],kp.map(x=>[x.t,x.j,e(x.c),e(x.k),rp(x.v)]))}
+<h3>IV. Zakat dan qurban (kumulatif)</h3>${tb(["Uraian","Jumlah"],[["Zakat fitrah (uang)",rp(z(/uang/,"v"))],["Zakat fitrah (beras)",z(/beras/,"o")+" kg"],["Zakat mal",rp(z(/Mal/,"v"))],["Jumlah jiwa pemberi zakat",js(/Zakat/)],["Jumlah jiwa penerima",js(/^Penyaluran$/)],["Peserta qurban",zk.filter(x=>/Qurban/.test(x.j)).length],["Sudah disalurkan",rp(z(/^Penyaluran$/,"v"))]])}
+<h3>V. Petugas Jumat</h3>${tb(["Tanggal","Imam","Khatib","Muadzin"],jp.map(x=>[x.t,e(x.i),e(x.k),e(x.m)]))}
+<h3>VI. Inventaris</h3><p>Total ${D.inv.length} jenis barang: ${bk} baik, ${D.inv.length-bk} perlu perbaikan.</p>
+<p style="text-align:right;margin-top:18px">Dibuat pada ${new Date().toLocaleDateString("id-ID",{day:"numeric",month:"long",year:"numeric"})}</p>
+<div class="sg"><div>Ketua DKM<br><br><br><br><b><u>${e(I.k)||"............................"}</u></b></div><div>Bendahara<br><br><br><br><b><u>${e(I.b)||"............................"}</u></b></div></div>`}
+V.aset=()=>{var b=D.inv.filter(x=>x.c=="Baik").length;return`<div class="grid"><div class="box st"><b>${D.inv.length}</b><span>Jenis barang</span></div><div class="box st"><b class="ok">${b}</b><span>Kondisi baik</span></div><div class="box st"><b class="no">${D.inv.length-b}</b><span>Perlu perbaikan</span></div><div class="box st"><b>${rp(sum("wk"))}</b><span>Nilai wakaf & donasi aset</span></div></div>`+crud("inv")+crud("wk")};
+V.lap=()=>`<div class="box"><h2>Laporan</h2><div class="f"><div><label>Jenis periode</label><select onchange="RP.m=this.value;R()">${[["month","Bulanan"],["year","Tahunan"],["all","Seluruhnya"]].map(o=>`<option value="${o[0]}"${RP.m==o[0]?" selected":""}>${o[1]}</option>`).join("")}</select></div><div><label>Bulan / tahun</label><input type="month" value="${RP.d}" onchange="RP.d=this.value||RP.d;R()"></div></div><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" onclick="dl('x')">Unduh Excel (.xlsx)</button><button class="btn g" onclick="dl('h')">Unduh laporan (.html)</button><button class="btn g" onclick="dl('c')">Unduh kas (.csv)</button><button class="btn g" onclick="window.print()">Cetak / PDF</button></div></div><div class="paper">${rep()}</div><div class="box"><h2>Cadangan data</h2><p class="mu" style="margin-top:0">Salin teks ini sebagai cadangan, atau untuk memindahkan data ke perangkat lain.</p><textarea id="bk" rows="3" readonly style="width:100%;font:12px monospace;background:var(--cd);color:var(--tx);border:1px solid var(--bd);border-radius:9px;padding:8px">${e(JSON.stringify(D))}</textarea><br><button class="btn g" style="margin-top:6px" onclick="var t=document.getElementById('bk');t.select();try{navigator.clipboard.writeText(t.value)}catch(x){document.execCommand('copy')}">Salin</button>${RO?"":`<h2 style="margin-top:14px">Pulihkan dari cadangan</h2><textarea id="rs" rows="3" placeholder="Tempel teks cadangan di sini" style="width:100%;font:12px monospace;background:var(--cd);color:var(--tx);border:1px solid var(--bd);border-radius:9px;padding:8px"></textarea><br><button class="btn" style="margin-top:6px" onclick="rst()">Pulihkan</button>`}</div>`;
+function rst(){if(RO)return;try{var d=JSON.parse(document.getElementById("rs").value);if(!d.kas||!d.id)throw 0;if(!confirm("Timpa semua data saat ini dengan cadangan?"))return;D=d;["kas","jam","ag","zk","inv","wk","jd"].forEach(k=>D[k]=D[k]||[]);sv();R();alert("Data dipulihkan.")}catch(x){alert("Format cadangan tidak valid.")}}
+function js(re){return D.zk.filter(x=>re.test(x.j)).reduce((a,x)=>a+(+x.s||0),0)}
+function fn(){return RP.m=="all"?"semua":RP.d}
+async function dl(kind){var d=null;try{d=await claude.use("downloads")}catch(x){}
+if(!d)d={save:async function(o){var mt=/\.xlsx$/.test(o.filename)?"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":/\.csv$/.test(o.filename)?"text/csv;charset=utf-8":"text/html;charset=utf-8",b=new Blob([o.data],{type:mt}),u=URL.createObjectURL(b),a=document.createElement("a");a.href=u;a.download=o.filename;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000)}};
+try{if(kind=="x"){if(!window.XLSX){alert("Pustaka Excel belum termuat. Coba lagi atau pakai unduhan CSV.");return}
+var wb=XLSX.utils.book_new();[["kas","Kas"],["jam","Jamaah"],["ag","Agenda"],["jd","Petugas Jumat"],["zk","Zakat dan Qurban"],["inv","Inventaris"],["wk","Wakaf"]].forEach(p=>{var s=S[p[0]],rows=[s.f.map(c=>c[1])].concat(D[p[0]].filter(x=>!s.d||inP(x.t)).map(x=>s.f.map(c=>x[c[0]]==null?"":x[c[0]])));XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(rows),p[1])});
+await d.save({filename:"laporan-masjid-"+fn()+".xlsx",data:XLSX.write(wb,{type:"array",bookType:"xlsx"})})}
+else if(kind=="c"){var s=S.kas,rows=[s.f.map(c=>c[1])].concat(D.kas.filter(x=>inP(x.t)).map(x=>s.f.map(c=>x[c[0]])));
+await d.save({filename:"kas-masjid-"+fn()+".csv",data:"\ufeff"+rows.map(r=>r.map(c=>'"'+String(c==null?"":c).replace(/"/g,'""')+'"').join(",")).join("\r\n")})}
+else await d.save({filename:"laporan-masjid-"+fn()+".html",data:'<!DOCTYPE html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Laporan Masjid</title><style>body{margin:0;background:#f3f3f3}'+RCSS+'</style></head><body><div class="paper" style="max-width:800px;margin:auto">'+rep()+'</div></body></html>'})
+}catch(x){alert(x&&x.code=="declined"?"Unduhan dibatalkan.":"Unduhan gagal ("+(x&&x.message||x)+"). Coba format lain atau tombol Cetak / PDF.")}}
+ld();R();cloud();
+</script></body></html>

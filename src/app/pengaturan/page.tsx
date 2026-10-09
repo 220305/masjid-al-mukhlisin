@@ -1,0 +1,388 @@
+'use client';
+
+import React, { useEffect, useState } from 'react';
+import {
+  Settings,
+  Save,
+  Download,
+  Upload,
+  Copy,
+  CheckCircle2,
+  AlertTriangle,
+  X,
+  Building,
+  Database,
+  RotateCcw,
+  RefreshCw,
+} from 'lucide-react';
+import AdminLayout from '@/components/layout/admin-layout';
+import { DataService } from '@/lib/data-service';
+import { IdentitasMasjid } from '@/types';
+
+export default function PengaturanPage() {
+  const [identitas, setIdentitas] = useState<IdentitasMasjid>({
+    nama: 'Al-Mukhlisin',
+    nomor_id_kemenag: '',
+    alamat: '',
+    ketua_dkm: '',
+    bendahara: '',
+  });
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [savedOk, setSavedOk] = useState(false);
+
+  // Backup / Restore states
+  const [backupJson, setBackupJson] = useState('');
+  const [restoreInput, setRestoreInput] = useState('');
+  const [backupLoading, setBackupLoading] = useState(false);
+  const [restoreLoading, setRestoreLoading] = useState(false);
+  const [copiedJson, setCopiedJson] = useState(false);
+  const [restoreError, setRestoreError] = useState('');
+  const [restoreSuccess, setRestoreSuccess] = useState(false);
+
+  const loadData = async () => {
+    setLoading(true);
+    try {
+      const data = await DataService.getIdentitas();
+      setIdentitas(data);
+    } catch (e) {
+      console.error('Failed to load identitas:', e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const handleSave = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSaving(true);
+    try {
+      await DataService.updateIdentitas(identitas);
+      setSavedOk(true);
+      setTimeout(() => setSavedOk(false), 3000);
+    } catch (err: any) {
+      alert(err?.message || 'Gagal menyimpan identitas masjid');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleGenerateBackup = async () => {
+    setBackupLoading(true);
+    try {
+      const data = await DataService.exportAllData();
+      const jsonStr = JSON.stringify(data, null, 2);
+      setBackupJson(jsonStr);
+    } catch (e) {
+      alert('Gagal membuat cadangan data');
+    } finally {
+      setBackupLoading(false);
+    }
+  };
+
+  const handleCopyBackup = () => {
+    if (!backupJson) return;
+    navigator.clipboard.writeText(backupJson).then(() => {
+      setCopiedJson(true);
+      setTimeout(() => setCopiedJson(false), 2000);
+    });
+  };
+
+  const handleDownloadBackup = () => {
+    if (!backupJson) return;
+    const blob = new Blob([backupJson], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Backup_Masjid_Al_Mukhlisin_${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  const handleRestore = async () => {
+    setRestoreError('');
+    setRestoreSuccess(false);
+    if (!restoreInput.trim()) {
+      setRestoreError('Harap isi JSON backup terlebih dahulu.');
+      return;
+    }
+    setRestoreLoading(true);
+    try {
+      const parsed = JSON.parse(restoreInput);
+      await DataService.importAllData(parsed);
+      setRestoreSuccess(true);
+      setRestoreInput('');
+      setTimeout(() => setRestoreSuccess(false), 4000);
+    } catch (e: any) {
+      setRestoreError(
+        e?.message?.includes('JSON')
+          ? 'Format JSON tidak valid. Periksa kembali teks backup Anda.'
+          : e?.message || 'Gagal memulihkan data'
+      );
+    } finally {
+      setRestoreLoading(false);
+    }
+  };
+
+  return (
+    <AdminLayout>
+      <div className="p-4 md:p-8 space-y-6 max-w-4xl mx-auto">
+        {/* Header */}
+        <div className="flex items-center gap-3">
+          <span className="p-2 rounded-xl bg-emerald-100 text-emerald-800">
+            <Settings size={24} />
+          </span>
+          <div>
+            <h1 className="text-2xl font-black text-slate-800">Pengaturan & Cadangan Data</h1>
+            <p className="text-xs text-slate-500 mt-0.5">
+              Kelola identitas resmi SIMAS Kemenag dan lakukan backup/restore seluruh data masjid
+            </p>
+          </div>
+        </div>
+
+        {/* ============================= */}
+        {/* SECTION 1: IDENTITAS MASJID */}
+        {/* ============================= */}
+        <div className="bg-white rounded-3xl border border-slate-100 shadow-sm p-6 md:p-8">
+          <div className="flex items-center gap-2 mb-6">
+            <Building size={18} className="text-emerald-700" />
+            <h2 className="font-black text-slate-800 text-base">Identitas Resmi Masjid</h2>
+            <span className="text-[10px] font-bold text-slate-400 border border-slate-200 rounded-full px-2 py-0.5 uppercase tracking-wide">
+              SIMAS Kemenag RI
+            </span>
+          </div>
+
+          {loading ? (
+            <p className="text-sm text-slate-400 text-center py-6">Memuat data identitas...</p>
+          ) : (
+            <form onSubmit={handleSave} className="space-y-5 text-sm">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1.5 text-xs uppercase tracking-wide">
+                    Nama Masjid
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={identitas.nama}
+                    onChange={(e) => setIdentitas({ ...identitas, nama: e.target.value })}
+                    className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500 transition"
+                    placeholder="Contoh: Al-Mukhlisin"
+                  />
+                </div>
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1.5 text-xs uppercase tracking-wide">
+                    Nomor ID SIMAS Kemenag RI
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={identitas.nomor_id_kemenag}
+                    onChange={(e) =>
+                      setIdentitas({ ...identitas, nomor_id_kemenag: e.target.value })
+                    }
+                    className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium font-mono focus:outline-none focus:ring-2 focus:ring-emerald-500 transition"
+                    placeholder="Contoh: 01.4.13.04.06.000158"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-bold text-slate-700 mb-1.5 text-xs uppercase tracking-wide">
+                  Alamat Lengkap Masjid
+                </label>
+                <textarea
+                  rows={2}
+                  required
+                  value={identitas.alamat}
+                  onChange={(e) => setIdentitas({ ...identitas, alamat: e.target.value })}
+                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500 transition resize-none"
+                  placeholder="Contoh: Kp. Jalan Cagak RT.005 RW.004 Desa Lagadar, Kec. Margaasih, Kab. Bandung"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1.5 text-xs uppercase tracking-wide">
+                    Nama Ketua DKM
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={identitas.ketua_dkm}
+                    onChange={(e) => setIdentitas({ ...identitas, ketua_dkm: e.target.value })}
+                    className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500 transition"
+                    placeholder="Contoh: Ustadz H. Ahmad Sobari"
+                  />
+                </div>
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1.5 text-xs uppercase tracking-wide">
+                    Nama Bendahara DKM
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={identitas.bendahara}
+                    onChange={(e) => setIdentitas({ ...identitas, bendahara: e.target.value })}
+                    className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium focus:outline-none focus:ring-2 focus:ring-emerald-500 transition"
+                    placeholder="Contoh: H. Mulyadi, S.E."
+                  />
+                </div>
+              </div>
+
+              <div className="pt-2 flex items-center justify-between border-t border-slate-100">
+                <div>
+                  {savedOk && (
+                    <span className="flex items-center gap-1.5 text-xs font-bold text-emerald-700">
+                      <CheckCircle2 size={15} /> Identitas berhasil disimpan!
+                    </span>
+                  )}
+                </div>
+                <button
+                  type="submit"
+                  disabled={saving}
+                  className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 text-white text-xs font-bold rounded-xl shadow-md shadow-emerald-900/20 transition disabled:opacity-60"
+                >
+                  {saving ? (
+                    <RefreshCw size={15} className="animate-spin" />
+                  ) : (
+                    <Save size={15} />
+                  )}
+                  {saving ? 'Menyimpan...' : 'Simpan Identitas'}
+                </button>
+              </div>
+            </form>
+          )}
+        </div>
+
+        {/* ============================= */}
+        {/* SECTION 2: BACKUP DATA */}
+        {/* ============================= */}
+        <div className="bg-white rounded-3xl border border-slate-100 shadow-sm p-6 md:p-8">
+          <div className="flex items-center gap-2 mb-2">
+            <Database size={18} className="text-emerald-700" />
+            <h2 className="font-black text-slate-800 text-base">Cadangan Data (Backup)</h2>
+          </div>
+          <p className="text-xs text-slate-500 mb-5">
+            Ekspor seluruh data masjid (Kas, Jamaah, Zakat, Inventaris, Wakaf, Petugas Jumat) ke
+            format JSON untuk disimpan sebagai arsip atau dipindah ke perangkat lain.
+          </p>
+
+          <div className="flex items-center gap-2 mb-4 flex-wrap">
+            <button
+              onClick={handleGenerateBackup}
+              disabled={backupLoading}
+              className="px-4 py-2.5 bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold rounded-xl flex items-center gap-2 transition shadow-md disabled:opacity-60"
+            >
+              {backupLoading ? (
+                <RefreshCw size={14} className="animate-spin" />
+              ) : (
+                <Database size={14} />
+              )}
+              {backupLoading ? 'Menyiapkan...' : 'Buat File Backup JSON'}
+            </button>
+
+            {backupJson && (
+              <>
+                <button
+                  onClick={handleCopyBackup}
+                  className="px-4 py-2.5 border border-slate-200 text-slate-700 bg-white hover:bg-slate-50 text-xs font-bold rounded-xl flex items-center gap-2 transition"
+                >
+                  {copiedJson ? (
+                    <CheckCircle2 size={14} className="text-emerald-600" />
+                  ) : (
+                    <Copy size={14} />
+                  )}
+                  {copiedJson ? 'Tersalin!' : 'Salin ke Clipboard'}
+                </button>
+                <button
+                  onClick={handleDownloadBackup}
+                  className="px-4 py-2.5 border border-emerald-200 text-emerald-700 bg-emerald-50 hover:bg-emerald-100 text-xs font-bold rounded-xl flex items-center gap-2 transition"
+                >
+                  <Download size={14} /> Unduh File .json
+                </button>
+              </>
+            )}
+          </div>
+
+          {backupJson && (
+            <div className="relative">
+              <pre className="w-full h-52 overflow-auto text-[10px] font-mono bg-slate-900 text-emerald-300 rounded-2xl p-4 border border-slate-700">
+                {backupJson}
+              </pre>
+            </div>
+          )}
+        </div>
+
+        {/* ============================= */}
+        {/* SECTION 3: RESTORE DATA */}
+        {/* ============================= */}
+        <div className="bg-white rounded-3xl border border-slate-100 shadow-sm p-6 md:p-8">
+          <div className="flex items-center gap-2 mb-2">
+            <RotateCcw size={18} className="text-amber-600" />
+            <h2 className="font-black text-slate-800 text-base">Pulihkan Data (Restore)</h2>
+          </div>
+          <p className="text-xs text-slate-500 mb-1">
+            Tempel isi file JSON backup ke kotak di bawah ini, lalu klik <b>Pulihkan Sekarang</b>.
+            Seluruh data saat ini akan <b className="text-red-600">ditimpa</b> dengan data dari backup.
+          </p>
+
+          <div className="my-4 p-3.5 rounded-2xl bg-amber-50 border border-amber-200 flex items-start gap-2.5">
+            <AlertTriangle size={17} className="text-amber-600 shrink-0 mt-0.5" />
+            <p className="text-xs text-amber-800 font-medium">
+              <b>Peringatan:</b> Proses restore akan menggantikan data lokal yang ada saat ini. Pastikan
+              Anda memiliki backup terbaru sebelum melanjutkan. Fitur ini hanya mempengaruhi data
+              lokal (localStorage) jika Supabase belum dikonfigurasi.
+            </p>
+          </div>
+
+          <textarea
+            rows={7}
+            value={restoreInput}
+            onChange={(e) => {
+              setRestoreInput(e.target.value);
+              setRestoreError('');
+              setRestoreSuccess(false);
+            }}
+            placeholder={'Tempel JSON backup di sini...\n{\n  "version": "1.0.0",\n  "kas": [...],\n  ...\n}'}
+            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-[11px] font-mono text-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-500 transition resize-none"
+          />
+
+          {restoreError && (
+            <div className="mt-2 flex items-center gap-2 text-xs text-red-700 bg-red-50 border border-red-200 rounded-xl px-3 py-2">
+              <X size={14} className="shrink-0" />
+              {restoreError}
+            </div>
+          )}
+
+          {restoreSuccess && (
+            <div className="mt-2 flex items-center gap-2 text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-xl px-3 py-2">
+              <CheckCircle2 size={14} className="shrink-0" />
+              Data berhasil dipulihkan! Halaman mungkin perlu disegarkan untuk melihat perubahan.
+            </div>
+          )}
+
+          <div className="mt-4 flex justify-end">
+            <button
+              onClick={handleRestore}
+              disabled={restoreLoading || !restoreInput.trim()}
+              className="px-5 py-2.5 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold rounded-xl flex items-center gap-2 transition shadow-md shadow-amber-900/20 disabled:opacity-60"
+            >
+              {restoreLoading ? (
+                <RefreshCw size={14} className="animate-spin" />
+              ) : (
+                <Upload size={14} />
+              )}
+              {restoreLoading ? 'Memulihkan...' : 'Pulihkan Sekarang'}
+            </button>
+          </div>
+        </div>
+      </div>
+    </AdminLayout>
+  );
+}

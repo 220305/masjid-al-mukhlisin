@@ -15,6 +15,11 @@ import {
   Shield,
   User,
   Database,
+  Users,
+  HandHeart,
+  UserCheck,
+  FileText,
+  Settings,
 } from 'lucide-react';
 import { useAuth } from '@/lib/auth-context';
 
@@ -30,9 +35,14 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
   const navItems = [
     { title: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-    { title: 'Inventaris', href: '/inventory', icon: Package },
-    { title: 'Keuangan', href: '/finance', icon: Wallet },
-    { title: 'Khutbah', href: '/khutbah', icon: CalendarDays },
+    { title: 'Buku Kas Keuangan', href: '/finance', icon: Wallet },
+    { title: 'Zakat & Qurban', href: '/zakat', icon: HandHeart },
+    { title: 'Data Jamaah', href: '/jamaah', icon: Users },
+    { title: 'Jadwal Petugas Jumat', href: '/petugas-jumat', icon: UserCheck },
+    { title: 'Khutbah & Kajian', href: '/khutbah', icon: CalendarDays },
+    { title: 'Inventaris & Wakaf', href: '/inventory', icon: Package },
+    { title: 'Laporan Resmi (SIMAS)', href: '/laporan', icon: FileText },
+    { title: 'Pengaturan & Backup', href: '/pengaturan', icon: Settings },
   ];
 
   const handleLogout = async () => {

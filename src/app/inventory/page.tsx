@@ -16,18 +16,28 @@ import {
   CheckCircle2,
   AlertTriangle,
   RotateCw,
+  Landmark,
 } from 'lucide-react';
 import AdminLayout from '@/components/layout/admin-layout';
 import { DataService } from '@/lib/data-service';
-import { InventoryItem, KondisiBarang } from '@/types';
+import { InventoryItem, KondisiBarang, WakafItem, JenisWakaf } from '@/types';
 
 export default function InventoryPage() {
+  const [activeTab, setActiveTab] = useState<'inventaris' | 'wakaf'>('inventaris');
   const [dataAset, setDataAset] = useState<InventoryItem[]>([]);
+  const [dataWakaf, setDataWakaf] = useState<WakafItem[]>([]);
   const [loading, setLoading] = useState(true);
 
   // Modals
   const [showModal, setShowModal] = useState<'add' | 'edit' | 'detail' | null>(null);
   const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
+
+  // Wakaf modals
+  const [showWakafModal, setShowWakafModal] = useState<'add' | 'edit' | null>(null);
+  const [selectedWakaf, setSelectedWakaf] = useState<WakafItem | null>(null);
+  const [wakafForm, setWakafForm] = useState<{
+    tanggal: string; wakif: string; jenis: JenisWakaf; nilai: string; keterangan: string;
+  }>({ tanggal: '', wakif: '', jenis: "Al-Qur'an", nilai: '0', keterangan: '' });
 
   // Filters & Selection
   const [searchTerm, setSearchTerm] = useState('');
@@ -47,17 +57,23 @@ export default function InventoryPage() {
   const loadData = async () => {
     setLoading(true);
     try {
-      const items = await DataService.getInventories();
-      setDataAset(items);
+      const [invItems, wakafItems] = await Promise.all([
+        DataService.getInventories(),
+        DataService.getWakaf(),
+      ]);
+      setDataAset(invItems);
+      setDataWakaf(wakafItems);
     } catch (error) {
-      console.error('Failed to load inventory:', error);
+      console.error('Failed to load inventory/wakaf:', error);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
+    const today = new Date().toISOString().split('T')[0];
     setCurrentDateStr(new Date().toLocaleDateString('id-ID'));
+    setWakafForm((prev) => ({ ...prev, tanggal: today }));
     loadData();
   }, []);
 
@@ -155,6 +171,46 @@ export default function InventoryPage() {
     }
   };
 
+  const handleWakafAdd = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!wakafForm.wakif || !wakafForm.tanggal) return;
+    try {
+      await DataService.addWakaf({
+        tanggal: wakafForm.tanggal,
+        wakif: wakafForm.wakif,
+        jenis: wakafForm.jenis,
+        nilai: parseFloat(wakafForm.nilai) || 0,
+        keterangan: wakafForm.keterangan,
+      });
+      setShowWakafModal(null);
+      setWakafForm({ tanggal: new Date().toISOString().split('T')[0], wakif: '', jenis: "Al-Qur'an", nilai: '0', keterangan: '' });
+      loadData();
+    } catch (err: any) { alert(err?.message || 'Gagal menambahkan wakaf'); }
+  };
+
+  const handleWakafEdit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedWakaf) return;
+    try {
+      await DataService.updateWakaf(selectedWakaf.id, selectedWakaf);
+      setShowWakafModal(null);
+      setSelectedWakaf(null);
+      loadData();
+    } catch (err: any) { alert(err?.message || 'Gagal memperbarui wakaf'); }
+  };
+
+  const handleWakafDelete = async (id: number | string, wakif: string) => {
+    if (confirm(`Hapus catatan wakaf dari "${wakif}"?`)) {
+      try {
+        await DataService.deleteWakaf(id);
+        loadData();
+      } catch (err: any) { alert(err?.message || 'Gagal menghapus wakaf'); }
+    }
+  };
+
+  const formatRupiah = (val: number) =>
+    new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(val);
+
   return (
     <AdminLayout>
       <div className="p-4 md:p-10 max-w-7xl mx-auto space-y-6 pb-24">
@@ -167,47 +223,48 @@ export default function InventoryPage() {
         {/* Top Header */}
         <div className="no-print flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h2 className="text-3xl font-black text-slate-900 font-serif-elegant">Manajemen Inventaris</h2>
+            <h2 className="text-3xl font-black text-slate-900 font-serif-elegant">Inventaris &amp; Wakaf</h2>
             <p className="text-xs font-bold text-slate-400 mt-1 uppercase tracking-widest">
-              Aset & Fasilitas Fisik Masjid
+              Aset Fisik, Fasilitas Masjid &amp; Harta Wakaf Umat
             </p>
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
-            <button
-              onClick={copyTable}
-              className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-2xl bg-white border border-slate-200 text-xs font-bold text-slate-700 hover:border-slate-400 transition-colors shadow-xs"
-              title="Salin ke Clipboard"
-            >
-              <Copy size={15} /> <span className="hidden sm:inline">Salin</span>
-            </button>
-            <button
-              onClick={exportToExcel}
-              className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-2xl bg-white border border-slate-200 text-xs font-bold text-slate-700 hover:border-emerald-600 hover:text-emerald-700 transition-colors shadow-xs"
-              title="Ekspor ke Excel"
-            >
-              <Download size={15} /> <span className="hidden sm:inline">Excel</span>
-            </button>
-            <button
-              onClick={handlePrint}
-              className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-2xl bg-white border border-slate-200 text-xs font-bold text-slate-700 hover:border-emerald-600 transition-colors shadow-xs"
-              title="Cetak Laporan"
-            >
-              <Printer size={15} /> <span className="hidden sm:inline">Cetak</span>
-            </button>
-            <button
-              onClick={() => {
-                setFormData({ nama_barang: '', jumlah: '1', kondisi: 'baik', lokasi: '' });
-                setShowModal('add');
-              }}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-[#0d8a5e] text-white hover:bg-emerald-700 text-xs font-black tracking-wider uppercase transition-all shadow-md shadow-emerald-900/10 active:scale-95"
-            >
-              <Plus size={17} /> <span>Tambah Aset</span>
-            </button>
+            {activeTab === 'inventaris' ? (
+              <>
+                <button onClick={copyTable} className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-2xl bg-white border border-slate-200 text-xs font-bold text-slate-700 hover:border-slate-400 transition-colors shadow-xs" title="Salin ke Clipboard">
+                  <Copy size={15} /> <span className="hidden sm:inline">Salin</span>
+                </button>
+                <button onClick={exportToExcel} className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-2xl bg-white border border-slate-200 text-xs font-bold text-slate-700 hover:border-emerald-600 hover:text-emerald-700 transition-colors shadow-xs" title="Ekspor ke Excel">
+                  <Download size={15} /> <span className="hidden sm:inline">Excel</span>
+                </button>
+                <button onClick={handlePrint} className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-2xl bg-white border border-slate-200 text-xs font-bold text-slate-700 hover:border-emerald-600 transition-colors shadow-xs" title="Cetak Laporan">
+                  <Printer size={15} /> <span className="hidden sm:inline">Cetak</span>
+                </button>
+                <button onClick={() => { setFormData({ nama_barang: '', jumlah: '1', kondisi: 'baik', lokasi: '' }); setShowModal('add'); }} className="flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-[#0d8a5e] text-white hover:bg-emerald-700 text-xs font-black tracking-wider uppercase transition-all shadow-md shadow-emerald-900/10 active:scale-95">
+                  <Plus size={17} /> <span>Tambah Aset</span>
+                </button>
+              </>
+            ) : (
+              <button onClick={() => { setShowWakafModal('add'); }} className="flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-[#0d8a5e] text-white hover:bg-emerald-700 text-xs font-black tracking-wider uppercase transition-all shadow-md shadow-emerald-900/10 active:scale-95">
+                <Plus size={17} /> <span>Catat Wakaf</span>
+              </button>
+            )}
           </div>
         </div>
 
-        {/* Filters */}
+        {/* Tab Switcher */}
+        <div className="no-print flex bg-white border border-slate-200 p-1 rounded-2xl w-fit shadow-xs">
+          <button onClick={() => setActiveTab('inventaris')} className={`px-5 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 transition-all ${activeTab === 'inventaris' ? 'bg-emerald-700 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-50'}`}>
+            <Package size={15} /> Inventaris Fisik
+          </button>
+          <button onClick={() => setActiveTab('wakaf')} className={`px-5 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 transition-all ${activeTab === 'wakaf' ? 'bg-emerald-700 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-50'}`}>
+            <Landmark size={15} /> Harta Wakaf
+          </button>
+        </div>
+
+        {/* Filters (only for Inventaris tab) */}
+        {activeTab === 'inventaris' && (
         <div className="no-print rounded-[2rem] border border-slate-100 bg-white p-5 shadow-xs space-y-4">
           <div className="relative">
             <input
@@ -249,118 +306,165 @@ export default function InventoryPage() {
             )}
           </div>
         </div>
+        )}
 
-        {/* Data Table */}
-        <div id="printable-area" className="rounded-[2.5rem] border border-slate-100 bg-white overflow-hidden shadow-xs">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead className="bg-slate-50 border-b border-slate-100 text-[9px] font-black tracking-widest text-slate-400 uppercase">
-                <tr>
-                  <th className="no-print px-6 py-4">
-                    <input
-                      type="checkbox"
-                      className="rounded text-emerald-600 focus:ring-emerald-500"
-                      onChange={handleSelectAll}
-                      checked={selectedIds.length === filteredAset.length && filteredAset.length > 0}
-                    />
-                  </th>
-                  <th className="px-6 py-4">Nama Barang</th>
-                  <th className="px-6 py-4 text-center">Jumlah</th>
-                  <th className="px-6 py-4 text-center">Kondisi</th>
-                  <th className="px-6 py-4">Lokasi</th>
-                  <th className="no-print px-6 py-4 text-center">Aksi</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {filteredAset.length > 0 ? (
-                  filteredAset.map((item) => {
-                    const isSelected = selectedIds.includes(item.id);
-                    return (
-                      <tr
-                        key={item.id}
-                        className={`hover:bg-slate-50/70 transition-colors ${
-                          selectedIds.length > 0 && !isSelected ? 'no-print-row' : ''
-                        }`}
-                      >
-                        <td className="no-print px-6 py-4">
-                          <input
-                            type="checkbox"
-                            className="rounded text-emerald-600 focus:ring-emerald-500"
-                            checked={isSelected}
-                            onChange={() => toggleSelectRow(item.id)}
-                          />
-                        </td>
-                        <td className="px-6 py-4 font-bold text-slate-800">{item.nama_barang}</td>
-                        <td className="px-6 py-4 text-center font-mono font-bold text-slate-700">
-                          {item.jumlah} Unit
-                        </td>
-                        <td className="px-6 py-4 text-center">
-                          <span
-                            className={`inline-block px-2.5 py-1 rounded-md text-[9px] font-black uppercase ${
-                              item.kondisi === 'baik'
-                                ? 'bg-emerald-50 text-emerald-600'
-                                : item.kondisi === 'pemeliharaan'
-                                ? 'bg-amber-50 text-amber-600'
-                                : item.kondisi === 'dipinjamkan'
-                                ? 'bg-blue-50 text-blue-600'
-                                : 'bg-red-50 text-red-600'
-                            }`}
-                          >
-                            {item.kondisi}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 text-slate-600">{item.lokasi}</td>
-                        <td className="no-print px-6 py-4 text-center">
-                          <div className="flex items-center justify-center gap-2 text-slate-400">
-                            <button
-                              onClick={() => {
-                                setSelectedItem(item);
-                                setShowModal('detail');
-                              }}
-                              className="p-1.5 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
-                              title="Detail"
-                            >
-                              <Eye size={16} />
-                            </button>
-                            <button
-                              onClick={() => {
-                                setSelectedItem(item);
-                                setFormData({
-                                  nama_barang: item.nama_barang,
-                                  jumlah: String(item.jumlah),
-                                  kondisi: item.kondisi,
-                                  lokasi: item.lokasi,
-                                });
-                                setShowModal('edit');
-                              }}
-                              className="p-1.5 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors"
-                              title="Edit"
-                            >
-                              <Edit2 size={16} />
-                            </button>
-                            <button
-                              onClick={() => handleDelete(item.id)}
-                              className="p-1.5 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                              title="Hapus"
-                            >
-                              <Trash2 size={16} />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })
-                ) : (
+
+        {/* =================== INVENTARIS TAB =================== */}
+        {activeTab === 'inventaris' && (
+          <div id="printable-area" className="rounded-[2.5rem] border border-slate-100 bg-white overflow-hidden shadow-xs">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead className="bg-slate-50 border-b border-slate-100 text-[9px] font-black tracking-widest text-slate-400 uppercase">
                   <tr>
-                    <td colSpan={6} className="py-12 text-center text-slate-400">
-                      Tidak ada data inventaris yang cocok dengan pencarian.
-                    </td>
+                    <th className="no-print px-6 py-4">
+                      <input type="checkbox" className="rounded text-emerald-600 focus:ring-emerald-500" onChange={handleSelectAll} checked={selectedIds.length === filteredAset.length && filteredAset.length > 0} />
+                    </th>
+                    <th className="px-6 py-4">Nama Barang</th>
+                    <th className="px-6 py-4 text-center">Jumlah</th>
+                    <th className="px-6 py-4 text-center">Kondisi</th>
+                    <th className="px-6 py-4">Lokasi</th>
+                    <th className="no-print px-6 py-4 text-center">Aksi</th>
                   </tr>
-                )}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {filteredAset.length > 0 ? (
+                    filteredAset.map((item) => {
+                      const isSelected = selectedIds.includes(item.id);
+                      return (
+                        <tr key={item.id} className={`hover:bg-slate-50/70 transition-colors ${selectedIds.length > 0 && !isSelected ? 'no-print-row' : ''}`}>
+                          <td className="no-print px-6 py-4"><input type="checkbox" className="rounded text-emerald-600 focus:ring-emerald-500" checked={isSelected} onChange={() => toggleSelectRow(item.id)} /></td>
+                          <td className="px-6 py-4 font-bold text-slate-800">{item.nama_barang}</td>
+                          <td className="px-6 py-4 text-center font-mono font-bold text-slate-700">{item.jumlah} Unit</td>
+                          <td className="px-6 py-4 text-center">
+                            <span className={`inline-block px-2.5 py-1 rounded-md text-[9px] font-black uppercase ${item.kondisi === 'baik' ? 'bg-emerald-50 text-emerald-600' : item.kondisi === 'pemeliharaan' ? 'bg-amber-50 text-amber-600' : item.kondisi === 'dipinjamkan' ? 'bg-blue-50 text-blue-600' : 'bg-red-50 text-red-600'}`}>{item.kondisi}</span>
+                          </td>
+                          <td className="px-6 py-4 text-slate-600">{item.lokasi}</td>
+                          <td className="no-print px-6 py-4 text-center">
+                            <div className="flex items-center justify-center gap-2 text-slate-400">
+                              <button onClick={() => { setSelectedItem(item); setShowModal('detail'); }} className="p-1.5 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors" title="Detail"><Eye size={16} /></button>
+                              <button onClick={() => { setSelectedItem(item); setFormData({ nama_barang: item.nama_barang, jumlah: String(item.jumlah), kondisi: item.kondisi, lokasi: item.lokasi }); setShowModal('edit'); }} className="p-1.5 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors" title="Edit"><Edit2 size={16} /></button>
+                              <button onClick={() => handleDelete(item.id)} className="p-1.5 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Hapus"><Trash2 size={16} /></button>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })
+                  ) : (
+                    <tr><td colSpan={6} className="py-12 text-center text-slate-400">Tidak ada data inventaris yang cocok dengan pencarian.</td></tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
-        </div>
+        )}
+
+        {/* =================== WAKAF TAB =================== */}
+        {activeTab === 'wakaf' && (
+          <div className="rounded-[2.5rem] border border-slate-100 bg-white overflow-hidden shadow-xs">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead className="bg-slate-50 border-b border-slate-100 text-[9px] font-black tracking-widest text-slate-400 uppercase">
+                  <tr>
+                    <th className="px-6 py-4 w-12 text-center">No</th>
+                    <th className="px-6 py-4">Tanggal</th>
+                    <th className="px-6 py-4">Nama Wakif / Donatur</th>
+                    <th className="px-6 py-4">Jenis Wakaf</th>
+                    <th className="px-6 py-4 text-right">Estimasi Nilai</th>
+                    <th className="px-6 py-4">Keterangan</th>
+                    <th className="px-6 py-4 text-center">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {loading ? (
+                    <tr><td colSpan={7} className="py-12 text-center text-slate-400">Memuat data wakaf...</td></tr>
+                  ) : dataWakaf.length === 0 ? (
+                    <tr><td colSpan={7} className="py-12 text-center text-slate-400">Belum ada catatan wakaf. Klik &apos;Catat Wakaf&apos; untuk menambahkan.</td></tr>
+                  ) : dataWakaf.map((w, idx) => (
+                    <tr key={w.id} className="hover:bg-slate-50/70 transition-colors group">
+                      <td className="px-6 py-4 text-center text-slate-400">{idx + 1}</td>
+                      <td className="px-6 py-4 text-slate-600 whitespace-nowrap">{new Date(w.tanggal).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}</td>
+                      <td className="px-6 py-4 font-bold text-slate-800">{w.wakif}</td>
+                      <td className="px-6 py-4">
+                        <span className="inline-block px-2.5 py-1 rounded-lg text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">{w.jenis}</span>
+                      </td>
+                      <td className="px-6 py-4 text-right font-bold text-emerald-800">{w.nilai > 0 ? formatRupiah(w.nilai) : '-'}</td>
+                      <td className="px-6 py-4 text-slate-500 max-w-xs truncate">{w.keterangan || '-'}</td>
+                      <td className="px-6 py-4 text-center">
+                        <div className="flex items-center justify-center gap-2 text-slate-400 opacity-90 group-hover:opacity-100">
+                          <button onClick={() => { setSelectedWakaf(w); setShowWakafModal('edit'); }} className="p-1.5 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors" title="Edit"><Edit2 size={16} /></button>
+                          <button onClick={() => handleWakafDelete(w.id, w.wakif)} className="p-1.5 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Hapus"><Trash2 size={16} /></button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {/* Wakaf Add Modal */}
+        {showWakafModal === 'add' && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4">
+            <div className="bg-white rounded-3xl w-full max-w-md shadow-2xl overflow-hidden">
+              <div className="flex items-center justify-between px-6 py-4 bg-emerald-950 text-white">
+                <h3 className="font-bold text-sm flex items-center gap-2"><Landmark size={16} className="text-emerald-400" /> Catat Harta Wakaf</h3>
+                <button onClick={() => setShowWakafModal(null)} className="p-1 text-slate-400 hover:text-white"><X size={18} /></button>
+              </div>
+              <form onSubmit={handleWakafAdd} className="p-6 space-y-4 text-xs">
+                <div className="grid grid-cols-2 gap-3">
+                  <div><label className="block font-bold text-slate-700 mb-1">Tanggal *</label><input type="date" required value={wakafForm.tanggal} onChange={(e) => setWakafForm({ ...wakafForm, tanggal: e.target.value })} className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500" /></div>
+                  <div><label className="block font-bold text-slate-700 mb-1">Jenis Wakaf *</label>
+                    <select value={wakafForm.jenis} onChange={(e) => setWakafForm({ ...wakafForm, jenis: e.target.value as JenisWakaf })} className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium">
+                      <option value="Tanah">Tanah</option>
+                      <option value="Bangunan">Bangunan</option>
+                      <option value="Uang">Uang Tunai</option>
+                      <option value="Al-Qur'an">Al-Qur&apos;an</option>
+                      <option value="Peralatan">Peralatan</option>
+                      <option value="Lainnya">Lainnya</option>
+                    </select>
+                  </div>
+                </div>
+                <div><label className="block font-bold text-slate-700 mb-1">Nama Wakif / Donatur *</label><input type="text" required placeholder="Contoh: Bpk. H. Dedi Kurniawan" value={wakafForm.wakif} onChange={(e) => setWakafForm({ ...wakafForm, wakif: e.target.value })} className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500" /></div>
+                <div><label className="block font-bold text-slate-700 mb-1">Estimasi Nilai (Rp)</label><input type="number" min="0" value={wakafForm.nilai} onChange={(e) => setWakafForm({ ...wakafForm, nilai: e.target.value })} className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500" /></div>
+                <div><label className="block font-bold text-slate-700 mb-1">Keterangan / Deskripsi</label><input type="text" placeholder="Contoh: 5 mushaf Al-Quran Standar Kemenag" value={wakafForm.keterangan} onChange={(e) => setWakafForm({ ...wakafForm, keterangan: e.target.value })} className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500" /></div>
+                <div className="pt-3 flex justify-end gap-2 border-t border-slate-100">
+                  <button type="button" onClick={() => setShowWakafModal(null)} className="px-4 py-2 border border-slate-200 text-slate-600 hover:bg-slate-50 rounded-xl font-bold">Batal</button>
+                  <button type="submit" className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold shadow-md">Simpan</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* Wakaf Edit Modal */}
+        {showWakafModal === 'edit' && selectedWakaf && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4">
+            <div className="bg-white rounded-3xl w-full max-w-md shadow-2xl overflow-hidden">
+              <div className="flex items-center justify-between px-6 py-4 bg-emerald-950 text-white">
+                <h3 className="font-bold text-sm flex items-center gap-2"><Edit2 size={16} className="text-emerald-400" /> Edit Catatan Wakaf</h3>
+                <button onClick={() => setShowWakafModal(null)} className="p-1 text-slate-400 hover:text-white"><X size={18} /></button>
+              </div>
+              <form onSubmit={handleWakafEdit} className="p-6 space-y-4 text-xs">
+                <div className="grid grid-cols-2 gap-3">
+                  <div><label className="block font-bold text-slate-700 mb-1">Tanggal *</label><input type="date" required value={selectedWakaf.tanggal} onChange={(e) => setSelectedWakaf({ ...selectedWakaf, tanggal: e.target.value })} className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500" /></div>
+                  <div><label className="block font-bold text-slate-700 mb-1">Jenis Wakaf *</label>
+                    <select value={selectedWakaf.jenis} onChange={(e) => setSelectedWakaf({ ...selectedWakaf, jenis: e.target.value as JenisWakaf })} className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium">
+                      <option value="Tanah">Tanah</option><option value="Bangunan">Bangunan</option><option value="Uang">Uang Tunai</option><option value="Al-Qur'an">Al-Qur&apos;an</option><option value="Peralatan">Peralatan</option><option value="Lainnya">Lainnya</option>
+                    </select>
+                  </div>
+                </div>
+                <div><label className="block font-bold text-slate-700 mb-1">Nama Wakif *</label><input type="text" required value={selectedWakaf.wakif} onChange={(e) => setSelectedWakaf({ ...selectedWakaf, wakif: e.target.value })} className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500" /></div>
+                <div><label className="block font-bold text-slate-700 mb-1">Estimasi Nilai (Rp)</label><input type="number" min="0" value={selectedWakaf.nilai || 0} onChange={(e) => setSelectedWakaf({ ...selectedWakaf, nilai: parseFloat(e.target.value) || 0 })} className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500" /></div>
+                <div><label className="block font-bold text-slate-700 mb-1">Keterangan</label><input type="text" value={selectedWakaf.keterangan || ''} onChange={(e) => setSelectedWakaf({ ...selectedWakaf, keterangan: e.target.value })} className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500" /></div>
+                <div className="pt-3 flex justify-end gap-2 border-t border-slate-100">
+                  <button type="button" onClick={() => setShowWakafModal(null)} className="px-4 py-2 border border-slate-200 text-slate-600 hover:bg-slate-50 rounded-xl font-bold">Batal</button>
+                  <button type="submit" className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold shadow-md">Simpan</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
 
         {/* --- MODAL ADD / EDIT --- */}
         {(showModal === 'add' || showModal === 'edit') && (
