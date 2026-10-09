@@ -3,28 +3,33 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Shield, Lock, Mail, ArrowLeft, CheckCircle2 } from 'lucide-react';
+import { Lock, Eye, EyeOff, ArrowLeft, KeyRound, ShieldCheck } from 'lucide-react';
 import { useAuth } from '@/lib/auth-context';
 
 export default function LoginPage() {
   const router = useRouter();
   const { login, isSupabaseConnected } = useAuth();
-  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!password.trim()) {
+      setErrorMessage('Silakan masukkan kata sandi pengurus');
+      return;
+    }
+
     setLoading(true);
     setErrorMessage('');
 
     try {
-      const res = await login(email, password);
+      const res = await login(password);
       if (res.success) {
         router.push('/dashboard');
       } else {
-        setErrorMessage(res.error || 'Login gagal, periksa email dan password Anda');
+        setErrorMessage(res.error || 'Kata sandi salah. Coba lagi atau gunakan sandi demo: admin123');
       }
     } catch (err: any) {
       setErrorMessage(err?.message || 'Terjadi kesalahan sistem');
@@ -34,8 +39,8 @@ export default function LoginPage() {
   };
 
   const handleUseDemo = () => {
-    setEmail('admin@masjid.id');
     setPassword('admin123');
+    setErrorMessage('');
   };
 
   return (
@@ -84,9 +89,10 @@ export default function LoginPage() {
             <button
               type="button"
               onClick={handleUseDemo}
-              className="text-[10px] font-bold text-emerald-700 bg-emerald-100/70 hover:bg-emerald-200 px-2.5 py-1 rounded-lg transition-colors"
+              className="text-[10px] font-bold text-emerald-700 bg-emerald-100/70 hover:bg-emerald-200 px-2.5 py-1 rounded-lg transition-colors flex items-center gap-1"
             >
-              Isi Demo
+              <KeyRound size={12} />
+              <span>Isi Sandi Demo</span>
             </button>
           )}
         </div>
@@ -99,37 +105,39 @@ export default function LoginPage() {
 
         <form onSubmit={handleSubmit} className="space-y-5">
           <div>
-            <label className="px-2 text-[10px] font-black tracking-widest text-slate-400 uppercase block mb-1.5">
-              Email Pengurus
-            </label>
-            <div className="relative">
-              <input
-                type="email"
-                required
-                className="w-full rounded-2xl border border-slate-100 bg-slate-50 px-4 py-3.5 pl-11 text-xs font-bold outline-none focus:border-emerald-500 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 transition-all text-slate-900"
-                placeholder="admin@masjid.id"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-              <Mail className="absolute left-4 top-3.5 text-slate-400" size={16} />
+            <div className="flex items-center justify-between px-2 mb-1.5">
+              <label className="text-[10px] font-black tracking-widest text-slate-400 uppercase block">
+                Kata Sandi Pengurus
+              </label>
+              <span className="text-[10px] font-medium text-slate-400">
+                Tanpa email
+              </span>
             </div>
-          </div>
 
-          <div>
-            <label className="px-2 text-[10px] font-black tracking-widest text-slate-400 uppercase block mb-1.5">
-              Kata Sandi
-            </label>
             <div className="relative">
               <input
-                type="password"
+                type={showPassword ? 'text' : 'password'}
                 required
-                className="w-full rounded-2xl border border-slate-100 bg-slate-50 px-4 py-3.5 pl-11 text-xs font-bold outline-none focus:border-emerald-500 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 transition-all text-slate-900"
-                placeholder="••••••••"
+                autoFocus
+                className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3.5 pl-11 pr-11 text-xs font-bold outline-none focus:border-emerald-500 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 transition-all text-slate-900 tracking-wide"
+                placeholder="Masukkan kata sandi..."
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
               <Lock className="absolute left-4 top-3.5 text-slate-400" size={16} />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-4 top-3.5 text-slate-400 hover:text-slate-600 transition-colors"
+                tabIndex={-1}
+              >
+                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+              </button>
             </div>
+            <p className="mt-2 px-2 text-[11px] text-slate-400 flex items-center gap-1">
+              <ShieldCheck size={12} className="text-emerald-600" />
+              <span>Sandi bawaan: <strong className="font-mono text-slate-700 font-bold">admin123</strong></span>
+            </p>
           </div>
 
           <button
@@ -142,11 +150,9 @@ export default function LoginPage() {
         </form>
 
         <div className="mt-6 pt-6 border-t border-slate-100 text-center">
-          <p className="text-xs text-slate-500">
-            Belum punya akun pengurus?{' '}
-            <Link href="/register" className="font-bold text-emerald-600 hover:underline">
-              Daftar Baru
-            </Link>
+          <p className="text-xs text-slate-500 leading-relaxed">
+            Akses khusus Pengurus & Pengelola DKM <br />
+            <strong className="text-emerald-900 font-bold">Masjid Al-Mukhlisin Lagadar</strong>
           </p>
         </div>
       </div>

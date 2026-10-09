@@ -3,10 +3,12 @@ import { supabase, isSupabaseConfigured } from '@/lib/supabase/client';
 
 export async function POST(request: Request) {
   try {
-    const { email, password } = await request.json();
+    const body = await request.json();
+    const password = body.password;
+    const email = body.email || 'admin@masjid.id';
 
-    if (!email || !password) {
-      return NextResponse.json({ message: 'Email dan password wajib diisi' }, { status: 422 });
+    if (!password) {
+      return NextResponse.json({ message: 'Kata sandi wajib diisi' }, { status: 422 });
     }
 
     if (isSupabaseConfigured && supabase) {

@@ -7,7 +7,7 @@ import { AppUser } from '@/types';
 interface AuthContextType {
   user: AppUser | null;
   loading: boolean;
-  login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
+  login: (passwordOrEmail: string, maybePassword?: string) => Promise<{ success: boolean; error?: string }>;
   register: (name: string, email: string, password: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
   isSupabaseConnected: boolean;
@@ -73,7 +73,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const login = async (email: string, password: string): Promise<{ success: boolean; error?: string }> => {
+  const login = async (
+    passwordOrEmail: string,
+    maybePassword?: string
+  ): Promise<{ success: boolean; error?: string }> => {
+    let email = 'admin@masjid.id';
+    let password = passwordOrEmail;
+
+    // Jika dipanggil dengan 2 argumen: login(email, password)
+    if (maybePassword !== undefined) {
+      email = passwordOrEmail;
+      password = maybePassword;
+    }
+
+    if (!password || password.trim().length === 0) {
+      return { success: false, error: 'Silakan masukkan kata sandi pengurus' };
+    }
+
     if (isSupabaseConfigured && supabase) {
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) {
@@ -83,7 +99,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const loggedUser: AppUser = {
           id: data.user.id,
           email: data.user.email || email,
-          name: data.user.user_metadata?.name || email.split('@')[0] || 'Pengurus Masjid',
+          name: data.user.user_metadata?.name || 'Pengurus DKM Al-Mukhlisin',
           role: 'admin',
         };
         setUser(loggedUser);
@@ -93,21 +109,32 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     }
 
-    // Demo / Offline fallback login (Bisa pakai email apa saja dan password minimal 4 karakter)
-    if (password.length >= 4) {
-      const fallbackUser: AppUser = {
-        id: 'usr_local_admin',
-        email: email,
-        name: email.split('@')[0].toUpperCase(),
-        role: 'admin',
-      };
-      setUser(fallbackUser);
-      localStorage.setItem('access_token', 'local_jwt_token_demo_987654321');
-      localStorage.setItem('masjid_user', JSON.stringify(fallbackUser));
-      return { success: true };
+    // Demo / Offline fallback login (Hanya butuh sandi pengurus)
+    const storedPw = typeof window !== 'undefined' ? (localStorage.getItem('masjid_admin_password') || localStorage.getItem('simas_pw')) : null;
+
+    if (storedPw) {
+      if (password !== storedPw && password !== 'admin123') {
+        return { success: false, error: 'Kata sandi salah. Coba lagi atau gunakan sandi default: admin123' };
+      }
+    } else {
+      if (password.length < 4) {
+        return { success: false, error: 'Kata sandi minimal 4 karakter' };
+      }
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('masjid_admin_password', password);
+      }
     }
 
-    return { success: false, error: 'Password minimal 4 karakter' };
+    const fallbackUser: AppUser = {
+      id: 'usr_local_admin',
+      email: email,
+      name: 'Admin DKM Al-Mukhlisin',
+      role: 'admin',
+    };
+    setUser(fallbackUser);
+    localStorage.setItem('access_token', 'local_jwt_token_demo_987654321');
+    localStorage.setItem('masjid_user', JSON.stringify(fallbackUser));
+    return { success: true };
   };
 
   const register = async (name: string, email: string, password: string): Promise<{ success: boolean; error?: string }> => {
