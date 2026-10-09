@@ -5,14 +5,10 @@ import {
   Settings,
   Save,
   Download,
-  Upload,
   Copy,
   CheckCircle2,
-  AlertTriangle,
-  X,
   Building,
   Database,
-  RotateCcw,
   RefreshCw,
 } from 'lucide-react';
 import AdminLayout from '@/components/layout/admin-layout';
@@ -31,14 +27,10 @@ export default function PengaturanPage() {
   const [saving, setSaving] = useState(false);
   const [savedOk, setSavedOk] = useState(false);
 
-  // Backup / Restore states
+  // Backup states
   const [backupJson, setBackupJson] = useState('');
-  const [restoreInput, setRestoreInput] = useState('');
   const [backupLoading, setBackupLoading] = useState(false);
-  const [restoreLoading, setRestoreLoading] = useState(false);
   const [copiedJson, setCopiedJson] = useState(false);
-  const [restoreError, setRestoreError] = useState('');
-  const [restoreSuccess, setRestoreSuccess] = useState(false);
 
   const loadData = async () => {
     setLoading(true);
@@ -102,31 +94,6 @@ export default function PengaturanPage() {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-  };
-
-  const handleRestore = async () => {
-    setRestoreError('');
-    setRestoreSuccess(false);
-    if (!restoreInput.trim()) {
-      setRestoreError('Harap isi JSON backup terlebih dahulu.');
-      return;
-    }
-    setRestoreLoading(true);
-    try {
-      const parsed = JSON.parse(restoreInput);
-      await DataService.importAllData(parsed);
-      setRestoreSuccess(true);
-      setRestoreInput('');
-      setTimeout(() => setRestoreSuccess(false), 4000);
-    } catch (e: any) {
-      setRestoreError(
-        e?.message?.includes('JSON')
-          ? 'Format JSON tidak valid. Periksa kembali teks backup Anda.'
-          : e?.message || 'Gagal memulihkan data'
-      );
-    } finally {
-      setRestoreLoading(false);
-    }
   };
 
   return (
@@ -317,70 +284,6 @@ export default function PengaturanPage() {
               </pre>
             </div>
           )}
-        </div>
-
-        {/* ============================= */}
-        {/* SECTION 3: RESTORE DATA */}
-        {/* ============================= */}
-        <div className="bg-white rounded-3xl border border-slate-100 shadow-sm p-6 md:p-8">
-          <div className="flex items-center gap-2 mb-2">
-            <RotateCcw size={18} className="text-amber-600" />
-            <h2 className="font-black text-slate-800 text-base">Pulihkan Data (Restore)</h2>
-          </div>
-          <p className="text-xs text-slate-500 mb-1">
-            Tempel isi file JSON backup ke kotak di bawah ini, lalu klik <b>Pulihkan Sekarang</b>.
-            Seluruh data saat ini akan <b className="text-red-600">ditimpa</b> dengan data dari backup.
-          </p>
-
-          <div className="my-4 p-3.5 rounded-2xl bg-amber-50 border border-amber-200 flex items-start gap-2.5">
-            <AlertTriangle size={17} className="text-amber-600 shrink-0 mt-0.5" />
-            <p className="text-xs text-amber-800 font-medium">
-              <b>Peringatan:</b> Proses restore akan menggantikan data lokal yang ada saat ini. Pastikan
-              Anda memiliki backup terbaru sebelum melanjutkan. Fitur ini hanya mempengaruhi data
-              lokal (localStorage) jika Supabase belum dikonfigurasi.
-            </p>
-          </div>
-
-          <textarea
-            rows={7}
-            value={restoreInput}
-            onChange={(e) => {
-              setRestoreInput(e.target.value);
-              setRestoreError('');
-              setRestoreSuccess(false);
-            }}
-            placeholder={'Tempel JSON backup di sini...\n{\n  "version": "1.0.0",\n  "kas": [...],\n  ...\n}'}
-            className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl text-[11px] font-mono text-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-500 transition resize-none"
-          />
-
-          {restoreError && (
-            <div className="mt-2 flex items-center gap-2 text-xs text-red-700 bg-red-50 border border-red-200 rounded-xl px-3 py-2">
-              <X size={14} className="shrink-0" />
-              {restoreError}
-            </div>
-          )}
-
-          {restoreSuccess && (
-            <div className="mt-2 flex items-center gap-2 text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-xl px-3 py-2">
-              <CheckCircle2 size={14} className="shrink-0" />
-              Data berhasil dipulihkan! Halaman mungkin perlu disegarkan untuk melihat perubahan.
-            </div>
-          )}
-
-          <div className="mt-4 flex justify-end">
-            <button
-              onClick={handleRestore}
-              disabled={restoreLoading || !restoreInput.trim()}
-              className="px-5 py-2.5 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold rounded-xl flex items-center gap-2 transition shadow-md shadow-amber-900/20 disabled:opacity-60"
-            >
-              {restoreLoading ? (
-                <RefreshCw size={14} className="animate-spin" />
-              ) : (
-                <Upload size={14} />
-              )}
-              {restoreLoading ? 'Memulihkan...' : 'Pulihkan Sekarang'}
-            </button>
-          </div>
         </div>
       </div>
     </AdminLayout>
