@@ -54,6 +54,7 @@ export default function HomePage() {
   const [jadwalShalat, setJadwalShalat] = useState<Record<string, string> | null>(null);
   const [loadingShalat, setLoadingShalat] = useState(true);
   const [todayDateString, setTodayDateString] = useState('');
+  const [hijriDateString, setHijriDateString] = useState('');
   const [currentYear, setCurrentYear] = useState<number>(2026);
 
   // Modals & Slides
@@ -94,6 +95,17 @@ export default function HomePage() {
         year: 'numeric',
       })
     );
+    try {
+      setHijriDateString(
+        new Intl.DateTimeFormat('id-ID-u-ca-islamic-civil', {
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric',
+        }).format(now)
+      );
+    } catch {
+      setHijriDateString('');
+    }
 
     const fetchInternalData = async () => {
       setLoading(true);
@@ -272,11 +284,25 @@ export default function HomePage() {
               Masjid Al-Mukhlisin
             </h1>
 
-            {/* Alamat Resmi Hero */}
-            <p className="mb-6 flex items-center gap-2 text-xs md:text-sm text-emerald-200/90 font-medium">
-              <MapPin size={16} className="text-[#d4af37] shrink-0" />
-              <span>Kp. Jalan Cagak RT.005 RW.004 Desa Lagadar</span>
-            </p>
+            {/* Alamat Resmi Hero & Tanggal Hijriah */}
+            <div className="mb-6 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs md:text-sm text-emerald-200/90 font-medium">
+              <span className="flex items-center gap-1.5">
+                <MapPin size={16} className="text-[#d4af37] shrink-0" />
+                <span>Kp. Jalan Cagak RT.005 RW.004 Desa Lagadar</span>
+              </span>
+              {todayDateString && (
+                <>
+                  <span className="hidden sm:inline text-white/30">•</span>
+                  <span className="flex items-center gap-1.5 text-emerald-300 font-semibold bg-emerald-950/60 px-3 py-1 rounded-full border border-emerald-800/40">
+                    <CalendarDays size={14} className="text-[#d4af37]" />
+                    <span>
+                      {todayDateString}
+                      {hijriDateString ? ` · ${hijriDateString}` : ''}
+                    </span>
+                  </span>
+                </>
+              )}
+            </div>
 
             {/* Subjudul Dua Warna */}
             <h2 className="font-serif-elegant mb-8 text-3xl leading-tight font-bold md:text-4xl lg:text-5xl">
@@ -325,8 +351,11 @@ export default function HomePage() {
                 </p>
               </div>
               <div className="flex items-center gap-2 text-xs font-bold text-emerald-800 bg-emerald-50 px-4 py-2 rounded-full border border-emerald-100">
-                <Clock size={14} className="text-[#0d8a5e]" />
-                <span>{todayDateString || 'Hari Ini'}</span>
+                <CalendarDays size={14} className="text-[#0d8a5e]" />
+                <span>
+                  {todayDateString || 'Hari Ini'}
+                  {hijriDateString ? ` · ${hijriDateString}` : ''}
+                </span>
               </div>
             </div>
 

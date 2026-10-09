@@ -60,8 +60,26 @@ export default function DashboardPage() {
     }
   };
 
+  const [todayDateStr, setTodayDateStr] = useState('');
+
   useEffect(() => {
     loadData();
+    const now = new Date();
+    const masehi = now.toLocaleDateString('id-ID', {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    });
+    let hijri = '';
+    try {
+      hijri = new Intl.DateTimeFormat('id-ID-u-ca-islamic-civil', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+      }).format(now);
+    } catch {}
+    setTodayDateStr(hijri ? `${masehi} · ${hijri}` : masehi);
   }, []);
 
   return (
@@ -73,9 +91,17 @@ export default function DashboardPage() {
             <h2 className="text-3xl md:text-4xl font-black tracking-tight text-slate-900 font-serif-elegant">
               Pusat Komando
             </h2>
-            <p className="text-xs md:text-sm font-bold text-slate-400 mt-1">
-              Ringkasan Sistem Manajemen Masjid Al-Mukhlisin
-            </p>
+            <div className="flex flex-wrap items-center gap-3 mt-1.5">
+              <p className="text-xs md:text-sm font-bold text-slate-400">
+                Ringkasan Sistem Manajemen Masjid Al-Mukhlisin
+              </p>
+              {todayDateStr && (
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 text-xs font-bold border border-emerald-200 shadow-2xs">
+                  <CalendarDays size={13} className="text-emerald-600" />
+                  <span>{todayDateStr}</span>
+                </span>
+              )}
+            </div>
           </div>
 
           <button
