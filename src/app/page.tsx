@@ -185,23 +185,15 @@ export default function HomePage() {
               </a>
             </div>
 
-            {/* Right Side: Donasi & Burger Button & Portal Link */}
+            {/* Right Side: Portal Link & Burger Button */}
             <div className="flex items-center gap-2.5">
               <Link
                 href="/login"
-                className="hidden lg:flex items-center gap-1.5 px-4 py-2 rounded-full text-[10px] font-bold text-slate-200 hover:text-white bg-white/10 hover:bg-white/15 transition-all"
+                className="flex items-center gap-1.5 px-3.5 py-1.5 md:px-4 md:py-2 rounded-full text-xs font-bold text-slate-200 hover:text-white bg-white/10 hover:bg-white/15 transition-all"
               >
                 <Shield size={13} className="text-emerald-400" />
                 <span>Portal Pengurus</span>
               </Link>
-
-              <button
-                onClick={() => setShowDonasiModal(true)}
-                className="flex items-center gap-2 rounded-full bg-[#0d8a5e] px-4 py-2 text-[10px] font-bold text-white transition-all hover:bg-emerald-500 shadow-md active:scale-95 md:px-6 md:py-2.5 md:text-xs"
-              >
-                <Heart size={14} className="fill-white" />
-                <span>Donasi Infaq</span>
-              </button>
 
               <button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
