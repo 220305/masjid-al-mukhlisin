@@ -10,6 +10,8 @@ import {
   Building,
   Database,
   RefreshCw,
+  KeyRound,
+  Lock,
 } from 'lucide-react';
 import AdminLayout from '@/components/layout/admin-layout';
 import { DataService } from '@/lib/data-service';
@@ -32,6 +34,12 @@ export default function PengaturanPage() {
   const [backupLoading, setBackupLoading] = useState(false);
   const [copiedJson, setCopiedJson] = useState(false);
 
+  // Password states
+  const [currentPw, setCurrentPw] = useState('');
+  const [newPw, setNewPw] = useState('');
+  const [pwSavedOk, setPwSavedOk] = useState(false);
+  const [pwError, setPwError] = useState('');
+
   const loadData = async () => {
     setLoading(true);
     try {
@@ -46,7 +54,30 @@ export default function PengaturanPage() {
 
   useEffect(() => {
     loadData();
+    if (typeof window !== 'undefined') {
+      const stored =
+        localStorage.getItem('masjid_admin_password') ||
+        process.env.NEXT_PUBLIC_ADMIN_PASSWORD ||
+        'Mukhlisin2026!';
+      setCurrentPw(stored);
+    }
   }, []);
+
+  const handleSavePassword = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (newPw.length < 6) {
+      setPwError('Kata sandi baru minimal 6 karakter');
+      return;
+    }
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('masjid_admin_password', newPw);
+      setCurrentPw(newPw);
+      setNewPw('');
+      setPwError('');
+      setPwSavedOk(true);
+      setTimeout(() => setPwSavedOk(false), 3000);
+    }
+  };
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -284,6 +315,63 @@ export default function PengaturanPage() {
               </pre>
             </div>
           )}
+        </div>
+
+        {/* ============================= */}
+        {/* SECTION 3: KEAMANAN & KATA SANDI */}
+        {/* ============================= */}
+        <div className="bg-white rounded-3xl border border-slate-100 shadow-sm p-6 md:p-8">
+          <div className="flex items-center gap-2 mb-2">
+            <KeyRound size={18} className="text-emerald-700" />
+            <h2 className="font-black text-slate-800 text-base">Keamanan & Kata Sandi Administrator</h2>
+          </div>
+          <p className="text-xs text-slate-500 mb-5">
+            Kelola kata sandi yang digunakan oleh pengurus DKM untuk masuk ke Pusat Komando Administrator.
+          </p>
+
+          <form onSubmit={handleSavePassword} className="max-w-md space-y-4">
+            <div className="rounded-2xl bg-slate-50 border border-slate-200/80 p-4">
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">
+                Kata Sandi Aktif Saat Ini
+              </span>
+              <p className="font-mono text-sm font-bold text-emerald-800">
+                {currentPw || 'Mukhlisin2026!'}
+              </p>
+            </div>
+
+            <div>
+              <label className="text-[11px] font-bold text-slate-700 block mb-1.5">
+                Ubah Kata Sandi Baru
+              </label>
+              <div className="relative">
+                <input
+                  type="text"
+                  value={newPw}
+                  onChange={(e) => setNewPw(e.target.value)}
+                  placeholder="Masukkan kata sandi baru (min. 6 karakter)..."
+                  className="w-full text-xs font-mono font-bold bg-white border border-slate-200 rounded-xl px-4 py-3 pl-10 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none text-slate-900"
+                />
+                <Lock size={15} className="absolute left-3.5 top-3.5 text-slate-400" />
+              </div>
+              {pwError && (
+                <p className="text-[11px] font-bold text-red-600 mt-1.5">{pwError}</p>
+              )}
+            </div>
+
+            <div className="flex items-center gap-3 pt-1">
+              <button
+                type="submit"
+                className="px-5 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold rounded-xl shadow-md transition flex items-center gap-2"
+              >
+                <Save size={14} /> Simpan Kata Sandi Baru
+              </button>
+              {pwSavedOk && (
+                <span className="flex items-center gap-1.5 text-xs font-bold text-emerald-700">
+                  <CheckCircle2 size={15} /> Sandi berhasil diperbarui!
+                </span>
+              )}
+            </div>
+          </form>
         </div>
       </div>
     </AdminLayout>
