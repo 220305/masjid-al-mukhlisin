@@ -155,7 +155,8 @@ CREATE POLICY "Auth manage khutbahs" ON public.khutbahs FOR ALL USING (auth.role
 -- Polisi Petugas Jumat
 DROP POLICY IF EXISTS "Public can view petugas" ON public.petugas_jumat;
 CREATE POLICY "Public can view petugas" ON public.petugas_jumat FOR SELECT USING (true);
-DROP POLICY IF EXISTS "Auth manage petugas" ON public.petugas_jumat FOR ALL USING (auth.role() = 'authenticated');
+DROP POLICY IF EXISTS "Auth manage petugas" ON public.petugas_jumat;
+CREATE POLICY "Auth manage petugas" ON public.petugas_jumat FOR ALL USING (auth.role() = 'authenticated');
 
 -- Polisi Zakat & Qurban
 DROP POLICY IF EXISTS "Public can view zakat" ON public.zakat_qurban;
