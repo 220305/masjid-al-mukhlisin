@@ -284,190 +284,153 @@ export default function ZakatPublicPage() {
           </div>
         </div>
 
-        {/* Interactive Zakat Calculator & Payment Info */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Zakat Calculator (2 cols) */}
-          <div className="lg:col-span-2 rounded-2xl bg-white p-5 sm:p-6 border border-slate-200/90 shadow-xs space-y-5">
-            <div className="flex items-center gap-2.5 pb-3 border-b border-slate-100">
-              <div className="h-9 w-9 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-800">
-                <Calculator size={20} />
-              </div>
-              <div>
-                <h3 className="font-bold text-sm sm:text-base text-slate-800">
-                  Kalkulator Zakat & Fidyah
-                </h3>
-                <p className="text-[11px] text-slate-500">
-                  Hitung takaran kewajiban zakat fitrah, zakat harta (maal), atau fidyah Anda
-                </p>
-              </div>
+        {/* Interactive Zakat Calculator */}
+        <div className="rounded-2xl bg-white p-5 sm:p-6 border border-slate-200/90 shadow-xs space-y-5">
+          <div className="flex items-center gap-2.5 pb-3 border-b border-slate-100">
+            <div className="h-9 w-9 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-800">
+              <Calculator size={20} />
             </div>
-
-            {/* Calculator Tabs */}
-            <div className="flex items-center gap-2 text-xs">
-              {[
-                { id: 'fitrah', label: 'Zakat Fitrah' },
-                { id: 'maal', label: 'Zakat Maal (Harta)' },
-                { id: 'fidyah', label: 'Fidyah Puasa' },
-              ].map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setCalcTab(tab.id as any)}
-                  className={`px-3.5 py-1.5 rounded-xl font-bold transition-all ${
-                    calcTab === tab.id
-                      ? 'bg-emerald-800 text-white shadow-2xs'
-                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                  }`}
-                >
-                  {tab.label}
-                </button>
-              ))}
+            <div>
+              <h3 className="font-bold text-sm sm:text-base text-slate-800">
+                Kalkulator Zakat & Fidyah
+              </h3>
+              <p className="text-[11px] text-slate-500">
+                Hitung takaran kewajiban zakat fitrah, zakat harta (maal), atau fidyah Anda
+              </p>
             </div>
+          </div>
 
-            {/* Calculator Body */}
-            {calcTab === 'fitrah' && (
-              <div className="space-y-4">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">
-                      Jumlah Anggota Keluarga (Jiwa)
-                    </label>
-                    <input
-                      type="number"
-                      min={1}
-                      value={fitrahJiwa}
-                      onChange={(e) => setFitrahJiwa(Math.max(1, Number(e.target.value)))}
-                      className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm font-bold text-slate-800 focus:outline-hidden focus:border-emerald-600"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">
-                      Ketetapan Zakat Uang per Jiwa (Rp)
-                    </label>
-                    <input
-                      type="number"
-                      step={5000}
-                      value={hargaBerasPerJiwa}
-                      onChange={(e) => setHargaBerasPerJiwa(Number(e.target.value))}
-                      className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm font-bold text-slate-800 focus:outline-hidden focus:border-emerald-600"
-                    />
-                  </div>
-                </div>
+          {/* Calculator Tabs */}
+          <div className="flex items-center gap-2 text-xs">
+            {[
+              { id: 'fitrah', label: 'Zakat Fitrah' },
+              { id: 'maal', label: 'Zakat Maal (Harta)' },
+              { id: 'fidyah', label: 'Fidyah Puasa' },
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setCalcTab(tab.id as any)}
+                className={`px-3.5 py-1.5 rounded-xl font-bold transition-all ${
+                  calcTab === tab.id
+                    ? 'bg-emerald-800 text-white shadow-2xs'
+                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
 
-                <div className="rounded-xl bg-emerald-50 border border-emerald-200/80 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                  <div>
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-800">
-                      Total Kewajiban Zakat Fitrah
-                    </span>
-                    <p className="text-xl sm:text-2xl font-black text-emerald-950">
-                      {formatRupiah(fitrahJiwa * hargaBerasPerJiwa)}
-                    </p>
-                  </div>
-                  <div className="text-xs text-emerald-800 font-semibold bg-white/60 px-3 py-1.5 rounded-lg border border-emerald-200/60">
-                    Atau setara dengan <strong className="font-black">{(fitrahJiwa * 2.5).toFixed(1)} kg beras</strong> (2.5 kg per jiwa)
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {calcTab === 'maal' && (
-              <div className="space-y-4">
+          {/* Calculator Body */}
+          {calcTab === 'fitrah' && (
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-bold text-slate-700 mb-1">
-                    Total Harta Tabungan / Emas / Aset Produktif Mengendap 1 Tahun (Rp)
-                  </label>
-                  <input
-                    type="number"
-                    step={1000000}
-                    value={maalHarta}
-                    onChange={(e) => setMaalHarta(Number(e.target.value))}
-                    className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm font-bold text-slate-800 focus:outline-hidden focus:border-emerald-600"
-                  />
-                  <p className="text-[11px] text-slate-500 mt-1">
-                    Standar Nisab Emas: 85 gram emas (~Rp 85.000.000)
-                  </p>
-                </div>
-
-                <div className="rounded-xl bg-amber-50 border border-amber-200/80 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                  <div>
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-amber-800">
-                      Kewajiban Zakat Maal (2.5%)
-                    </span>
-                    <p className="text-xl sm:text-2xl font-black text-amber-950">
-                      {maalHarta >= 85000000 ? formatRupiah(maalHarta * 0.025) : 'Belum Mencapai Nisab'}
-                    </p>
-                  </div>
-                  <div className="text-xs text-amber-800 font-semibold bg-white/60 px-3 py-1.5 rounded-lg border border-amber-200/60">
-                    {maalHarta >= 85000000 ? 'Wajib Ditunaikan Setiap Tahun (Haul)' : 'Nisab minimal: Rp 85.000.000'}
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {calcTab === 'fidyah' && (
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1">
-                    Jumlah Hari Hutang Puasa (Hari)
+                    Jumlah Anggota Keluarga (Jiwa)
                   </label>
                   <input
                     type="number"
                     min={1}
-                    value={fidyahHari}
-                    onChange={(e) => setFidyahHari(Math.max(1, Number(e.target.value)))}
+                    value={fitrahJiwa}
+                    onChange={(e) => setFitrahJiwa(Math.max(1, Number(e.target.value)))}
                     className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm font-bold text-slate-800 focus:outline-hidden focus:border-emerald-600"
                   />
                 </div>
-
-                <div className="rounded-xl bg-blue-50 border border-blue-200/80 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                  <div>
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-blue-800">
-                      Total Fidyah
-                    </span>
-                    <p className="text-xl sm:text-2xl font-black text-blue-950">
-                      {formatRupiah(fidyahHari * 45000)}
-                    </p>
-                  </div>
-                  <div className="text-xs text-blue-800 font-semibold bg-white/60 px-3 py-1.5 rounded-lg border border-blue-200/60">
-                    Setara dengan makanan siap santap / 1 mud beras per hari
-                  </div>
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                    Ketetapan Zakat Uang per Jiwa (Rp)
+                  </label>
+                  <input
+                    type="number"
+                    step={5000}
+                    value={hargaBerasPerJiwa}
+                    onChange={(e) => setHargaBerasPerJiwa(Number(e.target.value))}
+                    className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm font-bold text-slate-800 focus:outline-hidden focus:border-emerald-600"
+                  />
                 </div>
               </div>
-            )}
-          </div>
 
-          {/* Posko & Penyaluran Info (1 col) */}
-          <div className="rounded-2xl bg-white p-5 sm:p-6 border border-slate-200/90 shadow-xs space-y-4 flex flex-col justify-between">
-            <div className="space-y-3">
-              <div className="flex items-center gap-2 text-emerald-800 font-bold text-sm">
-                <Building size={16} />
-                <span>Posko Penerimaan UPZ</span>
-              </div>
-              <p className="text-xs text-slate-600 leading-relaxed">
-                Anda dapat menyalurkan zakat, infaq, dan sedekah langsung ke Sekretariat DKM Al-Mukhlisin di <strong>Kp. Jalan Cagak RT.005 RW.004 Desa Lagadar</strong> atau melalui transfer resmi:
-              </p>
-
-              <div className="rounded-xl bg-slate-50 border border-slate-200 p-3 space-y-1 text-xs">
-                <span className="text-[10px] font-bold text-slate-400 uppercase">Rekening Infaq / ZIS DKM</span>
-                <p className="font-bold text-slate-800 font-mono text-sm">Bank Syariah Indonesia (BSI)</p>
-                <p className="font-mono font-black text-emerald-800 text-base">7145-0982-11</p>
-                <p className="text-[11px] text-slate-500">a.n. DKM Masjid Al-Mukhlisin</p>
+              <div className="rounded-xl bg-emerald-50 border border-emerald-200/80 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-800">
+                    Total Kewajiban Zakat Fitrah
+                  </span>
+                  <p className="text-xl sm:text-2xl font-black text-emerald-950">
+                    {formatRupiah(fitrahJiwa * hargaBerasPerJiwa)}
+                  </p>
+                </div>
+                <div className="text-xs text-emerald-800 font-semibold bg-white/60 px-3 py-1.5 rounded-lg border border-emerald-200/60">
+                  Atau setara dengan <strong className="font-black">{(fitrahJiwa * 2.5).toFixed(1)} kg beras</strong> (2.5 kg per jiwa)
+                </div>
               </div>
             </div>
+          )}
 
-            <div className="pt-3 border-t border-slate-100 text-center">
-              <span className="text-[11px] text-slate-400">
-                Layanan konfirmasi zakat via panitia DKM:
-              </span>
-              <a
-                href="https://wa.me/6281223456789"
-                target="_blank"
-                rel="noreferrer"
-                className="mt-2 block w-full py-2 px-3 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs transition-colors shadow-2xs"
-              >
-                Konfirmasi Penyaluran Zakat
-              </a>
+          {calcTab === 'maal' && (
+            <div className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">
+                  Total Harta Tabungan / Emas / Aset Produktif Mengendap 1 Tahun (Rp)
+                </label>
+                <input
+                  type="number"
+                  step={1000000}
+                  value={maalHarta}
+                  onChange={(e) => setMaalHarta(Number(e.target.value))}
+                  className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm font-bold text-slate-800 focus:outline-hidden focus:border-emerald-600"
+                />
+                <p className="text-[11px] text-slate-500 mt-1">
+                  Standar Nisab Emas: 85 gram emas (~Rp 85.000.000)
+                </p>
+              </div>
+
+              <div className="rounded-xl bg-amber-50 border border-amber-200/80 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-amber-800">
+                    Kewajiban Zakat Maal (2.5%)
+                  </span>
+                  <p className="text-xl sm:text-2xl font-black text-amber-950">
+                    {maalHarta >= 85000000 ? formatRupiah(maalHarta * 0.025) : 'Belum Mencapai Nisab'}
+                  </p>
+                </div>
+                <div className="text-xs text-amber-800 font-semibold bg-white/60 px-3 py-1.5 rounded-lg border border-amber-200/60">
+                  {maalHarta >= 85000000 ? 'Wajib Ditunaikan Setiap Tahun (Haul)' : 'Nisab minimal: Rp 85.000.000'}
+                </div>
+              </div>
             </div>
-          </div>
+          )}
+
+          {calcTab === 'fidyah' && (
+            <div className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 mb-1">
+                  Jumlah Hari Hutang Puasa (Hari)
+                </label>
+                <input
+                  type="number"
+                  min={1}
+                  value={fidyahHari}
+                  onChange={(e) => setFidyahHari(Math.max(1, Number(e.target.value)))}
+                  className="w-full px-3.5 py-2 rounded-xl border border-slate-200 text-sm font-bold text-slate-800 focus:outline-hidden focus:border-emerald-600"
+                />
+              </div>
+
+              <div className="rounded-xl bg-blue-50 border border-blue-200/80 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-blue-800">
+                    Total Fidyah
+                  </span>
+                  <p className="text-xl sm:text-2xl font-black text-blue-950">
+                    {formatRupiah(fidyahHari * 45000)}
+                  </p>
+                </div>
+                <div className="text-xs text-blue-800 font-semibold bg-white/60 px-3 py-1.5 rounded-lg border border-blue-200/60">
+                  Setara dengan makanan siap santap / 1 mud beras per hari
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* --- TABEL TRANSPARANSI PENERIMAAN ZIS --- */}

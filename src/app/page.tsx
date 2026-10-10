@@ -126,7 +126,6 @@ export default function HomePage() {
 
   // Modals & Slides
   const [selectedKajian, setSelectedKajian] = useState<KhutbahItem | null>(null);
-  const [showDonasiModal, setShowDonasiModal] = useState(false);
   const [dataKeuangan, setDataKeuangan] = useState<KasItem[]>([]);
   const [fasilitas, setFasilitas] = useState<InventoryItem[]>([]);
 
@@ -987,53 +986,6 @@ export default function HomePage() {
             </div>
           </div>
         </section>
-
-        {/* --- MODAL QRIS DONASI --- */}
-        {showDonasiModal && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-            <div
-              className="animate-fade-in fixed inset-0 bg-black/50 backdrop-blur-xs duration-300"
-              onClick={() => setShowDonasiModal(false)}
-            />
-
-            <div className="animate-pop relative z-10 w-full max-w-[340px] overflow-hidden rounded-2xl sm:rounded-[2.5rem] bg-white p-5 sm:p-6 text-center shadow-2xl max-h-[90vh] overflow-y-auto">
-              <div className="mb-4">
-                <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-50 text-[#0d8a5e]">
-                  <Heart size={24} className="fill-current" />
-                </div>
-                <h3 className="font-serif-elegant text-2xl font-bold text-[#0a1f18]">Infaq & Sedekah</h3>
-                <p className="text-[9px] font-black tracking-[0.2em] text-slate-400 uppercase">
-                  Masjid Al-Mukhlisin
-                </p>
-              </div>
-
-              {/* QR Code */}
-              <div className="relative mx-auto mb-5 aspect-square w-52 overflow-hidden rounded-2xl border-2 border-slate-100 bg-white p-3 shadow-inner">
-                <img
-                  src="https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=DonasiMasjidAlMukhlisin"
-                  alt="QRIS Donasi"
-                  className="h-full w-full object-contain"
-                />
-              </div>
-
-              <div className="mb-6 space-y-1 px-2">
-                <p className="text-[11px] leading-tight font-bold text-slate-700">
-                  Scan QRIS via Mobile Banking (BSI, BCA, Mandiri) atau E-Wallet (Gopay, OVO, Dana)
-                </p>
-                <p className="text-[9px] text-slate-400 italic mt-1">
-                  "Perumpamaan orang yang menafkahkan hartanya di jalan Allah seperti sebutir benih yang menumbuhkan tujuh bulir..."
-                </p>
-              </div>
-
-              <button
-                onClick={() => setShowDonasiModal(false)}
-                className="w-full rounded-2xl bg-slate-900 py-3 text-xs font-black tracking-widest text-white transition-all hover:bg-[#0d8a5e] active:scale-95"
-              >
-                TUTUP
-              </button>
-            </div>
-          </div>
-        )}
       </main>
 
       {/* --- FOOTER --- */}
