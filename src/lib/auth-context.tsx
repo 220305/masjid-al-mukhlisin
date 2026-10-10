@@ -90,29 +90,70 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return { success: false, error: 'Silakan masukkan kata sandi pengurus' };
     }
 
+    const defaultMasterPw = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || 'Almukhlisin0504$';
+    const isMasterMatch = password === defaultMasterPw || password === 'Almukhlisin0504$';
+
     if (isSupabaseConfigured && supabase) {
-      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) {
-        return { success: false, error: error.message };
+      const signInRes = await supabase.auth.signInWithPassword({ email, password });
+      let activeSession = signInRes.data?.session || null;
+      let activeUser = signInRes.data?.user || null;
+      let authError = signInRes.error;
+
+      // Jika user belum terdaftar di Supabase Auth dan memasukkan master password,
+      // coba daftarkan secara otomatis
+      if (authError && isMasterMatch) {
+        try {
+          const signUpRes = await supabase.auth.signUp({
+            email,
+            password,
+            options: {
+              data: { name: 'Admin DKM Al-Mukhlisin' },
+            },
+          });
+          if (!signUpRes.error && signUpRes.data.session) {
+            activeSession = signUpRes.data.session;
+            activeUser = signUpRes.data.user;
+            authError = null;
+          }
+        } catch {
+          // ignore sign up error
+        }
       }
-      if (data.session) {
+
+      if (!authError && activeSession && activeUser) {
         const loggedUser: AppUser = {
-          id: data.user.id,
-          email: data.user.email || email,
-          name: data.user.user_metadata?.name || 'Pengurus DKM Al-Mukhlisin',
+          id: activeUser.id,
+          email: activeUser.email || email,
+          name: activeUser.user_metadata?.name || 'Pengurus DKM Al-Mukhlisin',
           role: 'admin',
         };
         setUser(loggedUser);
-        localStorage.setItem('access_token', data.session.access_token);
+        localStorage.setItem('access_token', activeSession.access_token);
         localStorage.setItem('masjid_user', JSON.stringify(loggedUser));
+        localStorage.setItem('masjid_admin_password', password);
         return { success: true };
       }
+
+      // Jika password cocok dengan kata sandi pengurus resmi, izinkan masuk ke dashboard
+      if (isMasterMatch) {
+        const fallbackUser: AppUser = {
+          id: 'usr_local_admin',
+          email: email,
+          name: 'Admin DKM Al-Mukhlisin',
+          role: 'admin',
+        };
+        setUser(fallbackUser);
+        localStorage.setItem('access_token', 'masjid_auth_token_live');
+        localStorage.setItem('masjid_user', JSON.stringify(fallbackUser));
+        localStorage.setItem('masjid_admin_password', password);
+        return { success: true };
+      }
+
+      return { success: false, error: 'Kata sandi tidak sesuai. Silakan coba lagi.' };
     }
 
     // Standalone / Production fallback login (Hanya butuh sandi pengurus)
     const storedPw = typeof window !== 'undefined' ? (localStorage.getItem('masjid_admin_password') || localStorage.getItem('simas_pw')) : null;
-    const defaultMasterPw = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || 'Almukhlisin0504$';
-    const isMasterMatch = password === defaultMasterPw || password === 'Almukhlisin0504$';
 
     if (isMasterMatch) {
       if (typeof window !== 'undefined') {

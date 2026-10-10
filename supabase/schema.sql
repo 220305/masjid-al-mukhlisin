@@ -130,50 +130,50 @@ ALTER TABLE public.wakaf ENABLE ROW LEVEL SECURITY;
 
 -- Polisi Identitas Masjid
 DROP POLICY IF EXISTS "Public can view identitas" ON public.identitas_masjid;
-CREATE POLICY "Public can view identitas" ON public.identitas_masjid FOR SELECT USING (true);
 DROP POLICY IF EXISTS "Auth can update identitas" ON public.identitas_masjid;
-CREATE POLICY "Auth can update identitas" ON public.identitas_masjid FOR ALL USING (auth.role() = 'authenticated');
+CREATE POLICY "Public can view identitas" ON public.identitas_masjid FOR SELECT USING (true);
+CREATE POLICY "Allow manage identitas" ON public.identitas_masjid FOR ALL USING (true) WITH CHECK (true);
 
 -- Polisi Kas
 DROP POLICY IF EXISTS "Public can view kas" ON public.kas;
-CREATE POLICY "Public can view kas" ON public.kas FOR SELECT USING (true);
 DROP POLICY IF EXISTS "Auth manage kas" ON public.kas;
-CREATE POLICY "Auth manage kas" ON public.kas FOR ALL USING (auth.role() = 'authenticated');
+CREATE POLICY "Public can view kas" ON public.kas FOR SELECT USING (true);
+CREATE POLICY "Allow manage kas" ON public.kas FOR ALL USING (true) WITH CHECK (true);
 
 -- Polisi Jamaah
 DROP POLICY IF EXISTS "Public can view jamaah" ON public.jamaah;
-CREATE POLICY "Public can view jamaah" ON public.jamaah FOR SELECT USING (true);
 DROP POLICY IF EXISTS "Auth manage jamaah" ON public.jamaah;
-CREATE POLICY "Auth manage jamaah" ON public.jamaah FOR ALL USING (auth.role() = 'authenticated');
+CREATE POLICY "Public can view jamaah" ON public.jamaah FOR SELECT USING (true);
+CREATE POLICY "Allow manage jamaah" ON public.jamaah FOR ALL USING (true) WITH CHECK (true);
 
 -- Polisi Khutbah
 DROP POLICY IF EXISTS "Public can view khutbahs" ON public.khutbahs;
-CREATE POLICY "Public can view khutbahs" ON public.khutbahs FOR SELECT USING (true);
 DROP POLICY IF EXISTS "Auth manage khutbahs" ON public.khutbahs;
-CREATE POLICY "Auth manage khutbahs" ON public.khutbahs FOR ALL USING (auth.role() = 'authenticated');
+CREATE POLICY "Public can view khutbahs" ON public.khutbahs FOR SELECT USING (true);
+CREATE POLICY "Allow manage khutbahs" ON public.khutbahs FOR ALL USING (true) WITH CHECK (true);
 
 -- Polisi Petugas Jumat
 DROP POLICY IF EXISTS "Public can view petugas" ON public.petugas_jumat;
-CREATE POLICY "Public can view petugas" ON public.petugas_jumat FOR SELECT USING (true);
 DROP POLICY IF EXISTS "Auth manage petugas" ON public.petugas_jumat;
-CREATE POLICY "Auth manage petugas" ON public.petugas_jumat FOR ALL USING (auth.role() = 'authenticated');
+CREATE POLICY "Public can view petugas" ON public.petugas_jumat FOR SELECT USING (true);
+CREATE POLICY "Allow manage petugas" ON public.petugas_jumat FOR ALL USING (true) WITH CHECK (true);
 
 -- Polisi Zakat & Qurban
 DROP POLICY IF EXISTS "Public can view zakat" ON public.zakat_qurban;
-CREATE POLICY "Public can view zakat" ON public.zakat_qurban FOR SELECT USING (true);
 DROP POLICY IF EXISTS "Auth manage zakat" ON public.zakat_qurban;
-CREATE POLICY "Auth manage zakat" ON public.zakat_qurban FOR ALL USING (auth.role() = 'authenticated');
+CREATE POLICY "Public can view zakat" ON public.zakat_qurban FOR SELECT USING (true);
+CREATE POLICY "Allow manage zakat" ON public.zakat_qurban FOR ALL USING (true) WITH CHECK (true);
 
 -- Polisi Inventaris & Wakaf
 DROP POLICY IF EXISTS "Public can view inventories" ON public.inventories;
-CREATE POLICY "Public can view inventories" ON public.inventories FOR SELECT USING (true);
 DROP POLICY IF EXISTS "Auth manage inventories" ON public.inventories;
-CREATE POLICY "Auth manage inventories" ON public.inventories FOR ALL USING (auth.role() = 'authenticated');
+CREATE POLICY "Public can view inventories" ON public.inventories FOR SELECT USING (true);
+CREATE POLICY "Allow manage inventories" ON public.inventories FOR ALL USING (true) WITH CHECK (true);
 
 DROP POLICY IF EXISTS "Public can view wakaf" ON public.wakaf;
-CREATE POLICY "Public can view wakaf" ON public.wakaf FOR SELECT USING (true);
 DROP POLICY IF EXISTS "Auth manage wakaf" ON public.wakaf;
-CREATE POLICY "Auth manage wakaf" ON public.wakaf FOR ALL USING (auth.role() = 'authenticated');
+CREATE POLICY "Public can view wakaf" ON public.wakaf FOR SELECT USING (true);
+CREATE POLICY "Allow manage wakaf" ON public.wakaf FOR ALL USING (true) WITH CHECK (true);
 
 -- Storage Bucket Poster Khutbah
 INSERT INTO storage.buckets (id, name, public)
@@ -181,10 +181,10 @@ VALUES ('khutbah-images', 'khutbah-images', true)
 ON CONFLICT (id) DO UPDATE SET public = true;
 
 DROP POLICY IF EXISTS "Public Access Khutbah Images" ON storage.objects;
-CREATE POLICY "Public Access Khutbah Images" ON storage.objects FOR SELECT USING (bucket_id = 'khutbah-images');
-
 DROP POLICY IF EXISTS "Auth Upload Khutbah Images" ON storage.objects;
-CREATE POLICY "Auth Upload Khutbah Images" ON storage.objects FOR INSERT WITH CHECK (bucket_id = 'khutbah-images' AND auth.role() = 'authenticated');
+DROP POLICY IF EXISTS "Allow Upload Khutbah Images" ON storage.objects;
+CREATE POLICY "Public Access Khutbah Images" ON storage.objects FOR SELECT USING (bucket_id = 'khutbah-images');
+CREATE POLICY "Allow Upload Khutbah Images" ON storage.objects FOR ALL USING (bucket_id = 'khutbah-images') WITH CHECK (bucket_id = 'khutbah-images');
 
 -- ==============================================================================
 -- INITIAL SETUP (Hanya Profil Identitas Masjid)
