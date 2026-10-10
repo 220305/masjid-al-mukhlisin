@@ -1,63 +1,58 @@
 'use client';
 
 import React, { useEffect, useMemo, useState } from 'react';
-import * as XLSX from 'xlsx';
+import Link from 'next/link';
 import {
   Users,
-  Plus,
-  Edit2,
-  Trash2,
-  Printer,
-  Download,
   Search,
-  X,
+  ArrowLeft,
+  Shield,
   Phone,
-  MessageCircle,
   MapPin,
-  ShieldCheck,
   Heart,
   Award,
   Sparkles,
-  RefreshCw,
+  Download,
+  Printer,
+  X,
+  MessageCircle,
+  UserCheck,
+  Building2,
+  Calendar,
 } from 'lucide-react';
-import AdminLayout from '@/components/layout/admin-layout';
+import * as XLSX from 'xlsx';
 import { DataService } from '@/lib/data-service';
-import { JamaahItem, PeranJamaah } from '@/types';
+import { JamaahItem, IdentitasMasjid } from '@/types';
+import MobileBottomNav from '@/components/layout/mobile-bottom-nav';
 
-export default function JamaahPage() {
+export default function JamaahPublicPage() {
   const [dataJamaah, setDataJamaah] = useState<JamaahItem[]>([]);
+  const [identitas, setIdentitas] = useState<IdentitasMasjid | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Modals
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [editItem, setEditItem] = useState<JamaahItem | null>(null);
-
-  // Filters
+  // Filters & Search
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterPeran, setFilterPeran] = useState<string>('all');
-  const [selectedIds, setSelectedIds] = useState<(number | string)[]>([]);
+  const [selectedPeran, setSelectedPeran] = useState<string>('all');
+  const [viewMode, setViewMode] = useState<'cards' | 'table'>('cards');
 
-  // Form State
-  const [formData, setFormData] = useState<{
-    nama: string;
-    no_hp: string;
-    alamat: string;
-    peran: PeranJamaah;
-  }>({
-    nama: '',
-    no_hp: '',
-    alamat: '',
-    peran: 'Jamaah',
-  });
+  // Detail Modal
+  const [selectedPerson, setSelectedPerson] = useState<JamaahItem | null>(null);
+
+  // Dates
+  const [todayDateStr, setTodayDateStr] = useState('');
+  const [hijriDateStr, setHijriDateStr] = useState('');
 
   const loadData = async () => {
     setLoading(true);
     try {
-      const items = await DataService.getJamaah();
-      setDataJamaah(items);
-    } catch (error) {
-      console.error('Failed to load jamaah:', error);
+      const [jamaahRes, idRes] = await Promise.all([
+        DataService.getJamaah(),
+        DataService.getIdentitas(),
+      ]);
+      setDataJamaah(jamaahRes);
+      setIdentitas(idRes);
+    } catch (err) {
+      console.error('Failed to load jamaah data:', err);
     } finally {
       setLoading(false);
     }
@@ -65,550 +60,548 @@ export default function JamaahPage() {
 
   useEffect(() => {
     loadData();
+
+    const now = new Date();
+    setTodayDateStr(
+      now.toLocaleDateString('id-ID', {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+      })
+    );
+    try {
+      setHijriDateStr(
+        new Intl.DateTimeFormat('id-ID-u-ca-islamic-civil', {
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric',
+        }).format(now)
+      );
+    } catch {
+      setHijriDateStr('');
+    }
   }, []);
 
-  // Filtered
-  const filteredJamaah = useMemo(() => {
-    return dataJamaah.filter((item) => {
-      const matchesSearch =
-        item.nama.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (item.no_hp && item.no_hp.includes(searchTerm)) ||
-        (item.alamat && item.alamat.toLowerCase().includes(searchTerm.toLowerCase()));
-      const matchesPeran = filterPeran === 'all' || item.peran === filterPeran;
-      return matchesSearch && matchesPeran;
+  // Stats
+  const stats = useMemo(() => {
+    const total = dataJamaah.length;
+    const pengurus = dataJamaah.filter((j) => j.peran === 'Pengurus DKM').length;
+    const imam = dataJamaah.filter((j) => j.peran === 'Imam' || j.peran === 'Muadzin').length;
+    const tokoh = dataJamaah.filter((j) => j.peran === 'Donatur' || j.peran === 'Remaja Masjid').length;
+    return { total, pengurus, imam, tokoh };
+  }, [dataJamaah]);
+
+  // Filtered List
+  const filteredData = useMemo(() => {
+    return dataJamaah.filter((j) => {
+      const matchSearch =
+        j.nama.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (j.alamat || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (j.no_hp || '').includes(searchTerm);
+      const matchPeran =
+        selectedPeran === 'all' ||
+        j.peran === selectedPeran ||
+        (selectedPeran === 'Imam & Muadzin' && (j.peran === 'Imam' || j.peran === 'Muadzin')) ||
+        (selectedPeran === 'Tokoh Masyarakat' && (j.peran === 'Donatur' || j.peran === 'Remaja Masjid'));
+      return matchSearch && matchPeran;
     });
-  }, [dataJamaah, searchTerm, filterPeran]);
+  }, [dataJamaah, searchTerm, selectedPeran]);
 
-  // Statistics
-  const totalJamaah = dataJamaah.length;
-  const totalDKM = dataJamaah.filter((j) => j.peran === 'Pengurus DKM').length;
-  const totalPetugas = dataJamaah.filter((j) => j.peran === 'Imam' || j.peran === 'Muadzin').length;
-  const totalDonatur = dataJamaah.filter((j) => j.peran === 'Donatur').length;
-
-  const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.checked) {
-      setSelectedIds(filteredJamaah.map((i) => i.id));
-    } else {
-      setSelectedIds([]);
-    }
-  };
-
-  const toggleSelectRow = (id: number | string) => {
-    setSelectedIds((prev) => (prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]));
-  };
-
-  const handleAddSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!formData.nama) return;
-    try {
-      await DataService.addJamaah(formData);
-      setShowAddModal(false);
-      setFormData({
-        nama: '',
-        no_hp: '',
-        alamat: '',
-        peran: 'Jamaah',
-      });
-      loadData();
-    } catch (err: any) {
-      alert(err?.message || 'Gagal menambahkan jamaah');
-    }
-  };
-
-  const handleEditSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!editItem || !editItem.nama) return;
-    try {
-      await DataService.updateJamaah(editItem.id, editItem);
-      setShowEditModal(false);
-      setEditItem(null);
-      loadData();
-    } catch (err: any) {
-      alert(err?.message || 'Gagal memperbarui jamaah');
-    }
-  };
-
-  const handleDelete = async (id: number | string, nama: string) => {
-    if (window.confirm(`Yakin ingin menghapus data jamaah "${nama}"?`)) {
-      try {
-        await DataService.deleteJamaah(id);
-        loadData();
-      } catch (err: any) {
-        alert(err?.message || 'Gagal menghapus jamaah');
-      }
-    }
-  };
-
-  const getTargetData = () =>
-    selectedIds.length > 0 ? dataJamaah.filter((i) => selectedIds.includes(i.id)) : filteredJamaah;
-
-  const exportToExcel = () => {
-    const prepare = getTargetData().map((i, idx) => ({
-      No: idx + 1,
-      'Nama Lengkap': i.nama,
-      'No. WhatsApp/HP': i.no_hp || '-',
-      Alamat: i.alamat || '-',
-      Peran: i.peran,
-      'Terdaftar Sejak': i.created_at ? new Date(i.created_at).toLocaleDateString('id-ID') : '-',
+  // Export to Excel
+  const handleExportExcel = () => {
+    const exportData = filteredData.map((item, index) => ({
+      No: index + 1,
+      Nama: item.nama,
+      Peran: item.peran,
+      Alamat: item.alamat || '-',
+      'No HP': item.no_hp ? item.no_hp : '-',
+      'Terdaftar Sejak': item.created_at ? new Date(item.created_at).toLocaleDateString('id-ID') : '-',
     }));
-    const ws = XLSX.utils.json_to_sheet(prepare);
+
+    const ws = XLSX.utils.json_to_sheet(exportData);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Data Jamaah');
-    XLSX.writeFile(wb, `Data_Jamaah_Al_Mukhlisin_${new Date().toISOString().split('T')[0]}.xlsx`);
+    const dateStr = new Date().toISOString().split('T')[0];
+    XLSX.writeFile(wb, `Data_Jamaah_Al_Mukhlisin_${dateStr}.xlsx`);
   };
 
-  const printTable = () => {
-    window.print();
-  };
-
-  const formatWaUrl = (noHp?: string) => {
-    if (!noHp) return null;
-    let clean = noHp.replace(/[^0-9]/g, '');
-    if (clean.startsWith('0')) {
-      clean = '62' + clean.slice(1);
-    }
-    return `https://wa.me/${clean}`;
-  };
-
-  const getPeranBadge = (peran: PeranJamaah) => {
+  const getRoleBadgeStyle = (peran: string) => {
     switch (peran) {
       case 'Pengurus DKM':
-        return 'bg-emerald-100 text-emerald-800 border-emerald-300 font-bold';
-      case 'Imam':
-        return 'bg-amber-100 text-amber-800 border-amber-300 font-bold';
-      case 'Muadzin':
-        return 'bg-blue-100 text-blue-800 border-blue-300 font-bold';
-      case 'Remaja Masjid':
-        return 'bg-purple-100 text-purple-800 border-purple-300 font-bold';
-      case 'Donatur':
-        return 'bg-rose-100 text-rose-800 border-rose-300 font-bold';
+        return 'bg-emerald-50 text-emerald-800 border-emerald-200';
+      case 'Imam & Muadzin':
+        return 'bg-amber-50 text-amber-800 border-amber-200';
+      case 'Tokoh Masyarakat':
+        return 'bg-indigo-50 text-indigo-800 border-indigo-200';
+      case 'Donatur Tetap':
+        return 'bg-rose-50 text-rose-800 border-rose-200';
       default:
         return 'bg-slate-100 text-slate-700 border-slate-200';
     }
   };
 
   return (
-    <AdminLayout>
-      <div className="p-3.5 sm:p-6 md:p-8 space-y-4 sm:space-y-6 max-w-7xl mx-auto pb-24">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="p-1.5 sm:p-2 rounded-xl bg-emerald-100 text-emerald-800">
-                <Users size={22} />
-              </span>
-              <h1 className="text-xl sm:text-2xl font-black text-slate-800">Data Jamaah & Tokoh</h1>
+    <div className="min-h-screen bg-[#f4f7f6] font-sans text-slate-900 selection:bg-emerald-200 pb-28 md:pb-12">
+      {/* --- TOP BAR HEADER --- */}
+      <header className="sticky top-0 z-40 border-b border-emerald-950/20 bg-[#0a1f18]/95 px-4 py-3.5 text-white backdrop-blur-md md:px-8">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <Link
+              href="/"
+              className="flex items-center gap-2 rounded-xl bg-white/10 px-3 py-1.5 text-xs font-bold text-slate-200 transition-colors hover:bg-white/20 hover:text-white"
+            >
+              <ArrowLeft size={14} />
+              <span className="hidden sm:inline">Beranda</span>
+            </Link>
+
+            <div className="h-5 w-px bg-white/20" />
+
+            <div className="flex items-center gap-2.5">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-emerald-500/30 bg-emerald-800/80 shadow-xs overflow-hidden">
+                <img src="/icon.svg" alt="Masjid Al-Mukhlisin" className="h-6 w-6" />
+              </div>
+              <div>
+                <h1 className="font-serif-elegant text-sm font-bold tracking-wide text-white md:text-base leading-none">
+                  Masjid Al-Mukhlisin
+                </h1>
+                <p className="text-[9px] font-mono text-emerald-300/80 leading-tight mt-0.5">
+                  ID SIMAS 01.4.13.04.06.000158 | Lagadar
+                </p>
+              </div>
             </div>
-            <p className="text-[11px] sm:text-xs text-slate-500 mt-0.5 sm:mt-1">
-              Pencatatan warga, kontak silaturahmi WhatsApp, dan kepengurusan Masjid Al-Mukhlisin
+          </div>
+
+          <div className="flex items-center gap-2 sm:gap-3">
+            {todayDateStr && (
+              <div className="hidden lg:flex flex-col text-right">
+                <span className="text-[10px] font-bold text-slate-300">{todayDateStr}</span>
+                {hijriDateStr && (
+                  <span className="text-[9px] font-mono text-amber-300">{hijriDateStr} H</span>
+                )}
+              </div>
+            )}
+
+            <Link
+              href="/login"
+              className="flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-3.5 py-1.5 text-xs font-bold text-white transition-colors hover:bg-white/20"
+            >
+              <Shield size={13} className="text-emerald-400" />
+              <span className="hidden sm:inline">Portal Pengurus</span>
+            </Link>
+          </div>
+        </div>
+      </header>
+
+      {/* --- HERO SECTION --- */}
+      <section className="relative overflow-hidden bg-gradient-to-b from-[#0a1f18] via-[#0d2a21] to-[#f4f7f6] pt-10 pb-16 px-4 sm:px-6 md:px-8 text-white">
+        <div className="mx-auto max-w-7xl">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+            <div>
+              <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-900/60 px-3.5 py-1 text-[10px] font-black tracking-widest text-emerald-300 uppercase">
+                <Sparkles size={12} />
+                <span>KEPENGURUSAN & WARGA JAMAAH · MASJID AL-MUKHLISIN</span>
+              </div>
+              <h1 className="font-serif-elegant text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-white">
+                Data Jamaah & Tokoh
+              </h1>
+              <p className="mt-2 text-xs sm:text-sm text-emerald-100/90 max-w-2xl leading-relaxed">
+                Struktur Dewan Kemakmuran Masjid (DKM), asatidz, imam rawatib, serta silaturahmi warga jamaah Kp. Jalan Cagak RT.005 RW.004 Desa Lagadar.
+              </p>
+            </div>
+
+            {/* Quick Actions */}
+            <div className="flex items-center gap-2.5">
+              <button
+                onClick={handleExportExcel}
+                className="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold bg-white/10 hover:bg-white/20 text-white border border-white/15 transition-colors shadow-xs"
+              >
+                <Download size={14} />
+                <span>Unduh Excel</span>
+              </button>
+              <button
+                onClick={() => window.print()}
+                className="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold bg-white/10 hover:bg-white/20 text-white border border-white/15 transition-colors shadow-xs"
+              >
+                <Printer size={14} />
+                <span className="hidden sm:inline">Cetak</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Quick Leadership Highlight */}
+          <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="rounded-2xl bg-white/10 backdrop-blur-md border border-white/15 p-4 flex items-center gap-3.5">
+              <div className="h-12 w-12 rounded-xl bg-emerald-500/20 border border-emerald-400/40 flex items-center justify-center shrink-0">
+                <Building2 size={24} className="text-emerald-300" />
+              </div>
+              <div>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-300 block">
+                  Ketua DKM Al-Mukhlisin
+                </span>
+                <p className="text-sm sm:text-base font-bold text-white">
+                  {identitas?.ketua_dkm || 'Ustadz H. Ahmad Sobari'}
+                </p>
+                <span className="text-[11px] text-slate-300">Penanggung Jawab Kemakmuran Masjid</span>
+              </div>
+            </div>
+
+            <div className="rounded-2xl bg-white/10 backdrop-blur-md border border-white/15 p-4 flex items-center gap-3.5">
+              <div className="h-12 w-12 rounded-xl bg-amber-500/20 border border-amber-400/40 flex items-center justify-center shrink-0">
+                <UserCheck size={24} className="text-amber-300" />
+              </div>
+              <div>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-amber-300 block">
+                  Bendahara DKM
+                </span>
+                <p className="text-sm sm:text-base font-bold text-white">
+                  {identitas?.bendahara || 'H. Mulyadi, S.E.'}
+                </p>
+                <span className="text-[11px] text-slate-300">Pengelola Amanah Kas & Keuangan Ummat</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* --- STAT CARDS & CONTENT --- */}
+      <main className="mx-auto max-w-7xl px-3.5 sm:px-6 md:px-8 -mt-8 space-y-6">
+        {/* Stat Cards */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4">
+          <div className="rounded-2xl bg-white p-4 sm:p-5 border border-slate-200/80 shadow-xs flex items-center gap-3 sm:gap-4">
+            <div className="h-11 w-11 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center shrink-0">
+              <Users size={22} className="text-emerald-700" />
+            </div>
+            <div>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">
+                Total Jamaah
+              </span>
+              <p className="text-xl sm:text-2xl font-black text-slate-800">{stats.total}</p>
+              <span className="text-[10px] text-slate-500">Warga Terdaftar</span>
+            </div>
+          </div>
+
+          <div className="rounded-2xl bg-white p-4 sm:p-5 border border-slate-200/80 shadow-xs flex items-center gap-3 sm:gap-4">
+            <div className="h-11 w-11 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center shrink-0">
+              <Award size={22} className="text-blue-700" />
+            </div>
+            <div>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">
+                Pengurus DKM
+              </span>
+              <p className="text-xl sm:text-2xl font-black text-slate-800">{stats.pengurus}</p>
+              <span className="text-[10px] text-slate-500">Dewan Pengurus</span>
+            </div>
+          </div>
+
+          <div className="rounded-2xl bg-white p-4 sm:p-5 border border-slate-200/80 shadow-xs flex items-center gap-3 sm:gap-4">
+            <div className="h-11 w-11 rounded-xl bg-amber-50 border border-amber-100 flex items-center justify-center shrink-0">
+              <Award size={22} className="text-amber-700" />
+            </div>
+            <div>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">
+                Imam & Muadzin
+              </span>
+              <p className="text-xl sm:text-2xl font-black text-slate-800">{stats.imam}</p>
+              <span className="text-[10px] text-slate-500">Petugas Rawatib</span>
+            </div>
+          </div>
+
+          <div className="rounded-2xl bg-white p-4 sm:p-5 border border-slate-200/80 shadow-xs flex items-center gap-3 sm:gap-4">
+            <div className="h-11 w-11 rounded-xl bg-rose-50 border border-rose-100 flex items-center justify-center shrink-0">
+              <Heart size={22} className="text-rose-700" />
+            </div>
+            <div>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">
+                Tokoh & Donatur
+              </span>
+              <p className="text-xl sm:text-2xl font-black text-slate-800">{stats.tokoh}</p>
+              <span className="text-[10px] text-slate-500">Sesepuh & Muhsinin</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Filter & Search Bar */}
+        <div className="rounded-2xl bg-white p-4 sm:p-5 border border-slate-200/80 shadow-xs space-y-4">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3.5">
+            {/* Search Input */}
+            <div className="relative flex-1">
+              <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+              <input
+                type="text"
+                placeholder="Cari nama jamaah, RT/RW, atau nomor kontak..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-xs sm:text-sm focus:outline-hidden focus:border-emerald-600 focus:bg-white transition-all"
+              />
+              {searchTerm && (
+                <button
+                  onClick={() => setSearchTerm('')}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                >
+                  <X size={14} />
+                </button>
+              )}
+            </div>
+
+            {/* View Mode Toggle */}
+            <div className="flex items-center gap-2 self-end md:self-auto">
+              <button
+                onClick={() => setViewMode('cards')}
+                className={`px-3 py-2 rounded-xl text-xs font-bold transition-all ${
+                  viewMode === 'cards'
+                    ? 'bg-emerald-700 text-white shadow-xs'
+                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                }`}
+              >
+                Tampilan Kartu
+              </button>
+              <button
+                onClick={() => setViewMode('table')}
+                className={`px-3 py-2 rounded-xl text-xs font-bold transition-all ${
+                  viewMode === 'table'
+                    ? 'bg-emerald-700 text-white shadow-xs'
+                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                }`}
+              >
+                Tabel Rinci
+              </button>
+            </div>
+          </div>
+
+          {/* Role Filter Pills */}
+          <div className="flex items-center gap-2 overflow-x-auto pb-1 text-xs">
+            {[
+              { id: 'all', label: 'Semua Peran' },
+              { id: 'Pengurus DKM', label: 'Pengurus DKM' },
+              { id: 'Imam & Muadzin', label: 'Imam & Muadzin' },
+              { id: 'Tokoh Masyarakat', label: 'Tokoh Masyarakat' },
+              { id: 'Donatur Tetap', label: 'Donatur Tetap' },
+              { id: 'Jamaah', label: 'Warga Jamaah' },
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setSelectedPeran(tab.id)}
+                className={`px-3.5 py-1.5 rounded-full font-bold whitespace-nowrap transition-all ${
+                  selectedPeran === tab.id
+                    ? 'bg-emerald-800 text-white shadow-2xs'
+                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Content Display: Cards or Table */}
+        {loading ? (
+          <div className="rounded-2xl bg-white p-12 text-center border border-slate-200">
+            <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-emerald-600 border-t-transparent" />
+            <p className="mt-3 text-xs font-bold text-slate-500">Memuat data jamaah...</p>
+          </div>
+        ) : filteredData.length === 0 ? (
+          <div className="rounded-2xl bg-white p-12 text-center border border-slate-200 shadow-xs space-y-2">
+            <Users size={36} className="mx-auto text-slate-300" />
+            <p className="text-sm font-bold text-slate-700">Tidak ada data jamaah yang ditemukan</p>
+            <p className="text-xs text-slate-400">
+              {searchTerm ? 'Coba ubah kata kunci pencarian Anda' : 'Belum ada data warga terdaftar'}
             </p>
           </div>
-          <div className="flex items-center gap-2 flex-wrap">
-            <button
-              onClick={loadData}
-              className="p-2 sm:p-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 transition"
-              title="Segarkan Data"
-            >
-              <RefreshCw size={15} />
-            </button>
-            <button
-              onClick={exportToExcel}
-              className="px-3 sm:px-3.5 py-2 sm:py-2.5 rounded-xl border border-emerald-200 bg-white hover:bg-emerald-50 text-emerald-700 text-xs font-bold flex items-center gap-1.5 transition shadow-xs"
-            >
-              <Download size={14} /> <span className="hidden xs:inline">Ekspor Excel</span>
-            </button>
-            <button
-              onClick={printTable}
-              className="px-3 sm:px-3.5 py-2 sm:py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold flex items-center gap-1.5 transition shadow-xs"
-            >
-              <Printer size={14} /> <span className="hidden xs:inline">Cetak</span>
-            </button>
-            <button
-              onClick={() => setShowAddModal(true)}
-              className="flex-1 sm:flex-initial justify-center px-4 py-2 sm:py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white text-xs font-bold flex items-center gap-1.5 shadow-md shadow-emerald-900/20 transition"
-            >
-              <Plus size={16} /> <span>Tambah Jamaah</span>
-            </button>
-          </div>
-        </div>
+        ) : viewMode === 'cards' ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-4">
+            {filteredData.map((person) => {
+              const initials = person.nama
+                .split(' ')
+                .slice(0, 2)
+                .map((n) => n[0])
+                .join('')
+                .toUpperCase();
 
-        {/* Quick Stats Banner */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
-          <div className="bg-white rounded-2xl p-3 sm:p-4 border border-slate-100 shadow-xs flex items-center justify-between">
-            <div>
-              <p className="text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-wider">Total Jamaah</p>
-              <p className="text-xl sm:text-2xl font-black text-slate-800 mt-0.5 sm:mt-1">{totalJamaah}</p>
-              <p className="text-[9px] sm:text-[10px] text-slate-400 mt-0.5">Warga terdaftar</p>
-            </div>
-            <div className="h-9 w-9 sm:h-11 sm:w-11 rounded-xl sm:rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
-              <Users size={18} className="sm:size-[22px]" />
-            </div>
-          </div>
-          <div className="bg-white rounded-2xl p-3 sm:p-4 border border-slate-100 shadow-xs flex items-center justify-between">
-            <div>
-              <p className="text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-wider">Pengurus DKM</p>
-              <p className="text-xl sm:text-2xl font-black text-emerald-700 mt-0.5 sm:mt-1">{totalDKM}</p>
-              <p className="text-[9px] sm:text-[10px] text-slate-400 mt-0.5">Struktur dewan</p>
-            </div>
-            <div className="h-9 w-9 sm:h-11 sm:w-11 rounded-xl sm:rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
-              <ShieldCheck size={18} className="sm:size-[22px]" />
-            </div>
-          </div>
-          <div className="bg-white rounded-2xl p-3 sm:p-4 border border-slate-100 shadow-xs flex items-center justify-between">
-            <div>
-              <p className="text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-wider">Imam & Muadzin</p>
-              <p className="text-xl sm:text-2xl font-black text-amber-700 mt-0.5 sm:mt-1">{totalPetugas}</p>
-              <p className="text-[9px] sm:text-[10px] text-slate-400 mt-0.5">Petugas rawatib</p>
-            </div>
-            <div className="h-9 w-9 sm:h-11 sm:w-11 rounded-xl sm:rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
-              <Award size={18} className="sm:size-[22px]" />
-            </div>
-          </div>
-          <div className="bg-white rounded-2xl p-3 sm:p-4 border border-slate-100 shadow-xs flex items-center justify-between">
-            <div>
-              <p className="text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-wider">Donatur Tetap</p>
-              <p className="text-xl sm:text-2xl font-black text-rose-700 mt-0.5 sm:mt-1">{totalDonatur}</p>
-              <p className="text-[9px] sm:text-[10px] text-slate-400 mt-0.5">Dermawan & muhsinin</p>
-            </div>
-            <div className="h-9 w-9 sm:h-11 sm:w-11 rounded-xl sm:rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center shrink-0">
-              <Heart size={18} className="sm:size-[22px]" />
-            </div>
-          </div>
-        </div>
-
-        {/* Filter and Search Bar */}
-        <div className="bg-white p-3.5 sm:p-4 rounded-2xl border border-slate-100 shadow-xs flex flex-col sm:flex-row gap-2.5 sm:gap-3 items-center justify-between">
-          <div className="relative w-full md:w-80">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
-            <input
-              type="text"
-              placeholder="Cari nama, no hp, atau alamat..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500 transition"
-            />
-          </div>
-
-          <div className="flex items-center gap-2 w-full md:w-auto">
-            <select
-              value={filterPeran}
-              onChange={(e) => setFilterPeran(e.target.value)}
-              className="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-            >
-              <option value="all">Semua Peran / Status</option>
-              <option value="Pengurus DKM">Pengurus DKM</option>
-              <option value="Imam">Imam</option>
-              <option value="Muadzin">Muadzin</option>
-              <option value="Remaja Masjid">Remaja Masjid</option>
-              <option value="Donatur">Donatur</option>
-              <option value="Jamaah">Jamaah Warga</option>
-            </select>
-          </div>
-        </div>
-
-        {/* Table Content */}
-        <div className="bg-white rounded-2xl border border-slate-100 shadow-xs overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse text-xs">
-              <thead>
-                <tr className="bg-slate-50/80 border-b border-slate-100 text-slate-500 uppercase tracking-wider font-semibold">
-                  <th className="py-3.5 px-4 w-10 text-center">
-                    <input
-                      type="checkbox"
-                      checked={selectedIds.length === filteredJamaah.length && filteredJamaah.length > 0}
-                      onChange={handleSelectAll}
-                      className="rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
-                    />
-                  </th>
-                  <th className="py-3.5 px-4 w-12 text-center">No</th>
-                  <th className="py-3.5 px-4">Nama Jamaah</th>
-                  <th className="py-3.5 px-4">No. HP / WhatsApp</th>
-                  <th className="py-3.5 px-4">Alamat Rumah</th>
-                  <th className="py-3.5 px-4">Peran / Status</th>
-                  <th className="py-3.5 px-4 text-center w-28">Aksi</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {loading ? (
-                  <tr>
-                    <td colSpan={7} className="text-center py-10 text-slate-400">
-                      Memuat data jamaah...
-                    </td>
-                  </tr>
-                ) : filteredJamaah.length === 0 ? (
-                  <tr>
-                    <td colSpan={7} className="text-center py-10 text-slate-400">
-                      Tidak ada data jamaah yang cocok dengan pencarian.
-                    </td>
-                  </tr>
-                ) : (
-                  filteredJamaah.map((item, index) => {
-                    const waLink = formatWaUrl(item.no_hp);
-                    return (
-                      <tr key={item.id} className="hover:bg-slate-50/60 transition group">
-                        <td className="py-3 px-4 text-center">
-                          <input
-                            type="checkbox"
-                            checked={selectedIds.includes(item.id)}
-                            onChange={() => toggleSelectRow(item.id)}
-                            className="rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
-                          />
-                        </td>
-                        <td className="py-3 px-4 text-center text-slate-400 font-medium">
-                          {index + 1}
-                        </td>
-                        <td className="py-3 px-4 font-bold text-slate-800">
-                          <div className="flex items-center gap-2.5">
-                            <div className="h-7 w-7 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-xs uppercase shrink-0">
-                              {item.nama.charAt(0)}
-                            </div>
-                            <span>{item.nama}</span>
-                          </div>
-                        </td>
-                        <td className="py-3 px-4 text-slate-600">
-                          {item.no_hp ? (
-                            <div className="flex items-center gap-2">
-                              <span>{item.no_hp}</span>
-                              {waLink && (
-                                <a
-                                  href={waLink}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="p-1 rounded-lg bg-emerald-50 text-emerald-600 hover:bg-emerald-600 hover:text-white transition"
-                                  title="Kirim Pesan WhatsApp"
-                                >
-                                  <MessageCircle size={14} />
-                                </a>
-                              )}
-                            </div>
-                          ) : (
-                            <span className="text-slate-300 italic">-</span>
-                          )}
-                        </td>
-                        <td className="py-3 px-4 text-slate-600">
-                          {item.alamat ? (
-                            <span className="flex items-center gap-1.5">
-                              <MapPin size={13} className="text-slate-400 shrink-0" />
-                              {item.alamat}
-                            </span>
-                          ) : (
-                            <span className="text-slate-300 italic">-</span>
-                          )}
-                        </td>
-                        <td className="py-3 px-4">
+              return (
+                <div
+                  key={person.id}
+                  onClick={() => setSelectedPerson(person)}
+                  className="group rounded-2xl bg-white p-4 sm:p-5 border border-slate-200/90 shadow-2xs hover:shadow-md hover:border-emerald-500/50 transition-all cursor-pointer flex flex-col justify-between"
+                >
+                  <div className="space-y-3">
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex items-center gap-3">
+                        <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-emerald-600 to-teal-700 text-white font-bold text-xs flex items-center justify-center shrink-0 shadow-xs">
+                          {initials}
+                        </div>
+                        <div>
+                          <h3 className="font-bold text-sm text-slate-800 group-hover:text-emerald-800 transition-colors">
+                            {person.nama}
+                          </h3>
                           <span
-                            className={`inline-block px-2.5 py-1 rounded-lg text-[10px] border ${getPeranBadge(
-                              item.peran
+                            className={`inline-block px-2 py-0.5 mt-0.5 rounded-full text-[10px] font-bold border ${getRoleBadgeStyle(
+                              person.peran
                             )}`}
                           >
-                            {item.peran}
+                            {person.peran}
                           </span>
-                        </td>
-                        <td className="py-3 px-4 text-center">
-                          <div className="flex items-center justify-center gap-1.5 opacity-90 group-hover:opacity-100">
-                            <button
-                              onClick={() => {
-                                setEditItem(item);
-                                setShowEditModal(true);
-                              }}
-                              className="p-1.5 rounded-lg border border-slate-200 text-slate-600 hover:text-emerald-600 hover:border-emerald-200 bg-white transition"
-                              title="Edit"
-                            >
-                              <Edit2 size={13} />
-                            </button>
-                            <button
-                              onClick={() => handleDelete(item.id, item.nama)}
-                              className="p-1.5 rounded-lg border border-slate-200 text-slate-600 hover:text-red-600 hover:border-red-200 bg-white transition"
-                              title="Hapus"
-                            >
-                              <Trash2 size={13} />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })
-                )}
-              </tbody>
-            </table>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-1.5 text-xs text-slate-500 pt-1">
+                      <p className="flex items-start gap-1.5 leading-snug">
+                        <MapPin size={13} className="text-slate-400 shrink-0 mt-0.5" />
+                        <span className="truncate">{person.alamat || 'Kp. Jalan Cagak Lagadar'}</span>
+                      </p>
+                      {person.no_hp && (
+                        <p className="flex items-center gap-1.5">
+                          <Phone size={13} className="text-slate-400 shrink-0" />
+                          <span className="font-mono text-[11px] text-slate-600">{person.no_hp}</span>
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-[11px]">
+                    <span className="text-slate-400">Klik untuk detail</span>
+                    {person.no_hp && (
+                      <a
+                        href={`https://wa.me/${person.no_hp.replace(/^0/, '62').replace(/\D/g, '')}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        onClick={(e) => e.stopPropagation()}
+                        className="inline-flex items-center gap-1 text-emerald-700 hover:text-emerald-800 font-bold"
+                      >
+                        <MessageCircle size={13} />
+                        <span>WhatsApp</span>
+                      </a>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="rounded-2xl bg-white border border-slate-200/90 shadow-xs overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase tracking-wider font-bold">
+                  <tr>
+                    <th className="px-4 py-3">No</th>
+                    <th className="px-4 py-3">Nama Jamaah</th>
+                    <th className="px-4 py-3">Peran / Amanah</th>
+                    <th className="px-4 py-3">Alamat</th>
+                    <th className="px-4 py-3">Kontak</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {filteredData.map((person, idx) => (
+                    <tr
+                      key={person.id}
+                      onClick={() => setSelectedPerson(person)}
+                      className="hover:bg-slate-50/80 transition-colors cursor-pointer"
+                    >
+                      <td className="px-4 py-3 font-mono text-slate-400">{idx + 1}</td>
+                      <td className="px-4 py-3 font-bold text-slate-800">{person.nama}</td>
+                      <td className="px-4 py-3">
+                        <span
+                          className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-bold border ${getRoleBadgeStyle(
+                            person.peran
+                          )}`}
+                        >
+                          {person.peran}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-slate-600">{person.alamat || '-'}</td>
+                      <td className="px-4 py-3 font-mono text-slate-600">{person.no_hp || '-'}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+      </main>
+
+      {/* --- DETAIL MODAL --- */}
+      {selectedPerson && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4"
+          onClick={() => setSelectedPerson(null)}
+        >
+          <div
+            className="w-full max-w-md rounded-2xl bg-white p-5 sm:p-6 shadow-2xl border border-slate-200 max-h-[90vh] overflow-y-auto space-y-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+              <div className="flex items-center gap-2">
+                <Users size={18} className="text-emerald-700" />
+                <h3 className="font-bold text-base text-slate-800">Profil Jamaah</h3>
+              </div>
+              <button
+                onClick={() => setSelectedPerson(null)}
+                className="p-1 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              <div className="text-center py-3 bg-slate-50 rounded-xl">
+                <div className="h-16 w-16 mx-auto rounded-full bg-gradient-to-br from-emerald-600 to-teal-800 text-white font-bold text-xl flex items-center justify-center shadow-md">
+                  {selectedPerson.nama
+                    .split(' ')
+                    .slice(0, 2)
+                    .map((n) => n[0])
+                    .join('')
+                    .toUpperCase()}
+                </div>
+                <h4 className="mt-2 text-base font-bold text-slate-800">{selectedPerson.nama}</h4>
+                <span
+                  className={`inline-block px-2.5 py-0.5 mt-1 rounded-full text-xs font-bold border ${getRoleBadgeStyle(
+                    selectedPerson.peran
+                  )}`}
+                >
+                  {selectedPerson.peran}
+                </span>
+              </div>
+
+              <div className="space-y-2 text-xs">
+                <div className="flex items-start justify-between py-2 border-b border-slate-100">
+                  <span className="text-slate-500">Alamat Domisili</span>
+                  <span className="font-semibold text-slate-800 text-right max-w-[200px]">
+                    {selectedPerson.alamat || 'Kp. Jalan Cagak Lagadar'}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between py-2 border-b border-slate-100">
+                  <span className="text-slate-500">Nomor Telepon/WA</span>
+                  <span className="font-mono font-semibold text-slate-800">
+                    {selectedPerson.no_hp || '-'}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between py-2 border-b border-slate-100">
+                  <span className="text-slate-500">Status Jamaah</span>
+                  <span className="font-bold text-emerald-700">Aktif & Terverifikasi</span>
+                </div>
+              </div>
+
+              {selectedPerson.no_hp && (
+                <div className="pt-2">
+                  <a
+                    href={`https://wa.me/${selectedPerson.no_hp.replace(/^0/, '62').replace(/\D/g, '')}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="w-full py-2.5 px-4 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs flex items-center justify-center gap-2 transition-colors shadow-xs"
+                  >
+                    <MessageCircle size={15} />
+                    <span>Hubungi Pengurus / Jamaah via WhatsApp</span>
+                  </a>
+                </div>
+              )}
+            </div>
           </div>
         </div>
+      )}
 
-        {/* Add Modal */}
-        {showAddModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-3 sm:p-4">
-            <div className="bg-white rounded-2xl sm:rounded-3xl w-full max-w-md shadow-2xl border border-slate-100 overflow-hidden max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-150">
-              <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-emerald-950 text-white">
-                <h3 className="font-bold text-sm flex items-center gap-2">
-                  <Users size={16} className="text-emerald-400" /> Tambah Jamaah Baru
-                </h3>
-                <button
-                  onClick={() => setShowAddModal(false)}
-                  className="p-1 text-slate-400 hover:text-white transition"
-                >
-                  <X size={18} />
-                </button>
-              </div>
-
-              <form onSubmit={handleAddSubmit} className="p-6 space-y-4 text-xs">
-                <div>
-                  <label className="block font-bold text-slate-700 mb-1">Nama Lengkap *</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="Contoh: H. Ahmad Sobari"
-                    value={formData.nama}
-                    onChange={(e) => setFormData({ ...formData, nama: e.target.value })}
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                  />
-                </div>
-
-                <div>
-                  <label className="block font-bold text-slate-700 mb-1">No. WhatsApp / HP</label>
-                  <input
-                    type="text"
-                    placeholder="Contoh: 08123456789"
-                    value={formData.no_hp}
-                    onChange={(e) => setFormData({ ...formData, no_hp: e.target.value })}
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                  />
-                </div>
-
-                <div>
-                  <label className="block font-bold text-slate-700 mb-1">Peran / Status *</label>
-                  <select
-                    value={formData.peran}
-                    onChange={(e) =>
-                      setFormData({ ...formData, peran: e.target.value as PeranJamaah })
-                    }
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium"
-                  >
-                    <option value="Jamaah">Jamaah Warga</option>
-                    <option value="Pengurus DKM">Pengurus DKM</option>
-                    <option value="Imam">Imam</option>
-                    <option value="Muadzin">Muadzin</option>
-                    <option value="Remaja Masjid">Remaja Masjid</option>
-                    <option value="Donatur">Donatur</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block font-bold text-slate-700 mb-1">Alamat Rumah / RT-RW</label>
-                  <textarea
-                    rows={2}
-                    placeholder="Contoh: Kp. Jalan Cagak RT 05/04 Desa Lagadar"
-                    value={formData.alamat}
-                    onChange={(e) => setFormData({ ...formData, alamat: e.target.value })}
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-none"
-                  />
-                </div>
-
-                <div className="pt-3 flex items-center justify-end gap-2 border-t border-slate-100">
-                  <button
-                    type="button"
-                    onClick={() => setShowAddModal(false)}
-                    className="px-4 py-2 border border-slate-200 text-slate-600 hover:bg-slate-50 rounded-xl font-bold transition"
-                  >
-                    Batal
-                  </button>
-                  <button
-                    type="submit"
-                    className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold shadow-md shadow-emerald-900/20 transition"
-                  >
-                    Simpan Data
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        )}
-
-        {/* Edit Modal */}
-        {showEditModal && editItem && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-3 sm:p-4">
-            <div className="bg-white rounded-2xl sm:rounded-3xl w-full max-w-md shadow-2xl border border-slate-100 overflow-hidden max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-150">
-              <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-emerald-950 text-white">
-                <h3 className="font-bold text-sm flex items-center gap-2">
-                  <Edit2 size={16} className="text-emerald-400" /> Perbarui Data Jamaah
-                </h3>
-                <button
-                  onClick={() => setShowEditModal(false)}
-                  className="p-1 text-slate-400 hover:text-white transition"
-                >
-                  <X size={18} />
-                </button>
-              </div>
-
-              <form onSubmit={handleEditSubmit} className="p-6 space-y-4 text-xs">
-                <div>
-                  <label className="block font-bold text-slate-700 mb-1">Nama Lengkap *</label>
-                  <input
-                    type="text"
-                    required
-                    value={editItem.nama}
-                    onChange={(e) => setEditItem({ ...editItem, nama: e.target.value })}
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                  />
-                </div>
-
-                <div>
-                  <label className="block font-bold text-slate-700 mb-1">No. WhatsApp / HP</label>
-                  <input
-                    type="text"
-                    value={editItem.no_hp || ''}
-                    onChange={(e) => setEditItem({ ...editItem, no_hp: e.target.value })}
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                  />
-                </div>
-
-                <div>
-                  <label className="block font-bold text-slate-700 mb-1">Peran / Status *</label>
-                  <select
-                    value={editItem.peran}
-                    onChange={(e) =>
-                      setEditItem({ ...editItem, peran: e.target.value as PeranJamaah })
-                    }
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 font-medium"
-                  >
-                    <option value="Jamaah">Jamaah Warga</option>
-                    <option value="Pengurus DKM">Pengurus DKM</option>
-                    <option value="Imam">Imam</option>
-                    <option value="Muadzin">Muadzin</option>
-                    <option value="Remaja Masjid">Remaja Masjid</option>
-                    <option value="Donatur">Donatur</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block font-bold text-slate-700 mb-1">Alamat Rumah / RT-RW</label>
-                  <textarea
-                    rows={2}
-                    value={editItem.alamat || ''}
-                    onChange={(e) => setEditItem({ ...editItem, alamat: e.target.value })}
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-none"
-                  />
-                </div>
-
-                <div className="pt-3 flex items-center justify-end gap-2 border-t border-slate-100">
-                  <button
-                    type="button"
-                    onClick={() => setShowEditModal(false)}
-                    className="px-4 py-2 border border-slate-200 text-slate-600 hover:bg-slate-50 rounded-xl font-bold transition"
-                  >
-                    Batal
-                  </button>
-                  <button
-                    type="submit"
-                    className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold shadow-md shadow-emerald-900/20 transition"
-                  >
-                    Simpan Perubahan
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
-        )}
-      </div>
-    </AdminLayout>
+      {/* Mobile Bottom Navigation Bar */}
+      <MobileBottomNav />
+    </div>
   );
 }

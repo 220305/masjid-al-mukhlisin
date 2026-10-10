@@ -38,12 +38,12 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   const navItems = [
     { title: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
     { title: 'Buku Kas Keuangan', href: '/finance', icon: Wallet },
-    { title: 'Zakat & Qurban', href: '/zakat', icon: HandHeart },
-    { title: 'Data Jamaah', href: '/jamaah', icon: Users },
+    { title: 'Zakat & Qurban', href: '/admin-zakat', icon: HandHeart },
+    { title: 'Data Jamaah', href: '/admin-jamaah', icon: Users },
     { title: 'Jadwal Petugas Jumat', href: '/petugas-jumat', icon: UserCheck },
     { title: 'Khutbah & Kajian', href: '/khutbah', icon: CalendarDays },
     { title: 'Inventaris & Wakaf', href: '/inventory', icon: Package },
-    { title: 'Laporan Resmi (SIMAS)', href: '/laporan', icon: FileText },
+    { title: 'Laporan Resmi (SIMAS)', href: '/admin-laporan', icon: FileText },
     { title: 'Pengaturan & Backup', href: '/pengaturan', icon: Settings },
   ];
 

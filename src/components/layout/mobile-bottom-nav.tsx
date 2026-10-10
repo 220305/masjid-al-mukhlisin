@@ -41,12 +41,6 @@ interface MobileBottomNavProps {
 
 export default function MobileBottomNav({ variant }: MobileBottomNavProps) {
   const pathname = usePathname();
-  const isAdmin =
-    variant === 'admin' ||
-    (variant === undefined &&
-      pathname !== '/' &&
-      !pathname.startsWith('/keuangan') &&
-      !pathname.startsWith('/fasilitas'));
 
   const navItems = [
     {
@@ -57,39 +51,39 @@ export default function MobileBottomNav({ variant }: MobileBottomNavProps) {
     },
     {
       title: 'Kas',
-      href: isAdmin ? '/finance' : '/keuangan',
+      href: '/keuangan',
       icon: Wallet,
-      active: pathname === '/finance' || pathname === '/keuangan',
+      active: pathname === '/keuangan' || pathname === '/finance',
     },
     {
       title: 'Jamaah',
       href: '/jamaah',
       icon: Users,
-      active: pathname === '/jamaah',
+      active: pathname === '/jamaah' || pathname === '/admin-jamaah',
     },
     {
       title: 'Agenda',
-      href: '/khutbah',
+      href: '/agenda',
       icon: CalendarDays,
-      active: pathname === '/khutbah' || pathname === '/petugas-jumat',
+      active: pathname === '/agenda' || pathname === '/khutbah' || pathname === '/petugas-jumat',
     },
     {
       title: 'Zakat',
       href: '/zakat',
       icon: HandHeart,
-      active: pathname === '/zakat',
+      active: pathname === '/zakat' || pathname === '/admin-zakat',
     },
     {
       title: 'Aset',
-      href: isAdmin ? '/inventory' : '/fasilitas',
+      href: '/fasilitas',
       icon: Package,
-      active: pathname === '/inventory' || pathname === '/fasilitas',
+      active: pathname === '/fasilitas' || pathname === '/inventory',
     },
     {
       title: 'Laporan',
       href: '/laporan',
       icon: FileText,
-      active: pathname === '/laporan',
+      active: pathname === '/laporan' || pathname === '/admin-laporan',
     },
   ];
 

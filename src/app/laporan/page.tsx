@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useMemo, useState } from 'react';
-import * as XLSX from 'xlsx';
+import Link from 'next/link';
 import {
   FileText,
   Printer,
@@ -15,10 +15,13 @@ import {
   Landmark,
   ShieldCheck,
   CheckCircle2,
-  RefreshCw,
-  Share2,
+  Sparkles,
+  ArrowLeft,
+  Shield,
+  MapPin,
+  Clock,
 } from 'lucide-react';
-import AdminLayout from '@/components/layout/admin-layout';
+import * as XLSX from 'xlsx';
 import { DataService } from '@/lib/data-service';
 import {
   IdentitasMasjid,
@@ -29,8 +32,9 @@ import {
   WakafItem,
   PetugasJumatItem,
 } from '@/types';
+import MobileBottomNav from '@/components/layout/mobile-bottom-nav';
 
-export default function LaporanPage() {
+export default function LaporanPublicPage() {
   const [identitas, setIdentitas] = useState<IdentitasMasjid>({
     nama: 'Al-Mukhlisin',
     nomor_id_kemenag: '01.4.13.04.06.000158',
@@ -49,6 +53,8 @@ export default function LaporanPage() {
   // Filter Periode
   const [periode, setPeriode] = useState<'all' | 'month' | 'year'>('all');
   const [currentDateStr, setCurrentDateStr] = useState('');
+  const [todayDateStr, setTodayDateStr] = useState('');
+  const [hijriDateStr, setHijriDateStr] = useState('');
 
   const loadAllData = async () => {
     setLoading(true);
@@ -69,548 +75,441 @@ export default function LaporanPage() {
       setInventory(invData);
       setWakaf(wkData);
       setPetugasJumat(pjData);
-    } catch (e) {
-      console.error('Failed to load report data:', e);
+    } catch (err) {
+      console.error('Failed to load report data:', err);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
+    loadAllData();
+
+    const now = new Date();
     setCurrentDateStr(
-      new Date().toLocaleDateString('id-ID', {
+      now.toLocaleDateString('id-ID', {
         day: 'numeric',
         month: 'long',
         year: 'numeric',
       })
     );
-    loadAllData();
+    setTodayDateStr(
+      now.toLocaleDateString('id-ID', {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+      })
+    );
+    try {
+      setHijriDateStr(
+        new Intl.DateTimeFormat('id-ID-u-ca-islamic-civil', {
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric',
+        }).format(now)
+      );
+    } catch {
+      setHijriDateStr('');
+    }
   }, []);
 
-  // Filtered Kas by Period
-  const [nowDate, setNowDate] = useState<Date | null>(null);
-
-  useEffect(() => {
-    setNowDate(new Date());
-  }, []);
-
+  // Filter Data by Periode
   const filteredKas = useMemo(() => {
-    if (!nowDate) return kas;
-    const currYear = nowDate.getFullYear().toString();
-    const currMonth = (nowDate.getMonth() + 1).toString().padStart(2, '0');
-    const currYearMonth = `${currYear}-${currMonth}`;
+    if (periode === 'all') return kas;
+    const now = new Date();
+    const currentMonth = now.toISOString().slice(0, 7);
+    const currentYear = now.getFullYear().toString();
 
-    if (periode === 'month') {
-      return kas.filter((k) => k.tanggal.startsWith(currYearMonth));
-    }
-    if (periode === 'year') {
-      return kas.filter((k) => k.tanggal.startsWith(currYear));
-    }
-    return kas;
-  }, [kas, periode, nowDate]);
+    return kas.filter((item) => {
+      if (!item.tanggal) return true;
+      if (periode === 'month') return item.tanggal.startsWith(currentMonth);
+      if (periode === 'year') return item.tanggal.startsWith(currentYear);
+      return true;
+    });
+  }, [kas, periode]);
 
-  // Statistics
-  const totalMasuk = useMemo(
-    () => filteredKas.filter((k) => k.tipe === 'masuk').reduce((a, b) => a + Number(b.nominal), 0),
-    [filteredKas]
-  );
-  const totalKeluar = useMemo(
-    () => filteredKas.filter((k) => k.tipe === 'keluar').reduce((a, b) => a + Number(b.nominal), 0),
-    [filteredKas]
-  );
-  const saldoKas = totalMasuk - totalKeluar;
+  // Financial Stats
+  const finStats = useMemo(() => {
+    let totalIn = 0;
+    let totalOut = 0;
+    filteredKas.forEach((item) => {
+      const n = Number(item.nominal || 0);
+      if (item.tipe === 'masuk') totalIn += n;
+      else totalOut += n;
+    });
+    return {
+      totalIn,
+      totalOut,
+      saldo: totalIn - totalOut,
+    };
+  }, [filteredKas]);
 
-  const totalFitrahUang = useMemo(
-    () =>
-      zakat
-        .filter((z) => z.jenis === 'Zakat Fitrah (uang)')
-        .reduce((sum, item) => sum + Number(item.nominal || 0), 0),
-    [zakat]
-  );
+  // Zakat Stats
+  const zakatStats = useMemo(() => {
+    let uang = 0;
+    let beras = 0;
+    let jiwa = 0;
+    zakat.forEach((item) => {
+      uang += Number(item.nominal || 0);
+      beras += Number(item.beras_kg || 0);
+      jiwa += Number(item.jumlah_jiwa || 0);
+    });
+    return { uang, beras, jiwa };
+  }, [zakat]);
 
-  const totalFitrahBeras = useMemo(
-    () =>
-      zakat
-        .filter((z) => z.jenis === 'Zakat Fitrah (beras)')
-        .reduce((sum, item) => sum + Number(item.beras_kg || 0), 0),
-    [zakat]
-  );
-
-  const totalZakatMal = useMemo(
-    () =>
-      zakat
-        .filter((z) => z.jenis === 'Zakat Mal')
-        .reduce((sum, item) => sum + Number(item.nominal || 0), 0),
-    [zakat]
-  );
-
-  const totalQurban = useMemo(
-    () =>
-      zakat
-        .filter((z) => z.jenis.startsWith('Qurban'))
-        .reduce((sum, item) => sum + Number(item.nominal || 0), 0),
-    [zakat]
-  );
-
-  const totalPenyaluran = useMemo(
-    () =>
-      zakat
-        .filter((z) => z.jenis === 'Penyaluran')
-        .reduce((sum, item) => sum + Number(item.nominal || 0), 0),
-    [zakat]
-  );
-
-  const totalNilaiWakaf = useMemo(
-    () => wakaf.reduce((sum, w) => sum + Number(w.nilai || 0), 0),
-    [wakaf]
-  );
-
-  const totalUnitAset = useMemo(
-    () => inventory.reduce((sum, i) => sum + Number(i.jumlah || 1), 0),
-    [inventory]
-  );
-
+  // Format Currency
   const formatRupiah = (val: number) => {
     return new Intl.NumberFormat('id-ID', {
       style: 'currency',
       currency: 'IDR',
-      maximumFractionDigits: 0,
+      minimumFractionDigits: 0,
     }).format(val);
   };
 
-  // Export Multi-Sheet Excel (7 Sheet)
-  const exportMultiSheetExcel = () => {
+  // Export Summary Excel
+  const handleExportExcel = () => {
     const wb = XLSX.utils.book_new();
 
-    // Sheet 1: Rekap Eksekutif
-    const rekapData = [
-      ['LAPORAN KEUANGAN DAN MANAJEMEN MASJID AL-MUKHLISIN'],
-      ['Nomor ID Kemenag RI (SIMAS):', identitas.nomor_id_kemenag],
-      ['Alamat:', identitas.alamat],
-      ['Tanggal Laporan Dibuat:', currentDateStr],
-      ['Periode:', periode === 'month' ? 'Bulan Ini' : periode === 'year' ? 'Tahun Ini' : 'Seluruh Periode'],
+    // Sheet 1: Identitas & Ringkasan
+    const summaryData = [
+      ['LAPORAN PERTANGGUNGJAWABAN DKM AL-MUKHLISIN'],
+      ['Nomor SIMAS Kemenag RI', identitas.nomor_id_kemenag],
+      ['Alamat', identitas.alamat],
+      ['Tanggal Laporan', currentDateStr],
+      ['Periode', periode === 'all' ? 'Seluruh Pembukuan' : periode === 'month' ? 'Bulan Ini' : 'Tahun Ini'],
       [],
-      ['1. RINGKASAN KAS KEUANGAN', 'NOMINAL (RP)'],
-      ['Total Pemasukan Kas', totalMasuk],
-      ['Total Pengeluaran Kas', totalKeluar],
-      ['Saldo Akhir Kas', saldoKas],
+      ['RINGKASAN KEUANGAN KAS'],
+      ['Total Penerimaan Kas', finStats.totalIn],
+      ['Total Pengeluaran Kas', finStats.totalOut],
+      ['Saldo Kas Berjalan', finStats.saldo],
       [],
-      ['2. REKAPITULASI ZAKAT & QURBAN', 'NILAI / JUMLAH'],
-      ['Zakat Fitrah (Uang Tunai)', totalFitrahUang],
-      ['Zakat Fitrah (Beras Kg)', `${totalFitrahBeras} Kg`],
-      ['Zakat Mal (Harta)', totalZakatMal],
-      ['Tabungan Qurban', totalQurban],
-      ['Penyaluran Mustahiq', totalPenyaluran],
+      ['RINGKASAN ZAKAT & INFAQ'],
+      ['Total Zakat Uang', zakatStats.uang],
+      ['Total Zakat Beras (kg)', zakatStats.beras],
+      ['Jumlah Jiwa Muzakki', zakatStats.jiwa],
       [],
-      ['3. STATISTIK JAMAAH & INVENTARIS', 'JUMLAH'],
-      ['Total Jamaah Terdaftar', jamaah.length],
-      ['Pengurus DKM', jamaah.filter((j) => j.peran === 'Pengurus DKM').length],
-      ['Total Unit Aset Inventaris', totalUnitAset],
-      ['Total Nilai Harta Wakaf', totalNilaiWakaf],
-      [],
-      ['Mengetahui, Ketua DKM', 'Bendahara DKM'],
-      [identitas.ketua_dkm, identitas.bendahara],
+      ['RINGKASAN ASET & JAMAAH'],
+      ['Total Aset Inventaris', inventory.length],
+      ['Total Tanah/Aset Wakaf', wakaf.length],
+      ['Total Jamaah Terdata', jamaah.length],
     ];
-    const wsRekap = XLSX.utils.aoa_to_sheet(rekapData);
-    XLSX.utils.book_append_sheet(wb, wsRekap, 'Rekap_Eksekutif');
+    const wsSummary = XLSX.utils.aoa_to_sheet(summaryData);
+    XLSX.utils.book_append_sheet(wb, wsSummary, 'Ringkasan Eksekutif');
 
     // Sheet 2: Kas
-    const kasData = filteredKas.map((k, idx) => ({
-      No: idx + 1,
+    const kasData = filteredKas.map((k, i) => ({
+      No: i + 1,
       Tanggal: k.tanggal,
-      Keterangan: k.keterangan,
-      Kategori: k.kategori || '-',
-      Tipe: k.tipe.toUpperCase(),
+      Tipe: k.tipe,
+      Kategori: k.kategori,
       Nominal: k.nominal,
+      Keterangan: k.keterangan || '-',
     }));
-    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(kasData), 'Buku_Kas');
+    const wsKas = XLSX.utils.json_to_sheet(kasData);
+    XLSX.utils.book_append_sheet(wb, wsKas, 'Arus Kas');
 
-    // Sheet 3: Zakat & Qurban
-    const zakatData = zakat.map((z, idx) => ({
-      No: idx + 1,
-      Tanggal: z.tanggal,
-      Nama: z.nama,
-      Jenis: z.jenis,
-      'Jumlah Jiwa': z.jumlah_jiwa,
-      'Beras (Kg)': z.beras_kg,
-      Nominal: z.nominal,
-      Keterangan: z.keterangan || '-',
-    }));
-    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(zakatData), 'Zakat_Qurban');
-
-    // Sheet 4: Jamaah
-    const jamaahData = jamaah.map((j, idx) => ({
-      No: idx + 1,
-      Nama: j.nama,
-      'No HP': j.no_hp || '-',
-      Alamat: j.alamat || '-',
-      Peran: j.peran,
-    }));
-    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(jamaahData), 'Data_Jamaah');
-
-    // Sheet 5: Inventaris
-    const invData = inventory.map((i, idx) => ({
-      No: idx + 1,
-      'Nama Barang': i.nama_barang,
-      Jumlah: i.jumlah,
-      Kondisi: i.kondisi.toUpperCase(),
-      Lokasi: i.lokasi,
-    }));
-    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(invData), 'Inventaris');
-
-    // Sheet 6: Wakaf
-    const wakafData = wakaf.map((w, idx) => ({
-      No: idx + 1,
-      Tanggal: w.tanggal,
-      'Nama Wakif': w.wakif,
-      'Jenis Wakaf': w.jenis,
-      'Estimasi Nilai': w.nilai,
-      Keterangan: w.keterangan || '-',
-    }));
-    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(wakafData), 'Wakaf');
-
-    // Sheet 7: Petugas Jumat
-    const pjData = petugasJumat.map((p, idx) => ({
-      No: idx + 1,
-      Tanggal: p.tanggal,
-      Khatib: p.khatib,
-      Imam: p.imam,
-      Muadzin: p.muadzin,
-    }));
-    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(pjData), 'Petugas_Jumat');
-
-    XLSX.writeFile(
-      wb,
-      `Laporan_Lengkap_Masjid_Al_Mukhlisin_${new Date().toISOString().split('T')[0]}.xlsx`
-    );
-  };
-
-  const handlePrint = () => {
-    window.print();
+    XLSX.writeFile(wb, `Laporan_Resmi_Masjid_Al_Mukhlisin_${new Date().toISOString().split('T')[0]}.xlsx`);
   };
 
   return (
-    <AdminLayout>
-      <div className="p-3.5 sm:p-6 md:p-8 space-y-4 sm:space-y-6 max-w-7xl mx-auto pb-24">
-        {/* Top Control Bar (Hidden when printing) */}
-        <div className="print:hidden flex flex-col md:flex-row md:items-center md:justify-between gap-3 sm:gap-4 bg-white p-4 sm:p-5 rounded-2xl sm:rounded-3xl border border-slate-100 shadow-xs">
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="p-1.5 sm:p-2 rounded-xl bg-emerald-100 text-emerald-800">
-                <FileText size={20} />
-              </span>
-              <h1 className="text-lg sm:text-xl font-black text-slate-800">Laporan Resmi Berkop SIMAS</h1>
+    <div className="min-h-screen bg-[#f4f7f6] font-sans text-slate-900 selection:bg-emerald-200 pb-28 md:pb-12">
+      {/* --- TOP BAR HEADER --- */}
+      <header className="sticky top-0 z-40 border-b border-emerald-950/20 bg-[#0a1f18]/95 px-4 py-3.5 text-white backdrop-blur-md md:px-8">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <Link
+              href="/"
+              className="flex items-center gap-2 rounded-xl bg-white/10 px-3 py-1.5 text-xs font-bold text-slate-200 transition-colors hover:bg-white/20 hover:text-white"
+            >
+              <ArrowLeft size={14} />
+              <span className="hidden sm:inline">Beranda</span>
+            </Link>
+
+            <div className="h-5 w-px bg-white/20" />
+
+            <div className="flex items-center gap-2.5">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-emerald-500/30 bg-emerald-800/80 shadow-xs overflow-hidden">
+                <img src="/icon.svg" alt="Masjid Al-Mukhlisin" className="h-6 w-6" />
+              </div>
+              <div>
+                <h1 className="font-serif-elegant text-sm font-bold tracking-wide text-white md:text-base leading-none">
+                  Masjid Al-Mukhlisin
+                </h1>
+                <p className="text-[9px] font-mono text-emerald-300/80 leading-tight mt-0.5">
+                  ID SIMAS 01.4.13.04.06.000158 | Lagadar
+                </p>
+              </div>
             </div>
-            <p className="text-[11px] sm:text-xs text-slate-500 mt-0.5 sm:mt-1">
-              Rekapitulasi lengkap 6 bagian dengan legalitas Nomor SIMAS Kemenag RI dan tanda tangan DKM
-            </p>
           </div>
 
-          <div className="flex items-center gap-2 flex-wrap">
-            {/* Periode filter */}
-            <div className="flex items-center bg-slate-100 p-1 rounded-xl text-xs font-bold">
-              <button
-                onClick={() => setPeriode('all')}
-                className={`px-3 py-1.5 rounded-lg transition ${
-                  periode === 'all' ? 'bg-white text-emerald-800 shadow-xs' : 'text-slate-600 hover:text-slate-900'
-                }`}
-              >
-                Semua
-              </button>
-              <button
-                onClick={() => setPeriode('year')}
-                className={`px-3 py-1.5 rounded-lg transition ${
-                  periode === 'year' ? 'bg-white text-emerald-800 shadow-xs' : 'text-slate-600 hover:text-slate-900'
-                }`}
-              >
-                Tahun Ini
-              </button>
-              <button
-                onClick={() => setPeriode('month')}
-                className={`px-3 py-1.5 rounded-lg transition ${
-                  periode === 'month' ? 'bg-white text-emerald-800 shadow-xs' : 'text-slate-600 hover:text-slate-900'
-                }`}
-              >
-                Bulan Ini
-              </button>
+          <div className="flex items-center gap-2 sm:gap-3">
+            {todayDateStr && (
+              <div className="hidden lg:flex flex-col text-right">
+                <span className="text-[10px] font-bold text-slate-300">{todayDateStr}</span>
+                {hijriDateStr && (
+                  <span className="text-[9px] font-mono text-amber-300">{hijriDateStr} H</span>
+                )}
+              </div>
+            )}
+
+            <Link
+              href="/login"
+              className="flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-3.5 py-1.5 text-xs font-bold text-white transition-colors hover:bg-white/20"
+            >
+              <Shield size={13} className="text-emerald-400" />
+              <span className="hidden sm:inline">Portal Pengurus</span>
+            </Link>
+          </div>
+        </div>
+      </header>
+
+      {/* --- HERO SECTION --- */}
+      <section className="relative overflow-hidden bg-gradient-to-b from-[#0a1f18] via-[#0d2a21] to-[#f4f7f6] pt-10 pb-16 px-4 sm:px-6 md:px-8 text-white">
+        <div className="mx-auto max-w-7xl">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+            <div>
+              <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-900/60 px-3.5 py-1 text-[10px] font-black tracking-widest text-emerald-300 uppercase">
+                <Sparkles size={12} />
+                <span>AKUNTABILITAS & TRANSPARANSI PUBLIK · SIMAS KEMENAG RI</span>
+              </div>
+              <h1 className="font-serif-elegant text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-white">
+                Laporan Terbuka Masjid
+              </h1>
+              <p className="mt-2 text-xs sm:text-sm text-emerald-100/90 max-w-2xl leading-relaxed">
+                Dokumen pertanggungjawaban terbuka DKM Al-Mukhlisin meliputi transparansi keuangan kas, aset inventaris, wakaf tanah, kepengurusan jamaah, dan zakat.
+              </p>
             </div>
 
-            <button
-              onClick={loadAllData}
-              className="p-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 transition"
-              title="Segarkan Data"
-            >
-              <RefreshCw size={16} />
-            </button>
+            {/* Quick Action Buttons */}
+            <div className="flex items-center gap-2.5">
+              <button
+                onClick={handleExportExcel}
+                className="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold bg-white/10 hover:bg-white/20 text-white border border-white/15 transition-colors shadow-xs"
+              >
+                <Download size={14} />
+                <span>Unduh Excel</span>
+              </button>
+              <button
+                onClick={() => window.print()}
+                className="flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white transition-colors shadow-md"
+              >
+                <Printer size={14} />
+                <span>Cetak Lembar Resmi</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
 
-            <button
-              onClick={exportMultiSheetExcel}
-              className="px-3.5 py-2.5 rounded-xl border border-emerald-300 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs font-bold flex items-center gap-2 transition"
-            >
-              <Download size={15} /> Ekspor 7-Sheet Excel
-            </button>
+      {/* --- MAIN CONTENT CANVAS --- */}
+      <main className="mx-auto max-w-5xl px-3.5 sm:px-6 md:px-8 -mt-8 space-y-6">
+        {/* Periode Filter Pills */}
+        <div className="rounded-2xl bg-white p-3.5 sm:p-4 border border-slate-200/90 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <Calendar size={16} className="text-emerald-700" />
+            <span className="text-xs font-bold text-slate-700">Pilih Periode Laporan:</span>
+          </div>
 
-            <button
-              onClick={handlePrint}
-              className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 text-white text-xs font-bold flex items-center gap-2 shadow-md shadow-emerald-900/20 transition"
-            >
-              <Printer size={16} /> Cetak / Unduh PDF
-            </button>
+          <div className="flex items-center gap-2 text-xs">
+            {[
+              { id: 'all', label: 'Seluruh Pembukuan' },
+              { id: 'year', label: 'Tahun 2026' },
+              { id: 'month', label: 'Bulan Ini' },
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setPeriode(tab.id as any)}
+                className={`px-3 py-1.5 rounded-xl font-bold transition-all ${
+                  periode === tab.id
+                    ? 'bg-emerald-800 text-white shadow-2xs'
+                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
           </div>
         </div>
 
-        {/* ========================================================================= */}
-        {/* PRINTABLE OFFICIAL REPORT CANVAS */}
-        {/* ========================================================================= */}
-        <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200/90 shadow-lg p-4 sm:p-8 md:p-12 text-slate-900 max-w-4xl mx-auto print:border-none print:shadow-none print:p-0 print:max-w-none overflow-x-auto">
-          {/* KOP SURAT RESMI BERKOP SIMAS KEMENAG RI */}
-          <div className="border-b-4 border-double border-emerald-950 pb-5 mb-8 text-center relative">
-            <div className="flex items-center justify-center gap-4 mb-2">
-              <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-[#0a1f18] to-emerald-800 text-white flex items-center justify-center font-serif text-3xl font-bold shadow-md shrink-0">
-                M
+        {/* Paper Canvas (Lembar Laporan Resmi Berstandar Cetak) */}
+        <div className="bg-white rounded-2xl border border-slate-200/90 shadow-md p-6 sm:p-10 space-y-8">
+          {/* KOP SURAT RESMI */}
+          <div className="border-b-2 border-slate-800 pb-5 text-center space-y-1.5 relative">
+            <div className="flex items-center justify-center gap-3">
+              <div className="h-12 w-12 rounded-xl bg-emerald-800 border border-emerald-600 flex items-center justify-center shrink-0 overflow-hidden">
+                <img src="/icon.svg" alt="Masjid Al-Mukhlisin" className="h-9 w-9" />
               </div>
               <div className="text-left">
-                <p className="text-[11px] font-black tracking-widest text-emerald-800 uppercase">
-                  DEWAN KEMAKMURAN MASJID (DKM)
-                </p>
-                <h2 className="text-2xl md:text-3xl font-black text-slate-900 font-serif uppercase tracking-tight">
-                  {identitas.nama}
+                <h2 className="font-serif-elegant text-xl sm:text-2xl font-black text-slate-900 tracking-wide uppercase leading-tight">
+                  DEWAN KEMAKMURAN MASJID AL-MUKHLISIN
                 </h2>
-                <div className="flex items-center gap-2 flex-wrap text-xs text-slate-600 mt-0.5">
-                  <span className="font-semibold text-emerald-900 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 text-[11px]">
-                    NOMOR ID SIMAS KEMENAG RI: {identitas.nomor_id_kemenag}
-                  </span>
-                </div>
+                <p className="text-xs font-semibold text-slate-600">
+                  {identitas.alamat} · Kec. Margaasih, Kab. Bandung Barat
+                </p>
+                <p className="text-[10px] font-mono font-bold text-emerald-800">
+                  ID SIMAS KEMENAG RI: {identitas.nomor_id_kemenag}
+                </p>
               </div>
             </div>
-            <p className="text-xs text-slate-500 font-medium mt-1">
-              {identitas.alamat}
-            </p>
           </div>
 
-          {/* REPORT TITLE & METADATA */}
-          <div className="text-center mb-8">
-            <h3 className="text-base md:text-lg font-black uppercase tracking-wider text-slate-900">
-              LAPORAN PERTANGGUNGJAWABAN & REKAPITULASI DKM
+          {/* JUDUL DOKUMEN */}
+          <div className="text-center space-y-1">
+            <h3 className="font-bold text-base sm:text-lg text-slate-800 uppercase tracking-wider">
+              LEMBAR LAPORAN PERTANGGUNGJAWABAN & TRANSPARANSI
             </h3>
-            <p className="text-xs text-slate-500 mt-1 font-medium">
+            <p className="text-xs text-slate-500">
               Periode:{' '}
-              <span className="font-bold text-slate-800">
-                {periode === 'month'
-                  ? 'Bulan Ini'
+              <strong className="text-slate-800 font-bold">
+                {periode === 'all'
+                  ? 'Seluruh Riwayat Pembukuan'
                   : periode === 'year'
-                  ? 'Tahun Berjalan'
-                  : 'Seluruh Periode Operasional'}
-              </span>{' '}
-              | Dicetak pada: <span className="font-bold text-slate-800">{currentDateStr}</span>
+                  ? 'Tahun Berjalan 2026'
+                  : 'Bulan Berjalan'}
+              </strong>{' '}
+              · Diterbitkan per tanggal {currentDateStr}
             </p>
           </div>
 
-          {/* ========================================================================= */}
-          {/* SECTION 1: RINGKASAN EKSEKUTIF KAS KEUANGAN */}
-          {/* ========================================================================= */}
-          <div className="mb-8">
-            <div className="flex items-center gap-2 mb-3 pb-1 border-b border-slate-200">
-              <span className="h-5 w-5 rounded-full bg-emerald-700 text-white flex items-center justify-center text-xs font-bold">
-                1
-              </span>
-              <h4 className="font-extrabold text-sm text-slate-900 uppercase tracking-wide">
-                Ringkasan Eksekutif Buku Kas Keuangan
-              </h4>
+          {/* 1. SEKSI KEUANGAN */}
+          <div className="space-y-3">
+            <div className="flex items-center gap-2 pb-2 border-b border-slate-200 text-slate-800 font-bold text-sm">
+              <Wallet size={16} className="text-emerald-700" />
+              <span>I. REKAPITULASI KEUANGAN KAS UMMAT</span>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3 mb-4">
-              <div className="p-3 sm:p-3.5 rounded-2xl bg-emerald-50/80 border border-emerald-200">
-                <p className="text-[10px] font-bold text-emerald-800 uppercase tracking-wider">
-                  Total Pemasukan Kas
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+              <div className="rounded-xl bg-emerald-50/80 p-3.5 border border-emerald-200/80">
+                <span className="text-[10px] font-bold text-emerald-800 uppercase block">
+                  Total Penerimaan Kas
+                </span>
+                <p className="text-base sm:text-lg font-black text-emerald-950 mt-1">
+                  {formatRupiah(finStats.totalIn)}
                 </p>
-                <p className="text-base sm:text-lg font-black text-emerald-700 mt-1">{formatRupiah(totalMasuk)}</p>
               </div>
-              <div className="p-3 sm:p-3.5 rounded-2xl bg-rose-50/80 border border-rose-200">
-                <p className="text-[10px] font-bold text-rose-800 uppercase tracking-wider">
+
+              <div className="rounded-xl bg-rose-50/80 p-3.5 border border-rose-200/80">
+                <span className="text-[10px] font-bold text-rose-800 uppercase block">
                   Total Pengeluaran Kas
-                </p>
-                <p className="text-base sm:text-lg font-black text-rose-700 mt-1">{formatRupiah(totalKeluar)}</p>
-              </div>
-              <div className="p-3 sm:p-3.5 rounded-2xl bg-blue-50/80 border border-blue-200">
-                <p className="text-[10px] font-bold text-blue-800 uppercase tracking-wider">
-                  Saldo Kas Berjalan
-                </p>
-                <p className="text-base sm:text-lg font-black text-blue-800 mt-1">{formatRupiah(saldoKas)}</p>
-              </div>
-            </div>
-
-            {/* Recent 5 transactions */}
-            <div className="overflow-x-auto rounded-xl border border-slate-200">
-              <table className="w-full text-left text-xs">
-                <thead className="bg-slate-100 text-slate-600 font-bold uppercase text-[10px]">
-                  <tr>
-                    <th className="py-2 px-3">Tanggal</th>
-                    <th className="py-2 px-3">Keterangan Transaksi</th>
-                    <th className="py-2 px-3">Kategori</th>
-                    <th className="py-2 px-3 text-right">Pemasukan</th>
-                    <th className="py-2 px-3 text-right">Pengeluaran</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {filteredKas.slice(0, 5).map((k) => (
-                    <tr key={k.id} className="text-slate-800">
-                      <td className="py-2 px-3 whitespace-nowrap text-slate-500">{k.tanggal}</td>
-                      <td className="py-2 px-3 font-medium">{k.keterangan}</td>
-                      <td className="py-2 px-3 text-slate-500">{k.kategori || '-'}</td>
-                      <td className="py-2 px-3 text-right font-bold text-emerald-700">
-                        {k.tipe === 'masuk' ? formatRupiah(k.nominal) : '-'}
-                      </td>
-                      <td className="py-2 px-3 text-right font-bold text-rose-600">
-                        {k.tipe === 'keluar' ? formatRupiah(k.nominal) : '-'}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          {/* ========================================================================= */}
-          {/* SECTION 2: ZAKAT, INFAQ & QURBAN */}
-          {/* ========================================================================= */}
-          <div className="mb-8">
-            <div className="flex items-center gap-2 mb-3 pb-1 border-b border-slate-200">
-              <span className="h-5 w-5 rounded-full bg-emerald-700 text-white flex items-center justify-center text-xs font-bold">
-                2
-              </span>
-              <h4 className="font-extrabold text-sm text-slate-900 uppercase tracking-wide">
-                Rekapitulasi Zakat, Infaq & Qurban
-              </h4>
-            </div>
-
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
-                <p className="text-[10px] font-bold text-slate-500 uppercase">Fitrah Uang & Beras</p>
-                <p className="text-sm font-extrabold text-slate-900 mt-1">
-                  {formatRupiah(totalFitrahUang)}
-                </p>
-                <p className="text-[10px] text-amber-700 font-bold">{totalFitrahBeras} Kg Beras</p>
-              </div>
-              <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
-                <p className="text-[10px] font-bold text-slate-500 uppercase">Zakat Mal</p>
-                <p className="text-sm font-extrabold text-slate-900 mt-1">
-                  {formatRupiah(totalZakatMal)}
-                </p>
-                <p className="text-[10px] text-slate-400">Harta muzakki</p>
-              </div>
-              <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
-                <p className="text-[10px] font-bold text-slate-500 uppercase">Dana Qurban</p>
-                <p className="text-sm font-extrabold text-slate-900 mt-1">{formatRupiah(totalQurban)}</p>
-                <p className="text-[10px] text-slate-400">Sapi & Kambing</p>
-              </div>
-              <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
-                <p className="text-[10px] font-bold text-slate-500 uppercase">Penyaluran Mustahiq</p>
-                <p className="text-sm font-extrabold text-rose-700 mt-1">
-                  {formatRupiah(totalPenyaluran)}
-                </p>
-                <p className="text-[10px] text-slate-400">Tersalurkan resmi</p>
-              </div>
-            </div>
-          </div>
-
-          {/* ========================================================================= */}
-          {/* SECTION 3 & 4: JAMAAH & INVENTARIS/WAKAF (2 Columns) */}
-          {/* ========================================================================= */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-            {/* Bagian 3: Jamaah */}
-            <div>
-              <div className="flex items-center gap-2 mb-3 pb-1 border-b border-slate-200">
-                <span className="h-5 w-5 rounded-full bg-emerald-700 text-white flex items-center justify-center text-xs font-bold">
-                  3
                 </span>
-                <h4 className="font-extrabold text-sm text-slate-900 uppercase tracking-wide">
-                  Data Jamaah & Tokoh
-                </h4>
+                <p className="text-base sm:text-lg font-black text-rose-950 mt-1">
+                  {formatRupiah(finStats.totalOut)}
+                </p>
               </div>
-              <ul className="space-y-2 text-xs">
-                <li className="flex justify-between p-2 rounded-lg bg-slate-50 border border-slate-100">
-                  <span className="text-slate-600">Total Jamaah Terdaftar:</span>
-                  <span className="font-bold text-slate-900">{jamaah.length} orang</span>
-                </li>
-                <li className="flex justify-between p-2 rounded-lg bg-slate-50 border border-slate-100">
-                  <span className="text-slate-600">Pengurus DKM:</span>
-                  <span className="font-bold text-slate-900">
-                    {jamaah.filter((j) => j.peran === 'Pengurus DKM').length} orang
-                  </span>
-                </li>
-                <li className="flex justify-between p-2 rounded-lg bg-slate-50 border border-slate-100">
-                  <span className="text-slate-600">Imam & Muadzin Rawatib:</span>
-                  <span className="font-bold text-slate-900">
-                    {jamaah.filter((j) => j.peran === 'Imam' || j.peran === 'Muadzin').length} orang
-                  </span>
-                </li>
-              </ul>
-            </div>
 
-            {/* Bagian 4 & 5: Inventaris & Wakaf */}
-            <div>
-              <div className="flex items-center gap-2 mb-3 pb-1 border-b border-slate-200">
-                <span className="h-5 w-5 rounded-full bg-emerald-700 text-white flex items-center justify-center text-xs font-bold">
-                  4
+              <div className="rounded-xl bg-blue-50/80 p-3.5 border border-blue-200/80">
+                <span className="text-[10px] font-bold text-blue-800 uppercase block">
+                  Saldo Kas Terbuka
                 </span>
-                <h4 className="font-extrabold text-sm text-slate-900 uppercase tracking-wide">
-                  Inventaris & Harta Wakaf
-                </h4>
+                <p className="text-base sm:text-lg font-black text-blue-950 mt-1">
+                  {formatRupiah(finStats.saldo)}
+                </p>
               </div>
-              <ul className="space-y-2 text-xs">
-                <li className="flex justify-between p-2 rounded-lg bg-slate-50 border border-slate-100">
-                  <span className="text-slate-600">Total Unit Barang Aset:</span>
-                  <span className="font-bold text-slate-900">{totalUnitAset} unit</span>
-                </li>
-                <li className="flex justify-between p-2 rounded-lg bg-slate-50 border border-slate-100">
-                  <span className="text-slate-600">Kondisi Baik:</span>
-                  <span className="font-bold text-emerald-700">
-                    {inventory.filter((i) => i.kondisi === 'baik').length} item
-                  </span>
-                </li>
-                <li className="flex justify-between p-2 rounded-lg bg-slate-50 border border-slate-100">
-                  <span className="text-slate-600">Estimasi Nilai Wakaf Umat:</span>
-                  <span className="font-bold text-slate-900">{formatRupiah(totalNilaiWakaf)}</span>
-                </li>
-              </ul>
             </div>
           </div>
 
-          {/* ========================================================================= */}
-          {/* TANDA TANGAN RESMI PENGURUS DKM */}
-          {/* ========================================================================= */}
-          <div className="mt-12 pt-6 border-t-2 border-slate-200">
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-6 sm:gap-0 text-xs text-slate-700">
-              <div className="text-center w-full sm:w-52">
-                <p className="font-semibold text-slate-500 mb-1">Mengetahui,</p>
-                <p className="font-black text-slate-800 uppercase tracking-wider">Ketua DKM</p>
-                <div className="h-16 sm:h-20 flex items-center justify-center">
-                  <span className="text-[10px] text-slate-300 italic">[ Tanda Tangan & Cap ]</span>
-                </div>
-                <p className="font-bold text-slate-900 underline decoration-slate-400">
-                  {identitas.ketua_dkm}
+          {/* 2. SEKSI ZAKAT & INFAQ */}
+          <div className="space-y-3">
+            <div className="flex items-center gap-2 pb-2 border-b border-slate-200 text-slate-800 font-bold text-sm">
+              <HandHeart size={16} className="text-emerald-700" />
+              <span>II. REKAPITULASI UNIT PENGUMPUL ZAKAT (UPZ)</span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+              <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-200">
+                <span className="text-[10px] font-bold text-slate-500 uppercase block">
+                  Penerimaan Zakat Uang
+                </span>
+                <p className="text-base font-bold text-slate-800 mt-1">
+                  {formatRupiah(zakatStats.uang)}
                 </p>
-                <p className="text-[10px] text-slate-400">DKM Masjid {identitas.nama}</p>
               </div>
 
-              <div className="text-center w-full sm:w-52">
-                <p className="font-semibold text-slate-500 mb-1">
-                  Lagadar, {currentDateStr}
+              <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-200">
+                <span className="text-[10px] font-bold text-slate-500 uppercase block">
+                  Penerimaan Zakat Beras
+                </span>
+                <p className="text-base font-bold text-slate-800 mt-1">
+                  {zakatStats.beras} kg
                 </p>
-                <p className="font-black text-slate-800 uppercase tracking-wider">Bendahara DKM</p>
-                <div className="h-16 sm:h-20 flex items-center justify-center">
-                  <span className="text-[10px] text-slate-300 italic">[ Tanda Tangan & Cap ]</span>
+              </div>
+
+              <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-200">
+                <span className="text-[10px] font-bold text-slate-500 uppercase block">
+                  Jiwa Muzakki Tertunaikan
+                </span>
+                <p className="text-base font-bold text-slate-800 mt-1">
+                  {zakatStats.jiwa} Jiwa
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* 3. SEKSI INVENTARIS & WAKAF */}
+          <div className="space-y-3">
+            <div className="flex items-center gap-2 pb-2 border-b border-slate-200 text-slate-800 font-bold text-sm">
+              <Package size={16} className="text-emerald-700" />
+              <span>III. REKAPITULASI FASILITAS, ASET & WAKAF</span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+              <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-200">
+                <span className="text-[10px] font-bold text-slate-500 uppercase block">
+                  Barang Inventaris Fasilitas
+                </span>
+                <p className="text-base font-bold text-slate-800 mt-1">{inventory.length} Barang</p>
+              </div>
+
+              <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-200">
+                <span className="text-[10px] font-bold text-slate-500 uppercase block">
+                  Tanah / Aset Wakaf Terkelola
+                </span>
+                <p className="text-base font-bold text-slate-800 mt-1">{wakaf.length} Bidang</p>
+              </div>
+
+              <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-200">
+                <span className="text-[10px] font-bold text-slate-500 uppercase block">
+                  Data Warga Jamaah Terdaftar
+                </span>
+                <p className="text-base font-bold text-slate-800 mt-1">{jamaah.length} Orang</p>
+              </div>
+            </div>
+          </div>
+
+          {/* TANDA TANGAN RESMI PENGURUS */}
+          <div className="pt-8 border-t border-slate-200">
+            <p className="text-right text-xs text-slate-600 mb-6">
+              Lagadar, {currentDateStr}
+            </p>
+
+            <div className="grid grid-cols-2 gap-8 text-center text-xs">
+              <div className="space-y-16">
+                <p className="font-bold text-slate-700">Mengetahui,<br />Ketua DKM Al-Mukhlisin</p>
+                <div>
+                  <p className="font-bold text-slate-900 underline text-sm">
+                    {identitas.ketua_dkm || 'Ustadz H. Ahmad Sobari'}
+                  </p>
+                  <p className="text-[10px] text-slate-500">Penanggung Jawab Kemakmuran</p>
                 </div>
-                <p className="font-bold text-slate-900 underline decoration-slate-400">
-                  {identitas.bendahara}
-                </p>
-                <p className="text-[10px] text-slate-400">DKM Masjid {identitas.nama}</p>
+              </div>
+
+              <div className="space-y-16">
+                <p className="font-bold text-slate-700">Disusun oleh,<br />Bendahara DKM</p>
+                <div>
+                  <p className="font-bold text-slate-900 underline text-sm">
+                    {identitas.bendahara || 'H. Mulyadi, S.E.'}
+                  </p>
+                  <p className="text-[10px] text-slate-500">Amanah Kas Keuangan Ummat</p>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    </AdminLayout>
+      </main>
+
+      {/* Mobile Bottom Navigation Bar */}
+      <MobileBottomNav />
+    </div>
   );
 }
