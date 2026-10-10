@@ -394,13 +394,6 @@ export default function HomePage() {
               >
                 <ChevronDown size={28} className="animate-bounce transition-transform group-hover:scale-110" />
               </a>
-
-              <button
-                onClick={() => setShowDonasiModal(true)}
-                className="rounded-full bg-white/10 hover:bg-white/20 border border-white/20 px-6 py-3 text-xs font-bold text-white tracking-wider uppercase transition-all backdrop-blur-xs flex items-center gap-2"
-              >
-                <Heart size={15} className="text-emerald-400 fill-emerald-400" /> Infaq & Sedekah
-              </button>
             </div>
           </div>
         </div>
