@@ -173,7 +173,7 @@ export default function AgendaPublicPage() {
       </header>
 
       {/* --- HERO SECTION --- */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-[#0a1f18] via-[#0d2a21] to-[#f4f7f6] pt-10 pb-16 px-4 sm:px-6 md:px-8 text-white">
+      <section className="relative overflow-hidden bg-gradient-to-b from-[#0a1f18] via-[#0d2a21] to-[#081a14] pt-10 pb-16 px-4 sm:px-6 md:px-8 text-white">
         <div className="mx-auto max-w-7xl">
           <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-900/60 px-3.5 py-1 text-[10px] font-black tracking-widest text-emerald-300 uppercase">
             <Sparkles size={12} />
@@ -223,7 +223,7 @@ export default function AgendaPublicPage() {
       </section>
 
       {/* --- MAIN CONTENT --- */}
-      <main className="mx-auto max-w-7xl px-3.5 sm:px-6 md:px-8 -mt-6 space-y-8">
+      <main className="relative z-10 mx-auto max-w-7xl px-3.5 sm:px-6 md:px-8 -mt-6 space-y-8">
         {/* Highlight Petugas Jumat Terdekat */}
         {nextJumat && (
           <div className="rounded-2xl bg-white p-5 sm:p-6 border border-slate-200/90 shadow-sm space-y-4">

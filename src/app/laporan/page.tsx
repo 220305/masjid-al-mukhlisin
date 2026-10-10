@@ -265,7 +265,7 @@ export default function LaporanPublicPage() {
       </header>
 
       {/* --- HERO SECTION --- */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-[#0a1f18] via-[#0d2a21] to-[#f4f7f6] pt-10 pb-16 px-4 sm:px-6 md:px-8 text-white">
+      <section className="relative overflow-hidden bg-gradient-to-b from-[#0a1f18] via-[#0d2a21] to-[#081a14] pt-10 pb-16 px-4 sm:px-6 md:px-8 text-white">
         <div className="mx-auto max-w-7xl">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
             <div>
@@ -303,7 +303,7 @@ export default function LaporanPublicPage() {
       </section>
 
       {/* --- MAIN CONTENT CANVAS --- */}
-      <main className="mx-auto max-w-5xl px-3.5 sm:px-6 md:px-8 -mt-8 space-y-6">
+      <main className="relative z-10 mx-auto max-w-5xl px-3.5 sm:px-6 md:px-8 -mt-8 space-y-6">
         {/* Periode Filter Pills */}
         <div className="rounded-2xl bg-white p-3.5 sm:p-4 border border-slate-200/90 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-center gap-2">

@@ -194,7 +194,7 @@ export default function ZakatPublicPage() {
       </header>
 
       {/* --- HERO SECTION --- */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-[#0a1f18] via-[#0d2a21] to-[#f4f7f6] pt-10 pb-16 px-4 sm:px-6 md:px-8 text-white">
+      <section className="relative overflow-hidden bg-gradient-to-b from-[#0a1f18] via-[#0d2a21] to-[#081a14] pt-10 pb-16 px-4 sm:px-6 md:px-8 text-white">
         <div className="mx-auto max-w-7xl">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
             <div>
@@ -224,7 +224,7 @@ export default function ZakatPublicPage() {
       </section>
 
       {/* --- STAT CARDS & CALCULATOR --- */}
-      <main className="mx-auto max-w-7xl px-3.5 sm:px-6 md:px-8 -mt-8 space-y-6">
+      <main className="relative z-10 mx-auto max-w-7xl px-3.5 sm:px-6 md:px-8 -mt-8 space-y-6">
         {/* Stat Cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4">
           <div className="rounded-2xl bg-white p-4 sm:p-5 border border-slate-200/80 shadow-xs flex items-center gap-3.5">
