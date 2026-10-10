@@ -51,9 +51,9 @@ export default function MobileBottomNav({ variant }: MobileBottomNavProps) {
   const navItems = [
     {
       title: 'Beranda',
-      href: isAdmin ? '/dashboard' : '/',
+      href: '/',
       icon: MosqueIcon,
-      active: isAdmin ? pathname === '/dashboard' : pathname === '/',
+      active: pathname === '/',
     },
     {
       title: 'Kas',
