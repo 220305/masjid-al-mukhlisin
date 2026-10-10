@@ -161,23 +161,23 @@ export default function KhutbahPage() {
 
   return (
     <AdminLayout>
-      <div className="p-4 md:p-10 max-w-7xl mx-auto space-y-6 pb-24">
+      <div className="p-3.5 sm:p-6 md:p-10 max-w-7xl mx-auto space-y-4 sm:space-y-6 pb-24">
         {/* Top Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
           <div>
-            <h2 className="text-3xl font-black text-slate-900 font-serif-elegant">Khutbah & Majelis Ilmu</h2>
-            <p className="text-xs font-bold text-slate-400 mt-1 uppercase tracking-widest">
+            <h2 className="text-2xl sm:text-3xl font-black text-slate-900 font-serif-elegant">Khutbah & Majelis Ilmu</h2>
+            <p className="text-[11px] sm:text-xs font-bold text-slate-400 mt-0.5 sm:mt-1 uppercase tracking-widest">
               Syiar Dakwah & Penjadwalan Khotib
             </p>
           </div>
 
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-2 sm:gap-2.5 w-full sm:w-auto">
             <button
               onClick={exportToExcel}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-white border border-slate-200 text-xs font-bold text-slate-700 hover:border-emerald-600 hover:text-emerald-700 transition-colors shadow-xs"
+              className="flex items-center justify-center gap-1.5 px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-2xl bg-white border border-slate-200 text-xs font-bold text-slate-700 hover:border-emerald-600 hover:text-emerald-700 transition-colors shadow-xs"
               title="Ekspor ke Excel"
             >
-              <Download size={16} /> <span className="hidden sm:inline">Ekspor Excel</span>
+              <Download size={15} /> <span className="hidden sm:inline">Ekspor Excel</span>
             </button>
             <button
               onClick={() => {
@@ -193,15 +193,15 @@ export default function KhutbahPage() {
                 setImagePreview('');
                 setShowModal('add');
               }}
-              className="flex items-center gap-2 px-6 py-2.5 rounded-2xl bg-[#0d8a5e] text-white hover:bg-emerald-700 text-xs font-black tracking-wider uppercase transition-all shadow-md shadow-emerald-900/10 active:scale-95"
+              className="flex-1 sm:flex-initial flex items-center justify-center gap-2 px-5 sm:px-6 py-2 sm:py-2.5 rounded-2xl bg-[#0d8a5e] text-white hover:bg-emerald-700 text-xs font-black tracking-wider uppercase transition-all shadow-md shadow-emerald-900/10 active:scale-95"
             >
-              <Plus size={18} /> <span>Tambah Jadwal</span>
+              <Plus size={17} /> <span>Tambah Jadwal</span>
             </button>
           </div>
         </div>
 
         {/* Filters */}
-        <div className="rounded-[2rem] border border-slate-100 bg-white p-5 shadow-xs space-y-4">
+        <div className="rounded-2xl sm:rounded-[2rem] border border-slate-100 bg-white p-4 sm:p-5 shadow-xs space-y-3 sm:space-y-4">
           <div className="relative">
             <input
               type="text"
@@ -375,9 +375,9 @@ export default function KhutbahPage() {
 
         {/* --- MODAL ADD / EDIT --- */}
         {(showModal === 'add' || showModal === 'edit') && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4">
             <div className="fixed inset-0 bg-black/50 backdrop-blur-xs" onClick={() => setShowModal(null)} />
-            <div className="animate-pop relative z-10 w-full max-w-lg rounded-[2.5rem] bg-white p-8 shadow-2xl max-h-[90vh] overflow-y-auto">
+            <div className="animate-pop relative z-10 w-full max-w-lg rounded-2xl sm:rounded-[2.5rem] bg-white p-5 sm:p-8 shadow-2xl max-h-[90vh] overflow-y-auto">
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-xl font-black text-slate-900 font-serif-elegant">
                   {showModal === 'add' ? 'Tambah Jadwal Khutbah' : 'Perbarui Jadwal Khutbah'}
@@ -571,9 +571,9 @@ export default function KhutbahPage() {
 
         {/* --- MODAL DETAIL --- */}
         {showModal === 'detail' && selectedItem && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4">
             <div className="fixed inset-0 bg-black/50 backdrop-blur-xs" onClick={() => setShowModal(null)} />
-            <div className="animate-pop relative z-10 w-full max-w-md rounded-[2.5rem] bg-white overflow-hidden shadow-2xl">
+            <div className="animate-pop relative z-10 w-full max-w-md rounded-2xl sm:rounded-[2.5rem] bg-white overflow-hidden shadow-2xl max-h-[90vh] overflow-y-auto">
               <div className="relative h-60 bg-slate-900">
                 {isCustomPosterImage(selectedItem.image) ? (
                   <img

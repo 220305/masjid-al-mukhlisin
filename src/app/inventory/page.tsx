@@ -213,7 +213,7 @@ export default function InventoryPage() {
 
   return (
     <AdminLayout>
-      <div className="p-4 md:p-10 max-w-7xl mx-auto space-y-6 pb-24">
+      <div className="p-3.5 sm:p-6 md:p-10 max-w-7xl mx-auto space-y-4 sm:space-y-6 pb-24">
         {/* Print Title */}
         <div className="hidden print-only-title">
           DAFTAR INVENTARIS FASILITAS MASJID AL-MUKHLISIN
@@ -221,10 +221,10 @@ export default function InventoryPage() {
         </div>
 
         {/* Top Header */}
-        <div className="no-print flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="no-print flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
           <div>
-            <h2 className="text-3xl font-black text-slate-900 font-serif-elegant">Inventaris &amp; Wakaf</h2>
-            <p className="text-xs font-bold text-slate-400 mt-1 uppercase tracking-widest">
+            <h2 className="text-2xl sm:text-3xl font-black text-slate-900 font-serif-elegant">Inventaris &amp; Wakaf</h2>
+            <p className="text-[11px] sm:text-xs font-bold text-slate-400 mt-0.5 sm:mt-1 uppercase tracking-widest">
               Aset Fisik, Fasilitas Masjid &amp; Harta Wakaf Umat
             </p>
           </div>
@@ -232,33 +232,33 @@ export default function InventoryPage() {
           <div className="flex flex-wrap items-center gap-2">
             {activeTab === 'inventaris' ? (
               <>
-                <button onClick={copyTable} className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-2xl bg-white border border-slate-200 text-xs font-bold text-slate-700 hover:border-slate-400 transition-colors shadow-xs" title="Salin ke Clipboard">
-                  <Copy size={15} /> <span className="hidden sm:inline">Salin</span>
+                <button onClick={copyTable} className="flex items-center gap-1.5 px-3 sm:px-3.5 py-2 sm:py-2.5 rounded-2xl bg-white border border-slate-200 text-xs font-bold text-slate-700 hover:border-slate-400 transition-colors shadow-xs" title="Salin ke Clipboard">
+                  <Copy size={14} /> <span className="hidden sm:inline">Salin</span>
                 </button>
-                <button onClick={exportToExcel} className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-2xl bg-white border border-slate-200 text-xs font-bold text-slate-700 hover:border-emerald-600 hover:text-emerald-700 transition-colors shadow-xs" title="Ekspor ke Excel">
-                  <Download size={15} /> <span className="hidden sm:inline">Excel</span>
+                <button onClick={exportToExcel} className="flex items-center gap-1.5 px-3 sm:px-3.5 py-2 sm:py-2.5 rounded-2xl bg-white border border-slate-200 text-xs font-bold text-slate-700 hover:border-emerald-600 hover:text-emerald-700 transition-colors shadow-xs" title="Ekspor ke Excel">
+                  <Download size={14} /> <span className="hidden sm:inline">Excel</span>
                 </button>
-                <button onClick={handlePrint} className="flex items-center gap-1.5 px-3.5 py-2.5 rounded-2xl bg-white border border-slate-200 text-xs font-bold text-slate-700 hover:border-emerald-600 transition-colors shadow-xs" title="Cetak Laporan">
-                  <Printer size={15} /> <span className="hidden sm:inline">Cetak</span>
+                <button onClick={handlePrint} className="flex items-center gap-1.5 px-3 sm:px-3.5 py-2 sm:py-2.5 rounded-2xl bg-white border border-slate-200 text-xs font-bold text-slate-700 hover:border-emerald-600 transition-colors shadow-xs" title="Cetak Laporan">
+                  <Printer size={14} /> <span className="hidden sm:inline">Cetak</span>
                 </button>
-                <button onClick={() => { setFormData({ nama_barang: '', jumlah: '1', kondisi: 'baik', lokasi: '' }); setShowModal('add'); }} className="flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-[#0d8a5e] text-white hover:bg-emerald-700 text-xs font-black tracking-wider uppercase transition-all shadow-md shadow-emerald-900/10 active:scale-95">
-                  <Plus size={17} /> <span>Tambah Aset</span>
+                <button onClick={() => { setFormData({ nama_barang: '', jumlah: '1', kondisi: 'baik', lokasi: '' }); setShowModal('add'); }} className="flex-1 sm:flex-initial flex items-center justify-center gap-2 px-4 sm:px-5 py-2 sm:py-2.5 rounded-2xl bg-[#0d8a5e] text-white hover:bg-emerald-700 text-xs font-black tracking-wider uppercase transition-all shadow-md shadow-emerald-900/10 active:scale-95">
+                  <Plus size={16} /> <span>Tambah Aset</span>
                 </button>
               </>
             ) : (
-              <button onClick={() => { setShowWakafModal('add'); }} className="flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-[#0d8a5e] text-white hover:bg-emerald-700 text-xs font-black tracking-wider uppercase transition-all shadow-md shadow-emerald-900/10 active:scale-95">
-                <Plus size={17} /> <span>Catat Wakaf</span>
+              <button onClick={() => { setShowWakafModal('add'); }} className="flex-1 sm:flex-initial flex items-center justify-center gap-2 px-4 sm:px-5 py-2 sm:py-2.5 rounded-2xl bg-[#0d8a5e] text-white hover:bg-emerald-700 text-xs font-black tracking-wider uppercase transition-all shadow-md shadow-emerald-900/10 active:scale-95">
+                <Plus size={16} /> <span>Catat Wakaf</span>
               </button>
             )}
           </div>
         </div>
 
         {/* Tab Switcher */}
-        <div className="no-print flex bg-white border border-slate-200 p-1 rounded-2xl w-fit shadow-xs">
-          <button onClick={() => setActiveTab('inventaris')} className={`px-5 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 transition-all ${activeTab === 'inventaris' ? 'bg-emerald-700 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-50'}`}>
+        <div className="no-print flex bg-white border border-slate-200 p-1 rounded-2xl w-full sm:w-fit shadow-xs">
+          <button onClick={() => setActiveTab('inventaris')} className={`flex-1 sm:flex-initial px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all ${activeTab === 'inventaris' ? 'bg-emerald-700 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-50'}`}>
             <Package size={15} /> Inventaris Fisik
           </button>
-          <button onClick={() => setActiveTab('wakaf')} className={`px-5 py-2.5 rounded-xl text-xs font-bold flex items-center gap-2 transition-all ${activeTab === 'wakaf' ? 'bg-emerald-700 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-50'}`}>
+          <button onClick={() => setActiveTab('wakaf')} className={`flex-1 sm:flex-initial px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl text-xs font-bold flex items-center justify-center gap-2 transition-all ${activeTab === 'wakaf' ? 'bg-emerald-700 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-50'}`}>
             <Landmark size={15} /> Harta Wakaf
           </button>
         </div>
@@ -405,8 +405,8 @@ export default function InventoryPage() {
 
         {/* Wakaf Add Modal */}
         {showWakafModal === 'add' && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4">
-            <div className="bg-white rounded-3xl w-full max-w-md shadow-2xl overflow-hidden">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-3 sm:p-4">
+            <div className="bg-white rounded-2xl sm:rounded-3xl w-full max-w-md shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto">
               <div className="flex items-center justify-between px-6 py-4 bg-emerald-950 text-white">
                 <h3 className="font-bold text-sm flex items-center gap-2"><Landmark size={16} className="text-emerald-400" /> Catat Harta Wakaf</h3>
                 <button onClick={() => setShowWakafModal(null)} className="p-1 text-slate-400 hover:text-white"><X size={18} /></button>
@@ -439,8 +439,8 @@ export default function InventoryPage() {
 
         {/* Wakaf Edit Modal */}
         {showWakafModal === 'edit' && selectedWakaf && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4">
-            <div className="bg-white rounded-3xl w-full max-w-md shadow-2xl overflow-hidden">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-3 sm:p-4">
+            <div className="bg-white rounded-2xl sm:rounded-3xl w-full max-w-md shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto">
               <div className="flex items-center justify-between px-6 py-4 bg-emerald-950 text-white">
                 <h3 className="font-bold text-sm flex items-center gap-2"><Edit2 size={16} className="text-emerald-400" /> Edit Catatan Wakaf</h3>
                 <button onClick={() => setShowWakafModal(null)} className="p-1 text-slate-400 hover:text-white"><X size={18} /></button>
@@ -468,9 +468,9 @@ export default function InventoryPage() {
 
         {/* --- MODAL ADD / EDIT --- */}
         {(showModal === 'add' || showModal === 'edit') && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4">
             <div className="fixed inset-0 bg-black/50 backdrop-blur-xs" onClick={() => setShowModal(null)} />
-            <div className="animate-pop relative z-10 w-full max-w-md rounded-[2.5rem] bg-white p-8 shadow-2xl">
+            <div className="animate-pop relative z-10 w-full max-w-md rounded-2xl sm:rounded-[2.5rem] bg-white p-5 sm:p-8 shadow-2xl max-h-[90vh] overflow-y-auto">
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-xl font-black text-slate-900 font-serif-elegant">
                   {showModal === 'add' ? 'Tambah Aset Inventaris' : 'Edit Data Aset'}
@@ -554,9 +554,9 @@ export default function InventoryPage() {
 
         {/* --- MODAL DETAIL --- */}
         {showModal === 'detail' && selectedItem && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4">
             <div className="fixed inset-0 bg-black/50 backdrop-blur-xs" onClick={() => setShowModal(null)} />
-            <div className="animate-pop relative z-10 w-full max-w-sm rounded-[2.5rem] bg-white p-8 shadow-2xl text-center">
+            <div className="animate-pop relative z-10 w-full max-w-sm rounded-2xl sm:rounded-[2.5rem] bg-white p-5 sm:p-8 shadow-2xl text-center max-h-[90vh] overflow-y-auto">
               <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600">
                 <Package size={28} />
               </div>

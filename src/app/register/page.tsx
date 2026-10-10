@@ -40,18 +40,18 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-900 px-4 py-12 relative overflow-hidden">
+    <div className="flex min-h-screen items-center justify-center bg-slate-900 px-3.5 sm:px-4 py-8 sm:py-12 relative overflow-hidden">
       <div className="absolute -top-40 -left-40 h-96 w-96 rounded-full bg-emerald-600/10 blur-3xl pointer-events-none" />
       <div className="absolute -bottom-40 -right-40 h-96 w-96 rounded-full bg-emerald-500/10 blur-3xl pointer-events-none" />
 
       <Link
         href="/"
-        className="absolute top-6 left-6 text-slate-400 hover:text-white flex items-center gap-2 text-xs font-bold transition-colors z-20"
+        className="absolute top-4 left-4 sm:top-6 sm:left-6 text-slate-400 hover:text-white flex items-center gap-2 text-xs font-bold transition-colors z-20"
       >
         <ArrowLeft size={16} /> Kembali ke Beranda
       </Link>
 
-      <div className="w-full max-w-md rounded-[3rem] bg-white p-8 md:p-10 shadow-2xl relative z-10">
+      <div className="w-full max-w-md rounded-2xl sm:rounded-[3rem] bg-white p-6 sm:p-8 md:p-10 shadow-2xl relative z-10">
         <div className="mb-8 text-center">
           <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-900 border border-emerald-500/30 shadow-md overflow-hidden">
             <img src="/icon.svg" alt="Masjid Al-Mukhlisin" className="h-10 w-10" />

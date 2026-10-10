@@ -142,15 +142,15 @@ export default function PengaturanPage() {
 
   return (
     <AdminLayout>
-      <div className="p-4 md:p-8 space-y-6 max-w-4xl mx-auto">
+      <div className="p-3.5 sm:p-6 md:p-8 space-y-4 sm:space-y-6 max-w-4xl mx-auto pb-24">
         {/* Header */}
-        <div className="flex items-center gap-3">
-          <span className="p-2 rounded-xl bg-emerald-100 text-emerald-800">
-            <Settings size={24} />
+        <div className="flex items-center gap-2.5 sm:gap-3">
+          <span className="p-1.5 sm:p-2 rounded-xl bg-emerald-100 text-emerald-800">
+            <Settings size={22} />
           </span>
           <div>
-            <h1 className="text-2xl font-black text-slate-800">Pengaturan & Cadangan Data</h1>
-            <p className="text-xs text-slate-500 mt-0.5">
+            <h1 className="text-xl sm:text-2xl font-black text-slate-800">Pengaturan & Cadangan Data</h1>
+            <p className="text-[11px] sm:text-xs text-slate-500 mt-0.5">
               Kelola identitas resmi SIMAS Kemenag dan lakukan backup/restore seluruh data masjid
             </p>
           </div>
@@ -159,7 +159,7 @@ export default function PengaturanPage() {
         {/* ============================= */}
         {/* SECTION 1: IDENTITAS MASJID */}
         {/* ============================= */}
-        <div className="bg-white rounded-3xl border border-slate-100 shadow-sm p-6 md:p-8">
+        <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-100 shadow-sm p-4 sm:p-6 md:p-8">
           <div className="flex items-center gap-2 mb-6">
             <Building size={18} className="text-emerald-700" />
             <h2 className="font-black text-slate-800 text-base">Identitas Resmi Masjid</h2>
@@ -274,7 +274,7 @@ export default function PengaturanPage() {
         {/* ============================= */}
         {/* SECTION 2: BACKUP DATA */}
         {/* ============================= */}
-        <div className="bg-white rounded-3xl border border-slate-100 shadow-sm p-6 md:p-8">
+        <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-100 shadow-sm p-4 sm:p-6 md:p-8">
           <div className="flex items-center gap-2 mb-2">
             <Database size={18} className="text-emerald-700" />
             <h2 className="font-black text-slate-800 text-base">Cadangan Data (Backup)</h2>
@@ -342,7 +342,7 @@ export default function PengaturanPage() {
         {/* ============================= */}
         {/* SECTION 3: KEAMANAN & KATA SANDI */}
         {/* ============================= */}
-        <div className="bg-white rounded-3xl border border-slate-100 shadow-sm p-6 md:p-8">
+        <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-100 shadow-sm p-4 sm:p-6 md:p-8">
           <div className="flex items-center gap-2 mb-2">
             <KeyRound size={18} className="text-emerald-700" />
             <h2 className="font-black text-slate-800 text-base">Keamanan & Kata Sandi Administrator</h2>

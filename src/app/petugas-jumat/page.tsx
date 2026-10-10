@@ -192,55 +192,55 @@ export default function PetugasJumatPage() {
 
   return (
     <AdminLayout>
-      <div className="p-4 md:p-8 space-y-6">
+      <div className="p-3.5 sm:p-6 md:p-8 space-y-4 sm:space-y-6 max-w-7xl mx-auto pb-24">
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
           <div>
             <div className="flex items-center gap-2">
-              <span className="p-2 rounded-xl bg-emerald-100 text-emerald-800">
-                <UserCheck size={24} />
+              <span className="p-1.5 sm:p-2 rounded-xl bg-emerald-100 text-emerald-800">
+                <UserCheck size={22} />
               </span>
-              <h1 className="text-2xl font-black text-slate-800">Jadwal Petugas Shalat Jumat</h1>
+              <h1 className="text-xl sm:text-2xl font-black text-slate-800">Jadwal Petugas Shalat Jumat</h1>
             </div>
-            <p className="text-xs text-slate-500 mt-1">
+            <p className="text-[11px] sm:text-xs text-slate-500 mt-0.5 sm:mt-1">
               Penyusunan dan mading jadwal Khatib, Imam, dan Muadzin Shalat Jumat Masjid Al-Mukhlisin
             </p>
           </div>
           <div className="flex items-center gap-2 flex-wrap">
             <button
               onClick={loadData}
-              className="p-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 transition"
+              className="p-2 sm:p-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 transition"
               title="Segarkan Data"
             >
-              <RefreshCw size={16} />
+              <RefreshCw size={15} />
             </button>
             <button
               onClick={exportToExcel}
-              className="px-3.5 py-2.5 rounded-xl border border-emerald-200 bg-white hover:bg-emerald-50 text-emerald-700 text-xs font-bold flex items-center gap-2 transition shadow-xs"
+              className="px-3 sm:px-3.5 py-2 sm:py-2.5 rounded-xl border border-emerald-200 bg-white hover:bg-emerald-50 text-emerald-700 text-xs font-bold flex items-center gap-1.5 transition shadow-xs"
             >
-              <Download size={15} /> Ekspor Excel
+              <Download size={14} /> <span className="hidden xs:inline">Ekspor Excel</span>
             </button>
             <button
               onClick={printTable}
-              className="px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold flex items-center gap-2 transition shadow-xs"
+              className="px-3 sm:px-3.5 py-2 sm:py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold flex items-center gap-1.5 transition shadow-xs"
             >
-              <Printer size={15} /> Cetak Mading
+              <Printer size={14} /> <span className="hidden xs:inline">Cetak Mading</span>
             </button>
             <button
               onClick={() => setShowAddModal(true)}
-              className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white text-xs font-bold flex items-center gap-2 shadow-md shadow-emerald-900/20 transition"
+              className="flex-1 sm:flex-initial justify-center px-4 py-2 sm:py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white text-xs font-bold flex items-center gap-1.5 shadow-md shadow-emerald-900/20 transition"
             >
-              <Plus size={16} /> Jadwalkan Petugas
+              <Plus size={16} /> <span>Jadwalkan Petugas</span>
             </button>
           </div>
         </div>
 
         {/* Quick Schedule Preview Cards for upcoming Fridays */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
           {dataPetugas.slice(0, 3).map((item, idx) => (
             <div
               key={item.id}
-              className={`p-5 rounded-3xl border transition shadow-sm ${
+              className={`p-4 sm:p-5 rounded-2xl sm:rounded-3xl border transition shadow-sm ${
                 idx === 0
                   ? 'bg-gradient-to-br from-[#0a1f18] to-emerald-950 text-white border-emerald-800/80 shadow-emerald-950/20'
                   : 'bg-white text-slate-800 border-slate-200/80'
@@ -408,8 +408,8 @@ export default function PetugasJumatPage() {
 
         {/* Add Modal */}
         {showAddModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4">
-            <div className="bg-white rounded-3xl w-full max-w-md shadow-2xl border border-slate-100 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-3 sm:p-4">
+            <div className="bg-white rounded-2xl sm:rounded-3xl w-full max-w-md shadow-2xl border border-slate-100 overflow-hidden max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-150">
               <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-emerald-950 text-white">
                 <h3 className="font-bold text-sm flex items-center gap-2">
                   <UserCheck size={16} className="text-emerald-400" /> Jadwalkan Petugas Jumat
@@ -635,8 +635,8 @@ export default function PetugasJumatPage() {
 
         {/* Edit Modal */}
         {showEditModal && editItem && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4">
-            <div className="bg-white rounded-3xl w-full max-w-md shadow-2xl border border-slate-100 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-3 sm:p-4">
+            <div className="bg-white rounded-2xl sm:rounded-3xl w-full max-w-md shadow-2xl border border-slate-100 overflow-hidden max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-150">
               <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-emerald-950 text-white">
                 <h3 className="font-bold text-sm flex items-center gap-2">
                   <Edit2 size={16} className="text-emerald-400" /> Perbarui Jadwal Petugas

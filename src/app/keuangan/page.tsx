@@ -297,9 +297,9 @@ export default function KeuanganDetailPage() {
       </header>
 
       {/* --- MAIN CONTAINER --- */}
-      <main className="mx-auto max-w-7xl px-4 py-8 md:px-8 space-y-8">
+      <main className="mx-auto max-w-7xl px-3.5 sm:px-6 md:px-8 py-6 sm:py-8 space-y-6 sm:space-y-8">
         {/* --- 1. HERO GRAND DISPLAY TOTAL SALDO --- */}
-        <section className="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-[#064e3b] via-[#043d2d] to-[#012217] p-8 md:p-12 text-white shadow-2xl border border-emerald-600/30">
+        <section className="relative overflow-hidden rounded-2xl sm:rounded-[2.5rem] bg-gradient-to-br from-[#064e3b] via-[#043d2d] to-[#012217] p-5 sm:p-8 md:p-12 text-white shadow-2xl border border-emerald-600/30">
           {/* Geometric Watermark Pattern */}
           <div className="absolute inset-0 opacity-[0.06] pointer-events-none">
             <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
@@ -323,16 +323,16 @@ export default function KeuanganDetailPage() {
               <span className="h-px w-6 bg-emerald-300/60" />
             </p>
 
-            <h2 className="font-serif-elegant mb-6 text-3xl font-bold md:text-5xl text-white">
+            <h2 className="font-serif-elegant mb-5 sm:mb-6 text-2xl sm:text-3xl md:text-5xl text-white">
               Total Saldo Kas Umat
             </h2>
 
             {loading ? (
-              <div className="mx-auto h-24 w-72 animate-pulse rounded-3xl bg-emerald-800/50" />
+              <div className="mx-auto h-20 sm:h-24 w-60 sm:w-72 animate-pulse rounded-2xl sm:rounded-3xl bg-emerald-800/50" />
             ) : (
-              <div className="inline-block rounded-3xl border border-emerald-400/40 bg-emerald-950/40 px-8 py-5 md:px-12 md:py-7 backdrop-blur-md shadow-2xl">
-                <p className="font-serif-elegant text-4xl font-bold tracking-tight drop-shadow-lg md:text-6xl text-white">
-                  <span className="mr-2 align-top text-2xl text-emerald-300 md:text-3xl">Rp</span>
+              <div className="inline-block rounded-2xl sm:rounded-3xl border border-emerald-400/40 bg-emerald-950/40 px-5 py-4 sm:px-8 sm:py-5 md:px-12 md:py-7 backdrop-blur-md shadow-2xl">
+                <p className="font-serif-elegant text-3xl sm:text-4xl font-bold tracking-tight drop-shadow-lg md:text-6xl text-white">
+                  <span className="mr-1.5 sm:mr-2 align-top text-xl sm:text-2xl text-emerald-300 md:text-3xl">Rp</span>
                   {stats.saldo.toLocaleString('id-ID')}
                 </p>
               </div>
@@ -779,9 +779,9 @@ export default function KeuanganDetailPage() {
 
       {/* --- MODAL DETAIL TRANSAKSI --- */}
       {selectedTrx && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4">
           <div className="fixed inset-0 bg-black/60 backdrop-blur-xs" onClick={() => setSelectedTrx(null)} />
-          <div className="animate-pop relative z-10 w-full max-w-lg rounded-[2.5rem] bg-white p-8 shadow-2xl space-y-6">
+          <div className="animate-pop relative z-10 w-full max-w-lg rounded-2xl sm:rounded-[2.5rem] bg-white p-5 sm:p-8 shadow-2xl space-y-4 sm:space-y-6 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <div className="flex items-center gap-2">
                 <span

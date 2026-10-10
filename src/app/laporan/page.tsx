@@ -291,17 +291,17 @@ export default function LaporanPage() {
 
   return (
     <AdminLayout>
-      <div className="p-4 md:p-8 space-y-6">
+      <div className="p-3.5 sm:p-6 md:p-8 space-y-4 sm:space-y-6 max-w-7xl mx-auto pb-24">
         {/* Top Control Bar (Hidden when printing) */}
-        <div className="print:hidden flex flex-col md:flex-row md:items-center md:justify-between gap-4 bg-white p-5 rounded-3xl border border-slate-100 shadow-xs">
+        <div className="print:hidden flex flex-col md:flex-row md:items-center md:justify-between gap-3 sm:gap-4 bg-white p-4 sm:p-5 rounded-2xl sm:rounded-3xl border border-slate-100 shadow-xs">
           <div>
             <div className="flex items-center gap-2">
-              <span className="p-2 rounded-xl bg-emerald-100 text-emerald-800">
-                <FileText size={22} />
+              <span className="p-1.5 sm:p-2 rounded-xl bg-emerald-100 text-emerald-800">
+                <FileText size={20} />
               </span>
-              <h1 className="text-xl font-black text-slate-800">Laporan Resmi Berkop SIMAS Kemenag</h1>
+              <h1 className="text-lg sm:text-xl font-black text-slate-800">Laporan Resmi Berkop SIMAS</h1>
             </div>
-            <p className="text-xs text-slate-500 mt-1">
+            <p className="text-[11px] sm:text-xs text-slate-500 mt-0.5 sm:mt-1">
               Rekapitulasi lengkap 6 bagian dengan legalitas Nomor SIMAS Kemenag RI dan tanda tangan DKM
             </p>
           </div>
@@ -362,7 +362,7 @@ export default function LaporanPage() {
         {/* ========================================================================= */}
         {/* PRINTABLE OFFICIAL REPORT CANVAS */}
         {/* ========================================================================= */}
-        <div className="bg-white rounded-3xl border border-slate-200/90 shadow-lg p-6 md:p-12 text-slate-900 max-w-4xl mx-auto print:border-none print:shadow-none print:p-0 print:max-w-none">
+        <div className="bg-white rounded-2xl sm:rounded-3xl border border-slate-200/90 shadow-lg p-4 sm:p-8 md:p-12 text-slate-900 max-w-4xl mx-auto print:border-none print:shadow-none print:p-0 print:max-w-none overflow-x-auto">
           {/* KOP SURAT RESMI BERKOP SIMAS KEMENAG RI */}
           <div className="border-b-4 border-double border-emerald-950 pb-5 mb-8 text-center relative">
             <div className="flex items-center justify-center gap-4 mb-2">
@@ -419,24 +419,24 @@ export default function LaporanPage() {
               </h4>
             </div>
 
-            <div className="grid grid-cols-3 gap-3 mb-4">
-              <div className="p-3.5 rounded-2xl bg-emerald-50/80 border border-emerald-200">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3 mb-4">
+              <div className="p-3 sm:p-3.5 rounded-2xl bg-emerald-50/80 border border-emerald-200">
                 <p className="text-[10px] font-bold text-emerald-800 uppercase tracking-wider">
                   Total Pemasukan Kas
                 </p>
-                <p className="text-lg font-black text-emerald-700 mt-1">{formatRupiah(totalMasuk)}</p>
+                <p className="text-base sm:text-lg font-black text-emerald-700 mt-1">{formatRupiah(totalMasuk)}</p>
               </div>
-              <div className="p-3.5 rounded-2xl bg-rose-50/80 border border-rose-200">
+              <div className="p-3 sm:p-3.5 rounded-2xl bg-rose-50/80 border border-rose-200">
                 <p className="text-[10px] font-bold text-rose-800 uppercase tracking-wider">
                   Total Pengeluaran Kas
                 </p>
-                <p className="text-lg font-black text-rose-700 mt-1">{formatRupiah(totalKeluar)}</p>
+                <p className="text-base sm:text-lg font-black text-rose-700 mt-1">{formatRupiah(totalKeluar)}</p>
               </div>
-              <div className="p-3.5 rounded-2xl bg-blue-50/80 border border-blue-200">
+              <div className="p-3 sm:p-3.5 rounded-2xl bg-blue-50/80 border border-blue-200">
                 <p className="text-[10px] font-bold text-blue-800 uppercase tracking-wider">
                   Saldo Kas Berjalan
                 </p>
-                <p className="text-lg font-black text-blue-800 mt-1">{formatRupiah(saldoKas)}</p>
+                <p className="text-base sm:text-lg font-black text-blue-800 mt-1">{formatRupiah(saldoKas)}</p>
               </div>
             </div>
 
@@ -581,11 +581,11 @@ export default function LaporanPage() {
           {/* TANDA TANGAN RESMI PENGURUS DKM */}
           {/* ========================================================================= */}
           <div className="mt-12 pt-6 border-t-2 border-slate-200">
-            <div className="flex items-center justify-between text-xs text-slate-700">
-              <div className="text-center w-52">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-6 sm:gap-0 text-xs text-slate-700">
+              <div className="text-center w-full sm:w-52">
                 <p className="font-semibold text-slate-500 mb-1">Mengetahui,</p>
                 <p className="font-black text-slate-800 uppercase tracking-wider">Ketua DKM</p>
-                <div className="h-20 flex items-center justify-center">
+                <div className="h-16 sm:h-20 flex items-center justify-center">
                   <span className="text-[10px] text-slate-300 italic">[ Tanda Tangan & Cap ]</span>
                 </div>
                 <p className="font-bold text-slate-900 underline decoration-slate-400">
@@ -594,12 +594,12 @@ export default function LaporanPage() {
                 <p className="text-[10px] text-slate-400">DKM Masjid {identitas.nama}</p>
               </div>
 
-              <div className="text-center w-52">
+              <div className="text-center w-full sm:w-52">
                 <p className="font-semibold text-slate-500 mb-1">
                   Lagadar, {currentDateStr}
                 </p>
                 <p className="font-black text-slate-800 uppercase tracking-wider">Bendahara DKM</p>
-                <div className="h-20 flex items-center justify-center">
+                <div className="h-16 sm:h-20 flex items-center justify-center">
                   <span className="text-[10px] text-slate-300 italic">[ Tanda Tangan & Cap ]</span>
                 </div>
                 <p className="font-bold text-slate-900 underline decoration-slate-400">

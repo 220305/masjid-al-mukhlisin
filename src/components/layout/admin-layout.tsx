@@ -84,7 +84,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
       {/* Sidebar Navigation */}
       <aside
-        className={`fixed md:sticky top-0 left-0 h-screen w-72 bg-[#0a1f18] text-white flex flex-col justify-between p-6 z-50 transition-transform duration-300 ease-in-out border-r border-emerald-950/80 ${
+        className={`fixed md:sticky top-0 left-0 h-screen w-72 bg-[#0a1f18] text-white flex flex-col justify-between p-6 z-50 overflow-y-auto transition-transform duration-300 ease-in-out border-r border-emerald-950/80 ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
         }`}
       >

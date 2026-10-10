@@ -350,79 +350,79 @@ export default function ZakatPage() {
 
   return (
     <AdminLayout>
-      <div className="p-4 md:p-8 space-y-6">
+      <div className="p-3.5 sm:p-6 md:p-8 space-y-4 sm:space-y-6 max-w-7xl mx-auto pb-24">
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
           <div>
             <div className="flex items-center gap-2">
-              <span className="p-2 rounded-xl bg-emerald-100 text-emerald-800">
-                <HandHeart size={24} />
+              <span className="p-1.5 sm:p-2 rounded-xl bg-emerald-100 text-emerald-800">
+                <HandHeart size={22} />
               </span>
-              <h1 className="text-2xl font-black text-slate-800">Zakat, Infaq & Qurban</h1>
+              <h1 className="text-xl sm:text-2xl font-black text-slate-800">Zakat, Infaq & Qurban</h1>
             </div>
-            <p className="text-xs text-slate-500 mt-1">
+            <p className="text-[11px] sm:text-xs text-slate-500 mt-0.5 sm:mt-1">
               Pengelolaan Zakat Fitrah, Zakat Mal, Tabungan Qurban, dan Laporan Distribusi Mustahiq
             </p>
           </div>
           <div className="flex items-center gap-2 flex-wrap">
             <button
               onClick={loadData}
-              className="p-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 transition"
+              className="p-2 sm:p-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 transition"
               title="Segarkan Data"
             >
-              <RefreshCw size={16} />
+              <RefreshCw size={15} />
             </button>
             <button
               onClick={exportToExcel}
-              className="px-3.5 py-2.5 rounded-xl border border-emerald-200 bg-white hover:bg-emerald-50 text-emerald-700 text-xs font-bold flex items-center gap-2 transition shadow-xs"
+              className="px-3 sm:px-3.5 py-2 sm:py-2.5 rounded-xl border border-emerald-200 bg-white hover:bg-emerald-50 text-emerald-700 text-xs font-bold flex items-center gap-1.5 transition shadow-xs"
             >
-              <Download size={15} /> Ekspor Excel
+              <Download size={14} /> <span className="hidden xs:inline">Ekspor Excel</span>
             </button>
             <button
               onClick={printTable}
-              className="px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold flex items-center gap-2 transition shadow-xs"
+              className="px-3 sm:px-3.5 py-2 sm:py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold flex items-center gap-1.5 transition shadow-xs"
             >
-              <Printer size={15} /> Cetak
+              <Printer size={14} /> <span className="hidden xs:inline">Cetak</span>
             </button>
             <button
               onClick={() => setShowAddModal(true)}
-              className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white text-xs font-bold flex items-center gap-2 shadow-md shadow-emerald-900/20 transition"
+              className="flex-1 sm:flex-initial justify-center px-4 py-2 sm:py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white text-xs font-bold flex items-center gap-1.5 shadow-md shadow-emerald-900/20 transition"
             >
-              <Plus size={16} /> Catat Zakat / Qurban
+              <Plus size={16} /> <span>Catat Zakat / Qurban</span>
             </button>
           </div>
         </div>
 
         {/* Quick Stats Banner */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3.5">
-          <div className="bg-white rounded-2xl p-3.5 border border-slate-100 shadow-xs">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 sm:gap-3.5">
+          <div className="bg-white rounded-2xl p-3 sm:p-3.5 border border-slate-100 shadow-xs">
             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Fitrah Uang</p>
-            <p className="text-base font-black text-emerald-700 mt-1">{formatRupiah(totalFitrahUang)}</p>
+            <p className="text-sm sm:text-base font-black text-emerald-700 mt-1">{formatRupiah(totalFitrahUang)}</p>
             <p className="text-[9px] text-slate-400 mt-0.5">Terkumpul tunai</p>
           </div>
-          <div className="bg-white rounded-2xl p-3.5 border border-slate-100 shadow-xs">
+          <div className="bg-white rounded-2xl p-3 sm:p-3.5 border border-slate-100 shadow-xs">
             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Fitrah Beras</p>
-            <p className="text-base font-black text-amber-700 mt-1">{totalFitrahBeras.toFixed(1)} Kg</p>
+            <p className="text-sm sm:text-base font-black text-amber-700 mt-1">{totalFitrahBeras.toFixed(1)} Kg</p>
             <p className="text-[9px] text-slate-400 mt-0.5">Beras zakat</p>
           </div>
-          <div className="bg-white rounded-2xl p-3.5 border border-slate-100 shadow-xs">
+          <div className="bg-white rounded-2xl p-3 sm:p-3.5 border border-slate-100 shadow-xs">
             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Zakat Mal</p>
-            <p className="text-base font-black text-blue-700 mt-1">{formatRupiah(totalZakatMal)}</p>
-            <p className="text-[9px] text-slate-400 mt-0.5">Zakat harta/penghasilan</p>
+            <p className="text-sm sm:text-base font-black text-blue-700 mt-1">{formatRupiah(totalZakatMal)}</p>
+            <p className="text-[9px] text-slate-400 mt-0.5">Zakat harta</p>
           </div>
-          <div className="bg-white rounded-2xl p-3.5 border border-slate-100 shadow-xs">
+          <div className="bg-white rounded-2xl p-3 sm:p-3.5 border border-slate-100 shadow-xs">
             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Dana Qurban</p>
-            <p className="text-base font-black text-purple-700 mt-1">{formatRupiah(totalQurbanNominal)}</p>
+            <p className="text-sm sm:text-base font-black text-purple-700 mt-1">{formatRupiah(totalQurbanNominal)}</p>
             <p className="text-[9px] text-slate-400 mt-0.5">Sapi & kambing</p>
           </div>
-          <div className="bg-white rounded-2xl p-3.5 border border-slate-100 shadow-xs">
+          <div className="bg-white rounded-2xl p-3 sm:p-3.5 border border-slate-100 shadow-xs">
             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Penyaluran</p>
-            <p className="text-base font-black text-rose-700 mt-1">{formatRupiah(totalPenyaluranNominal)}</p>
-            <p className="text-[9px] text-slate-400 mt-0.5">Mustahiq tersalurkan</p>
+            <p className="text-sm sm:text-base font-black text-rose-700 mt-1">{formatRupiah(totalPenyaluranNominal)}</p>
+            <p className="text-[9px] text-slate-400 mt-0.5">Mustahiq tersalur</p>
           </div>
-          <div className="bg-white rounded-2xl p-3.5 border border-slate-100 shadow-xs">
+          <div className="bg-white rounded-2xl p-3 sm:p-3.5 border border-slate-100 shadow-xs">
             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Jiwa Muzakki</p>
-            <p className="text-base font-black text-slate-800 mt-1">{totalJiwaMuzakki} Jiwa</p>
+            <p className="text-sm sm:text-base font-black text-slate-800 mt-1">{totalJiwaMuzakki} Jiwa</p>
             <p className="text-[9px] text-slate-400 mt-0.5">Total donatur</p>
           </div>
         </div>
@@ -585,8 +585,8 @@ export default function ZakatPage() {
 
         {/* Add Modal */}
         {showAddModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4">
-            <div className="bg-white rounded-3xl w-full max-w-md shadow-2xl border border-slate-100 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-3 sm:p-4">
+            <div className="bg-white rounded-2xl sm:rounded-3xl w-full max-w-md shadow-2xl border border-slate-100 overflow-hidden max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-150">
               <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-emerald-950 text-white">
                 <h3 className="font-bold text-sm flex items-center gap-2">
                   <HandHeart size={16} className="text-emerald-400" /> Catat Zakat / Infaq / Qurban
@@ -903,8 +903,8 @@ export default function ZakatPage() {
 
         {/* Edit Modal */}
         {showEditModal && editItem && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4">
-            <div className="bg-white rounded-3xl w-full max-w-md shadow-2xl border border-slate-100 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-3 sm:p-4">
+            <div className="bg-white rounded-2xl sm:rounded-3xl w-full max-w-md shadow-2xl border border-slate-100 overflow-hidden max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-150">
               <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-emerald-950 text-white">
                 <h3 className="font-bold text-sm flex items-center gap-2">
                   <Edit2 size={16} className="text-emerald-400" /> Perbarui Catatan Zakat / Qurban

@@ -250,7 +250,7 @@ export default function FasilitasDetailPage() {
           </div>
 
           {/* --- STAT CARDS --- */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3.5 mt-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-3.5 mt-6 sm:mt-8">
             {/* Card 1: Total Unit */}
             <div className="rounded-2xl border border-emerald-900/40 bg-[#0a1f18]/80 p-4 backdrop-blur-xs">
               <div className="flex items-center justify-between text-slate-400 text-[10px] font-bold uppercase tracking-wider">
@@ -639,9 +639,9 @@ export default function FasilitasDetailPage() {
 
       {/* --- MODAL DETAIL POPUP (INSPECTION MODAL) --- */}
       {selectedItem && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
           <div
-            className="w-full max-w-lg overflow-hidden rounded-[2.5rem] border border-emerald-800/60 bg-[#0a1f18] shadow-2xl text-white"
+            className="w-full max-w-lg overflow-hidden rounded-2xl sm:rounded-[2.5rem] border border-emerald-800/60 bg-[#0a1f18] shadow-2xl text-white max-h-[90vh] flex flex-col"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Modal Header */}
@@ -749,9 +749,9 @@ export default function FasilitasDetailPage() {
 
       {/* --- MODAL DETAIL WAKAF POPUP --- */}
       {selectedWakafItem && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
           <div
-            className="w-full max-w-md overflow-hidden rounded-[2.5rem] border border-emerald-800/60 bg-[#0a1f18] shadow-2xl text-white p-6"
+            className="w-full max-w-md overflow-hidden rounded-2xl sm:rounded-[2.5rem] border border-emerald-800/60 bg-[#0a1f18] shadow-2xl text-white p-5 sm:p-6 max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-start justify-between mb-4">

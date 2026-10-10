@@ -174,7 +174,7 @@ export default function FinancePage() {
 
   return (
     <AdminLayout>
-      <div className="p-4 md:p-10 max-w-7xl mx-auto space-y-6 pb-24">
+      <div className="p-3.5 sm:p-6 md:p-10 max-w-7xl mx-auto space-y-4 sm:space-y-6 pb-24">
         {/* Print-Only Title Header */}
         <div className="hidden print-only-title">
           LAPORAN MUTASI KEUANGAN KAS MASJID AL-MUKHLISIN
@@ -182,24 +182,24 @@ export default function FinancePage() {
         </div>
 
         {/* Top Header */}
-        <div className="no-print flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="no-print flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
           <div>
-            <h2 className="text-3xl font-black text-slate-900 font-serif-elegant">Manajemen Kas</h2>
-            <p className="text-xs font-bold text-slate-400 mt-1 uppercase tracking-widest">
+            <h2 className="text-2xl sm:text-3xl font-black text-slate-900 font-serif-elegant">Manajemen Kas</h2>
+            <p className="text-[11px] sm:text-xs font-bold text-slate-400 mt-0.5 sm:mt-1 uppercase tracking-widest">
               Transparansi Keuangan Terbuka
             </p>
           </div>
-          <div className="flex items-center gap-2.5">
+          <div className="flex items-center gap-2 sm:gap-2.5 w-full sm:w-auto">
             <button
               onClick={handlePrint}
-              className="flex items-center gap-2 px-4 py-3 rounded-2xl bg-white border border-slate-200 text-xs font-bold text-slate-700 hover:border-emerald-600 transition-colors shadow-xs"
+              className="flex items-center justify-center gap-2 px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-2xl bg-white border border-slate-200 text-xs font-bold text-slate-700 hover:border-emerald-600 transition-colors shadow-xs"
               title="Cetak Laporan"
             >
               <Printer size={16} /> <span className="hidden sm:inline">Cetak Laporan</span>
             </button>
             <button
               onClick={() => setShowAddModal(true)}
-              className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-[#0d8a5e] text-white hover:bg-emerald-700 text-xs font-black tracking-wider uppercase transition-all shadow-md shadow-emerald-900/10 active:scale-95"
+              className="flex-1 sm:flex-initial flex items-center justify-center gap-2 px-5 sm:px-6 py-2.5 sm:py-3 rounded-2xl bg-[#0d8a5e] text-white hover:bg-emerald-700 text-xs font-black tracking-wider uppercase transition-all shadow-md shadow-emerald-900/10 active:scale-95"
             >
               <Plus size={18} /> <span>Catat Transaksi</span>
             </button>
@@ -207,41 +207,41 @@ export default function FinancePage() {
         </div>
 
         {/* Stat Cards */}
-        <div className="no-print grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="rounded-[2rem] border border-slate-100 bg-white p-6 shadow-xs">
+        <div className="no-print grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+          <div className="rounded-2xl sm:rounded-[2rem] border border-slate-100 bg-white p-4.5 sm:p-6 shadow-xs">
             <p className="text-[10px] font-black tracking-widest text-slate-400 uppercase">Saldo Akhir Kas</p>
-            <p className="mt-2 text-2xl md:text-3xl font-black text-emerald-800 font-serif-elegant">
+            <p className="mt-1.5 sm:mt-2 text-xl sm:text-2xl md:text-3xl font-black text-emerald-800 font-serif-elegant">
               Rp {(totalInfaq - totalKeluar).toLocaleString('id-ID')}
             </p>
           </div>
-          <div className="rounded-[2rem] border border-slate-100 bg-white p-6 shadow-xs">
+          <div className="rounded-2xl sm:rounded-[2rem] border border-slate-100 bg-white p-4.5 sm:p-6 shadow-xs">
             <p className="text-[10px] font-black tracking-widest text-slate-400 uppercase">Total Pemasukan</p>
-            <p className="mt-2 text-2xl md:text-3xl font-black text-blue-600 font-serif-elegant">
+            <p className="mt-1.5 sm:mt-2 text-xl sm:text-2xl md:text-3xl font-black text-blue-600 font-serif-elegant">
               Rp {totalInfaq.toLocaleString('id-ID')}
             </p>
           </div>
-          <div className="rounded-[2rem] border border-slate-100 bg-white p-6 shadow-xs">
+          <div className="rounded-2xl sm:rounded-[2rem] border border-slate-100 bg-white p-4.5 sm:p-6 shadow-xs">
             <p className="text-[10px] font-black tracking-widest text-slate-400 uppercase">Total Pengeluaran</p>
-            <p className="mt-2 text-2xl md:text-3xl font-black text-red-500 font-serif-elegant">
+            <p className="mt-1.5 sm:mt-2 text-xl sm:text-2xl md:text-3xl font-black text-red-500 font-serif-elegant">
               Rp {totalKeluar.toLocaleString('id-ID')}
             </p>
           </div>
         </div>
 
         {/* Filters */}
-        <div className="no-print rounded-[2rem] border border-slate-100 bg-white p-5 shadow-xs space-y-4">
+        <div className="no-print rounded-2xl sm:rounded-[2rem] border border-slate-100 bg-white p-4 sm:p-5 shadow-xs space-y-3 sm:space-y-4">
           <div className="relative">
             <input
               type="text"
               placeholder="Cari keterangan transaksi kas..."
-              className="w-full rounded-2xl border border-slate-100 bg-slate-50 px-4 py-3 pl-11 text-xs font-bold outline-none focus:bg-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all text-slate-900"
+              className="w-full rounded-2xl border border-slate-100 bg-slate-50 px-4 py-2.5 sm:py-3 pl-10 sm:pl-11 text-xs font-bold outline-none focus:bg-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all text-slate-900"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
-            <Search className="absolute left-4 top-3.5 text-slate-400" size={16} />
+            <Search className="absolute left-3.5 sm:left-4 top-3 sm:top-3.5 text-slate-400" size={16} />
           </div>
 
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="flex flex-wrap items-center gap-2.5 sm:gap-3">
             <div className="flex rounded-xl bg-slate-100 p-1 text-xs font-bold text-slate-600">
               {(['all', 'masuk', 'keluar'] as const).map((cat) => (
                 <button
@@ -256,17 +256,17 @@ export default function FinancePage() {
               ))}
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 sm:gap-2 flex-1 sm:flex-initial min-w-[240px]">
               <input
                 type="date"
-                className="rounded-xl border border-slate-100 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-700 outline-none"
+                className="flex-1 sm:flex-initial rounded-xl border border-slate-100 bg-slate-50 px-2.5 sm:px-3 py-2 text-xs font-bold text-slate-700 outline-none min-w-0"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
               />
-              <span className="text-xs text-slate-400 font-bold">s/d</span>
+              <span className="text-xs text-slate-400 font-bold shrink-0">s/d</span>
               <input
                 type="date"
-                className="rounded-xl border border-slate-100 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-700 outline-none"
+                className="flex-1 sm:flex-initial rounded-xl border border-slate-100 bg-slate-50 px-2.5 sm:px-3 py-2 text-xs font-bold text-slate-700 outline-none min-w-0"
                 value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}
               />
@@ -403,9 +403,9 @@ export default function FinancePage() {
 
         {/* --- MODAL ADD --- */}
         {showAddModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4">
             <div className="fixed inset-0 bg-black/50 backdrop-blur-xs" onClick={() => setShowAddModal(false)} />
-            <div className="animate-pop relative z-10 w-full max-w-md rounded-[2.5rem] bg-white p-8 shadow-2xl">
+            <div className="animate-pop relative z-10 w-full max-w-md rounded-2xl sm:rounded-[2.5rem] bg-white p-5 sm:p-8 shadow-2xl max-h-[90vh] overflow-y-auto">
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-xl font-black text-slate-900 font-serif-elegant">Catat Kas Baru</h3>
                 <button onClick={() => setShowAddModal(false)} className="text-slate-400 hover:text-slate-600">
@@ -506,9 +506,9 @@ export default function FinancePage() {
 
         {/* --- MODAL EDIT --- */}
         {showEditModal && editData && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4">
             <div className="fixed inset-0 bg-black/50 backdrop-blur-xs" onClick={() => setShowEditModal(false)} />
-            <div className="animate-pop relative z-10 w-full max-w-md rounded-[2.5rem] bg-white p-8 shadow-2xl">
+            <div className="animate-pop relative z-10 w-full max-w-md rounded-2xl sm:rounded-[2.5rem] bg-white p-5 sm:p-8 shadow-2xl max-h-[90vh] overflow-y-auto">
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-xl font-black text-slate-900 font-serif-elegant">Edit Transaksi Kas</h3>
                 <button onClick={() => setShowEditModal(false)} className="text-slate-400 hover:text-slate-600">
@@ -605,9 +605,9 @@ export default function FinancePage() {
 
         {/* --- MODAL VIEW DETAIL --- */}
         {viewData && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4">
             <div className="fixed inset-0 bg-black/50 backdrop-blur-xs" onClick={() => setViewData(null)} />
-            <div className="animate-pop relative z-10 w-full max-w-sm rounded-[2.5rem] bg-white p-8 shadow-2xl text-center">
+            <div className="animate-pop relative z-10 w-full max-w-sm rounded-2xl sm:rounded-[2.5rem] bg-white p-5 sm:p-8 shadow-2xl text-center max-h-[90vh] overflow-y-auto">
               <div
                 className={`mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl ${
                   viewData.tipe === 'masuk' ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-600'

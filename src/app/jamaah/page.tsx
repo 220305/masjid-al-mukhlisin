@@ -189,95 +189,95 @@ export default function JamaahPage() {
 
   return (
     <AdminLayout>
-      <div className="p-4 md:p-8 space-y-6">
+      <div className="p-3.5 sm:p-6 md:p-8 space-y-4 sm:space-y-6 max-w-7xl mx-auto pb-24">
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
           <div>
             <div className="flex items-center gap-2">
-              <span className="p-2 rounded-xl bg-emerald-100 text-emerald-800">
-                <Users size={24} />
+              <span className="p-1.5 sm:p-2 rounded-xl bg-emerald-100 text-emerald-800">
+                <Users size={22} />
               </span>
-              <h1 className="text-2xl font-black text-slate-800">Data Jamaah & Tokoh Lingkungan</h1>
+              <h1 className="text-xl sm:text-2xl font-black text-slate-800">Data Jamaah & Tokoh</h1>
             </div>
-            <p className="text-xs text-slate-500 mt-1">
+            <p className="text-[11px] sm:text-xs text-slate-500 mt-0.5 sm:mt-1">
               Pencatatan warga, kontak silaturahmi WhatsApp, dan kepengurusan Masjid Al-Mukhlisin
             </p>
           </div>
           <div className="flex items-center gap-2 flex-wrap">
             <button
               onClick={loadData}
-              className="p-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 transition"
+              className="p-2 sm:p-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 transition"
               title="Segarkan Data"
             >
-              <RefreshCw size={16} />
+              <RefreshCw size={15} />
             </button>
             <button
               onClick={exportToExcel}
-              className="px-3.5 py-2.5 rounded-xl border border-emerald-200 bg-white hover:bg-emerald-50 text-emerald-700 text-xs font-bold flex items-center gap-2 transition shadow-xs"
+              className="px-3 sm:px-3.5 py-2 sm:py-2.5 rounded-xl border border-emerald-200 bg-white hover:bg-emerald-50 text-emerald-700 text-xs font-bold flex items-center gap-1.5 transition shadow-xs"
             >
-              <Download size={15} /> Ekspor Excel
+              <Download size={14} /> <span className="hidden xs:inline">Ekspor Excel</span>
             </button>
             <button
               onClick={printTable}
-              className="px-3.5 py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold flex items-center gap-2 transition shadow-xs"
+              className="px-3 sm:px-3.5 py-2 sm:py-2.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold flex items-center gap-1.5 transition shadow-xs"
             >
-              <Printer size={15} /> Cetak
+              <Printer size={14} /> <span className="hidden xs:inline">Cetak</span>
             </button>
             <button
               onClick={() => setShowAddModal(true)}
-              className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white text-xs font-bold flex items-center gap-2 shadow-md shadow-emerald-900/20 transition"
+              className="flex-1 sm:flex-initial justify-center px-4 py-2 sm:py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white text-xs font-bold flex items-center gap-1.5 shadow-md shadow-emerald-900/20 transition"
             >
-              <Plus size={16} /> Tambah Jamaah
+              <Plus size={16} /> <span>Tambah Jamaah</span>
             </button>
           </div>
         </div>
 
         {/* Quick Stats Banner */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-white rounded-2xl p-4 border border-slate-100 shadow-xs flex items-center justify-between">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-4">
+          <div className="bg-white rounded-2xl p-3 sm:p-4 border border-slate-100 shadow-xs flex items-center justify-between">
             <div>
-              <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Total Jamaah</p>
-              <p className="text-2xl font-black text-slate-800 mt-1">{totalJamaah}</p>
-              <p className="text-[10px] text-slate-400 mt-0.5">Warga terdaftar</p>
+              <p className="text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-wider">Total Jamaah</p>
+              <p className="text-xl sm:text-2xl font-black text-slate-800 mt-0.5 sm:mt-1">{totalJamaah}</p>
+              <p className="text-[9px] sm:text-[10px] text-slate-400 mt-0.5">Warga terdaftar</p>
             </div>
-            <div className="h-11 w-11 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
-              <Users size={22} />
+            <div className="h-9 w-9 sm:h-11 sm:w-11 rounded-xl sm:rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+              <Users size={18} className="sm:size-[22px]" />
             </div>
           </div>
-          <div className="bg-white rounded-2xl p-4 border border-slate-100 shadow-xs flex items-center justify-between">
+          <div className="bg-white rounded-2xl p-3 sm:p-4 border border-slate-100 shadow-xs flex items-center justify-between">
             <div>
-              <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Pengurus DKM</p>
-              <p className="text-2xl font-black text-emerald-700 mt-1">{totalDKM}</p>
-              <p className="text-[10px] text-slate-400 mt-0.5">Struktur dewan</p>
+              <p className="text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-wider">Pengurus DKM</p>
+              <p className="text-xl sm:text-2xl font-black text-emerald-700 mt-0.5 sm:mt-1">{totalDKM}</p>
+              <p className="text-[9px] sm:text-[10px] text-slate-400 mt-0.5">Struktur dewan</p>
             </div>
-            <div className="h-11 w-11 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
-              <ShieldCheck size={22} />
+            <div className="h-9 w-9 sm:h-11 sm:w-11 rounded-xl sm:rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+              <ShieldCheck size={18} className="sm:size-[22px]" />
             </div>
           </div>
-          <div className="bg-white rounded-2xl p-4 border border-slate-100 shadow-xs flex items-center justify-between">
+          <div className="bg-white rounded-2xl p-3 sm:p-4 border border-slate-100 shadow-xs flex items-center justify-between">
             <div>
-              <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Imam & Muadzin</p>
-              <p className="text-2xl font-black text-amber-700 mt-1">{totalPetugas}</p>
-              <p className="text-[10px] text-slate-400 mt-0.5">Petugas rawatib</p>
+              <p className="text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-wider">Imam & Muadzin</p>
+              <p className="text-xl sm:text-2xl font-black text-amber-700 mt-0.5 sm:mt-1">{totalPetugas}</p>
+              <p className="text-[9px] sm:text-[10px] text-slate-400 mt-0.5">Petugas rawatib</p>
             </div>
-            <div className="h-11 w-11 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center">
-              <Award size={22} />
+            <div className="h-9 w-9 sm:h-11 sm:w-11 rounded-xl sm:rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
+              <Award size={18} className="sm:size-[22px]" />
             </div>
           </div>
-          <div className="bg-white rounded-2xl p-4 border border-slate-100 shadow-xs flex items-center justify-between">
+          <div className="bg-white rounded-2xl p-3 sm:p-4 border border-slate-100 shadow-xs flex items-center justify-between">
             <div>
-              <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Donatur Tetap</p>
-              <p className="text-2xl font-black text-rose-700 mt-1">{totalDonatur}</p>
-              <p className="text-[10px] text-slate-400 mt-0.5">Dermawan & muhsinin</p>
+              <p className="text-[10px] sm:text-[11px] font-bold text-slate-400 uppercase tracking-wider">Donatur Tetap</p>
+              <p className="text-xl sm:text-2xl font-black text-rose-700 mt-0.5 sm:mt-1">{totalDonatur}</p>
+              <p className="text-[9px] sm:text-[10px] text-slate-400 mt-0.5">Dermawan & muhsinin</p>
             </div>
-            <div className="h-11 w-11 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center">
-              <Heart size={22} />
+            <div className="h-9 w-9 sm:h-11 sm:w-11 rounded-xl sm:rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center shrink-0">
+              <Heart size={18} className="sm:size-[22px]" />
             </div>
           </div>
         </div>
 
         {/* Filter and Search Bar */}
-        <div className="bg-white p-4 rounded-2xl border border-slate-100 shadow-xs flex flex-col md:flex-row gap-3 items-center justify-between">
+        <div className="bg-white p-3.5 sm:p-4 rounded-2xl border border-slate-100 shadow-xs flex flex-col sm:flex-row gap-2.5 sm:gap-3 items-center justify-between">
           <div className="relative w-full md:w-80">
             <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
             <input
@@ -436,8 +436,8 @@ export default function JamaahPage() {
 
         {/* Add Modal */}
         {showAddModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4">
-            <div className="bg-white rounded-3xl w-full max-w-md shadow-2xl border border-slate-100 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-3 sm:p-4">
+            <div className="bg-white rounded-2xl sm:rounded-3xl w-full max-w-md shadow-2xl border border-slate-100 overflow-hidden max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-150">
               <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-emerald-950 text-white">
                 <h3 className="font-bold text-sm flex items-center gap-2">
                   <Users size={16} className="text-emerald-400" /> Tambah Jamaah Baru
@@ -525,8 +525,8 @@ export default function JamaahPage() {
 
         {/* Edit Modal */}
         {showEditModal && editItem && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4">
-            <div className="bg-white rounded-3xl w-full max-w-md shadow-2xl border border-slate-100 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-3 sm:p-4">
+            <div className="bg-white rounded-2xl sm:rounded-3xl w-full max-w-md shadow-2xl border border-slate-100 overflow-hidden max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in-95 duration-150">
               <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-emerald-950 text-white">
                 <h3 className="font-bold text-sm flex items-center gap-2">
                   <Edit2 size={16} className="text-emerald-400" /> Perbarui Data Jamaah

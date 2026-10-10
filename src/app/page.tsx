@@ -350,7 +350,7 @@ export default function HomePage() {
             </div>
 
             {/* Judul Utama Serif */}
-            <h1 className="font-serif-elegant mb-2 text-5xl leading-tight font-bold text-white md:text-7xl lg:text-[5.5rem] drop-shadow-md">
+            <h1 className="font-serif-elegant mb-2 text-3xl sm:text-5xl leading-tight font-bold text-white md:text-7xl lg:text-[5.5rem] drop-shadow-md">
               Masjid Al-Mukhlisin
             </h1>
 
@@ -375,7 +375,7 @@ export default function HomePage() {
             </div>
 
             {/* Subjudul Dua Warna */}
-            <h2 className="font-serif-elegant mb-8 text-3xl leading-tight font-bold md:text-4xl lg:text-5xl">
+            <h2 className="font-serif-elegant mb-6 sm:mb-8 text-2xl sm:text-3xl leading-tight font-bold md:text-4xl lg:text-5xl">
               <span className="text-[#0d8a5e]">Menyinari Negeri,</span>{' '}
               <span className="text-[#d4af37]">Menjaga Harmoni.</span>
             </h2>
@@ -407,7 +407,7 @@ export default function HomePage() {
       </section>
 
       {/* --- MAIN CONTENT SECTIONS --- */}
-      <main className="relative z-20 mx-auto -mt-10 max-w-7xl space-y-24 px-4 py-12 md:-mt-20 md:space-y-32 md:px-8 md:py-20">
+      <main className="relative z-20 mx-auto -mt-10 max-w-7xl space-y-16 sm:space-y-24 px-3 sm:px-6 md:px-8 py-10 sm:py-12 md:-mt-20 md:space-y-32 md:py-20">
         {/* --- 1. JADWAL SHALAT REAL-TIME --- */}
         <section id="jadwal" className="scroll-mt-32">
           <div className="rounded-[2rem] border border-slate-100 bg-white p-6 shadow-2xl shadow-slate-200/50 md:p-10">
@@ -637,7 +637,7 @@ export default function HomePage() {
               />
 
               <div
-                className="animate-pop relative z-10 flex max-h-[95vh] w-full max-w-2xl flex-col overflow-hidden rounded-[2.5rem] bg-white shadow-2xl md:flex-row"
+                className="animate-pop relative z-10 flex max-h-[90vh] w-full max-w-2xl flex-col overflow-y-auto rounded-2xl sm:rounded-[2.5rem] bg-white shadow-2xl md:flex-row md:overflow-hidden"
                 onClick={(e) => e.stopPropagation()}
               >
                 <button
@@ -995,7 +995,7 @@ export default function HomePage() {
               onClick={() => setShowDonasiModal(false)}
             />
 
-            <div className="animate-pop relative z-10 w-full max-w-[340px] overflow-hidden rounded-[2.5rem] bg-white p-6 text-center shadow-2xl">
+            <div className="animate-pop relative z-10 w-full max-w-[340px] overflow-hidden rounded-2xl sm:rounded-[2.5rem] bg-white p-5 sm:p-6 text-center shadow-2xl max-h-[90vh] overflow-y-auto">
               <div className="mb-4">
                 <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-50 text-[#0d8a5e]">
                   <Heart size={24} className="fill-current" />
@@ -1036,7 +1036,7 @@ export default function HomePage() {
       </main>
 
       {/* --- FOOTER --- */}
-      <footer className="border-t border-slate-200 bg-white pt-20 pb-10">
+      <footer className="border-t border-slate-200 bg-white pt-14 sm:pt-20 pb-28 md:pb-10">
         <div className="mx-auto max-w-7xl px-4 md:px-8">
           <div className="mb-16 grid gap-12 md:grid-cols-4">
             {/* Info Masjid */}

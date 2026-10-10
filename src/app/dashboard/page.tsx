@@ -84,21 +84,21 @@ export default function DashboardPage() {
 
   return (
     <AdminLayout>
-      <div className="p-5 md:p-10 max-w-7xl mx-auto space-y-8">
+      <div className="p-3.5 sm:p-6 md:p-10 max-w-7xl mx-auto space-y-5 sm:space-y-8">
         {/* Header with Greeting & Quick Action */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
           <div>
-            <h2 className="text-3xl md:text-4xl font-black tracking-tight text-slate-900 font-serif-elegant">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight text-slate-900 font-serif-elegant">
               Pusat Komando
             </h2>
-            <div className="flex flex-wrap items-center gap-3 mt-1.5">
-              <p className="text-xs md:text-sm font-bold text-slate-400">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3 mt-1">
+              <p className="text-xs sm:text-sm font-bold text-slate-400">
                 Ringkasan Sistem Manajemen Masjid Al-Mukhlisin
               </p>
               {todayDateStr && (
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 text-xs font-bold border border-emerald-200 shadow-2xs">
-                  <CalendarDays size={13} className="text-emerald-600" />
-                  <span>{todayDateStr}</span>
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 sm:px-3 sm:py-1 rounded-full bg-emerald-50 text-emerald-800 text-[11px] sm:text-xs font-bold border border-emerald-200 shadow-2xs">
+                  <CalendarDays size={12} className="text-emerald-600 shrink-0" />
+                  <span className="truncate max-w-[240px] sm:max-w-none">{todayDateStr}</span>
                 </span>
               )}
             </div>
@@ -107,23 +107,23 @@ export default function DashboardPage() {
           <button
             onClick={loadData}
             disabled={loading}
-            className="self-start md:self-auto flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-white border border-slate-200 text-xs font-bold text-slate-700 hover:border-emerald-600 hover:text-emerald-700 transition-colors shadow-xs"
+            className="self-start sm:self-auto flex items-center gap-2 px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-2xl bg-white border border-slate-200 text-xs font-bold text-slate-700 hover:border-emerald-600 hover:text-emerald-700 transition-colors shadow-2xs"
           >
-            <RefreshCw size={14} className={loading ? 'animate-spin text-emerald-600' : ''} />
+            <RefreshCw size={13} className={loading ? 'animate-spin text-emerald-600' : ''} />
             <span>Muat Ulang Data</span>
           </button>
         </div>
 
         {/* --- TOP 3 STAT CARDS --- */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-5">
           {/* 1. Saldo Kas */}
-          <div className="group rounded-[2rem] border border-slate-100 bg-white p-7 shadow-xs hover:shadow-xl hover:shadow-emerald-900/5 transition-all duration-300">
+          <div className="group rounded-[1.8rem] sm:rounded-[2rem] border border-slate-100 bg-white p-5 sm:p-7 shadow-xs hover:shadow-xl hover:shadow-emerald-900/5 transition-all duration-300">
             <div className="flex items-center justify-between">
               <span className="text-[10px] font-black tracking-widest text-slate-400 uppercase">
                 Saldo Kas Umat
               </span>
-              <div className="h-11 w-11 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform">
-                <Wallet size={22} />
+              <div className="h-10 w-10 sm:h-11 sm:w-11 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform">
+                <Wallet size={20} />
               </div>
             </div>
             <div className="mt-4">
