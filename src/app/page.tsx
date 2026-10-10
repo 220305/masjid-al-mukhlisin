@@ -538,14 +538,22 @@ export default function HomePage() {
 
         {/* --- 2. KHUTBAH & KAJIAN --- */}
         <section id="khutbah" className="scroll-mt-16">
-          <div className="mb-10 text-center md:mb-14">
-            <p className="mb-3 text-[10px] font-black tracking-widest text-[#d4af37] uppercase">Syiar Agama</p>
-            <h2 className="font-serif-elegant text-3xl font-bold text-[#0a1f18] md:text-5xl">
-              Majelis Ilmu & Khutbah
-            </h2>
-            <p className="mt-4 text-sm text-slate-500">
-              Jadwal kajian dan ceramah terdekat untuk mempertebal keimanan dan wawasan keislaman.
-            </p>
+          <div className="mb-8 md:mb-14 flex flex-col md:flex-row md:items-end justify-between gap-3 text-center md:text-left">
+            <div>
+              <p className="mb-2 text-[10px] font-black tracking-widest text-[#d4af37] uppercase">Syiar Agama</p>
+              <h2 className="font-serif-elegant text-2xl sm:text-3xl font-bold text-[#0a1f18] md:text-5xl">
+                Majelis Ilmu & Khutbah
+              </h2>
+              <p className="mt-2 text-xs sm:text-sm text-slate-500">
+                Jadwal kajian dan ceramah terdekat untuk mempertebal keimanan dan wawasan keislaman.
+              </p>
+            </div>
+            {jadwal.length > 1 && (
+              <span className="inline-flex md:hidden items-center justify-center gap-1 text-[10px] font-bold text-emerald-800 bg-emerald-50 px-3 py-1 rounded-full self-center md:self-auto border border-emerald-100">
+                <span>Geser ke samping</span>
+                <ArrowRight size={12} />
+              </span>
+            )}
           </div>
 
           {loading ? (
@@ -554,23 +562,23 @@ export default function HomePage() {
               <span>Memuat agenda majelis ilmu...</span>
             </div>
           ) : (
-            <div className="grid gap-8 sm:grid-cols-2 md:grid-cols-3">
+            <div className="flex overflow-x-auto gap-3.5 pb-4 pt-1 snap-x snap-mandatory scrollbar-none -mx-4 px-4 sm:-mx-6 sm:px-6 md:mx-0 md:px-0 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-8 md:overflow-visible md:pb-0">
               {jadwal.length > 0 ? (
                 jadwal.map((item, i) => (
                   <div
                     key={i}
                     onClick={() => setSelectedKajian(item)}
-                    className="group flex cursor-pointer flex-col overflow-hidden rounded-[2.5rem] border border-slate-200 bg-white shadow-sm transition-all hover:-translate-y-2 hover:border-[#0d8a5e]/30 hover:shadow-2xl hover:shadow-emerald-900/5"
+                    className="group flex cursor-pointer flex-col overflow-hidden rounded-2xl sm:rounded-3xl md:rounded-[2.5rem] border border-slate-200/90 bg-white shadow-xs transition-all hover:-translate-y-1 hover:border-[#0d8a5e]/30 hover:shadow-xl w-[250px] sm:w-[280px] md:w-auto shrink-0 snap-start justify-between"
                   >
                     {/* AREA GAMBAR KHATIB */}
-                    <div className="relative h-56 w-full overflow-hidden bg-slate-900">
+                    <div className="relative h-36 sm:h-44 md:h-56 w-full overflow-hidden bg-slate-900 shrink-0">
                       <KajianCardMedia item={item} />
 
                       {/* Overlay status HANYA ditampilkan jika menggunakan foto kustom */}
                       {isCustomPosterImage(item.image) && (
-                        <div className="absolute top-4 right-4 z-20">
+                        <div className="absolute top-3 right-3 md:top-4 md:right-4 z-20">
                           <span
-                            className={`rounded-full px-3.5 py-1.5 text-[8px] font-black tracking-widest uppercase backdrop-blur-md ${
+                            className={`rounded-full px-2.5 py-1 md:px-3.5 md:py-1.5 text-[8px] font-black tracking-widest uppercase backdrop-blur-md ${
                               item.status === 'terjadwal'
                                 ? 'bg-indigo-600/90 text-white'
                                 : item.status === 'selesai'
@@ -585,35 +593,35 @@ export default function HomePage() {
                     </div>
 
                     {/* KONTEN TEXT */}
-                    <div className="flex flex-col p-7 flex-1 justify-between">
+                    <div className="flex flex-col p-4 sm:p-5 md:p-7 flex-1 justify-between">
                       <div>
-                        <div className="mb-3 flex items-center gap-2.5">
-                          <div className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-50 text-[#0d8a5e] transition-colors group-hover:bg-[#0d8a5e] group-hover:text-white">
-                            <CalendarDays size={16} />
+                        <div className="mb-2 md:mb-3 flex items-center gap-2">
+                          <div className="inline-flex h-7 w-7 md:h-8 md:w-8 items-center justify-center rounded-lg bg-emerald-50 text-[#0d8a5e] transition-colors group-hover:bg-[#0d8a5e] group-hover:text-white shrink-0">
+                            <CalendarDays size={14} />
                           </div>
-                          <p className="text-[10px] font-black tracking-widest text-[#0d8a5e] uppercase">
+                          <p className="text-[9px] md:text-[10px] font-black tracking-widest text-[#0d8a5e] uppercase">
                             {item.jenis_kegiatan}
                           </p>
                         </div>
 
-                        <h3 className="font-serif-elegant text-xl font-bold text-[#0a1f18] line-clamp-1 mb-2">
+                        <h3 className="font-serif-elegant text-base sm:text-lg md:text-xl font-bold text-[#0a1f18] line-clamp-1 mb-1">
                           {item.khotib}
                         </h3>
 
-                        <p className="text-xs text-slate-500 line-clamp-2 italic font-medium">
-                          "{item.tema || 'Tema kajian insya Allah disampaikan pada sesi majelis'}"
+                        <p className="text-xs text-slate-500 line-clamp-2 italic font-medium leading-relaxed">
+                          &ldquo;{item.tema || 'Tema kajian insya Allah disampaikan pada sesi majelis'}&rdquo;
                         </p>
                       </div>
 
-                      <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between">
-                        <span className="text-[11px] font-bold text-slate-500">
+                      <div className="mt-4 md:mt-6 pt-3 md:pt-4 border-t border-slate-100 flex items-center justify-between text-xs">
+                        <span className="text-[10px] md:text-[11px] font-bold text-slate-500">
                           {new Date(item.tanggal).toLocaleDateString('id-ID', {
                             weekday: 'short',
                             day: 'numeric',
                             month: 'short',
                           })}
                         </span>
-                        <span className="text-[10px] font-bold text-[#0d8a5e] group-hover:translate-x-1 transition-transform flex items-center gap-1">
+                        <span className="text-[10px] md:text-[11px] font-bold text-[#0d8a5e] group-hover:translate-x-1 transition-transform flex items-center gap-1">
                           Detail <ArrowRight size={12} />
                         </span>
                       </div>
@@ -621,7 +629,7 @@ export default function HomePage() {
                   </div>
                 ))
               ) : (
-                <div className="col-span-3 text-center p-12 text-slate-400 bg-white rounded-3xl border border-slate-100">
+                <div className="w-full col-span-3 text-center p-8 md:p-12 text-slate-400 bg-white rounded-2xl md:rounded-3xl border border-slate-100 text-xs sm:text-sm">
                   Belum ada jadwal kajian terbaru.
                 </div>
               )}

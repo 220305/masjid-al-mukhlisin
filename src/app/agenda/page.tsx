@@ -15,6 +15,7 @@ import {
   Share2,
   Calendar,
   BookOpen,
+  ArrowRight,
 } from 'lucide-react';
 import { DataService } from '@/lib/data-service';
 import { KhutbahItem, PetugasJumatItem, IdentitasMasjid } from '@/types';
@@ -333,15 +334,27 @@ export default function AgendaPublicPage() {
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
-              {filteredKajian.map((item) => (
-                <div
-                  key={item.id}
-                  onClick={() => setSelectedItem(item)}
-                  className="group rounded-2xl bg-white border border-slate-200/90 overflow-hidden shadow-2xs hover:shadow-md hover:border-emerald-500/50 transition-all cursor-pointer flex flex-col justify-between"
-                >
-                  {/* Poster Area */}
-                  <div className="relative aspect-16/9 bg-slate-900 overflow-hidden">
+            <>
+              {filteredKajian.length > 1 && (
+                <div className="flex sm:hidden items-center justify-between px-1">
+                  <span className="text-[11px] font-bold text-slate-500">
+                    {filteredKajian.length} Agenda Tersedia
+                  </span>
+                  <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-100">
+                    <span>Geser ke samping</span>
+                    <ArrowRight size={11} />
+                  </span>
+                </div>
+              )}
+              <div className="flex overflow-x-auto gap-3.5 pb-4 pt-1 snap-x snap-mandatory scrollbar-none -mx-4 px-4 sm:mx-0 sm:px-0 sm:grid sm:grid-cols-2 lg:grid-cols-3 sm:gap-5 sm:overflow-visible sm:pb-0">
+                {filteredKajian.map((item) => (
+                  <div
+                    key={item.id}
+                    onClick={() => setSelectedItem(item)}
+                    className="group rounded-2xl bg-white border border-slate-200/90 overflow-hidden shadow-2xs hover:shadow-md hover:border-emerald-500/50 transition-all cursor-pointer flex flex-col justify-between w-[250px] sm:w-auto shrink-0 snap-start"
+                  >
+                    {/* Poster Area */}
+                    <div className="relative aspect-16/9 bg-slate-900 overflow-hidden shrink-0">
                     {item.image && isCustomPosterImage(item.image) ? (
                       <img
                         src={item.image}
@@ -400,6 +413,7 @@ export default function AgendaPublicPage() {
                 </div>
               ))}
             </div>
+            </>
           )}
         </div>
       </main>

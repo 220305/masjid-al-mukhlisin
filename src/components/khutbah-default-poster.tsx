@@ -226,7 +226,7 @@ export default function KhutbahDefaultPoster({
   // Public Landing Page Card (variant === 'card')
   return (
     <div
-      className={`relative h-full w-full overflow-hidden bg-gradient-to-br from-[#064e3b] via-[#043627] to-[#011d14] p-5 text-white flex flex-col justify-between select-none ${className}`}
+      className={`relative h-full w-full overflow-hidden bg-gradient-to-br from-[#064e3b] via-[#043627] to-[#011d14] p-3.5 sm:p-4 md:p-5 text-white flex flex-col justify-between select-none ${className}`}
     >
       {/* Geometric Islamic Star Pattern Watermark */}
       <div className="absolute inset-0 opacity-[0.08] pointer-events-none">
@@ -245,43 +245,43 @@ export default function KhutbahDefaultPoster({
       <div className="absolute -top-12 -right-12 w-40 h-40 bg-emerald-400/10 rounded-full blur-2xl pointer-events-none" />
 
       {/* Top Header */}
-      <div className="relative z-10 flex items-center justify-between gap-2 border-b border-emerald-500/20 pb-2.5">
-        <div className="flex items-center gap-2">
-          <MosqueDomeIcon className="w-5 h-5 text-amber-300 shrink-0" />
+      <div className="relative z-10 flex items-center justify-between gap-1.5 border-b border-emerald-500/20 pb-2">
+        <div className="flex items-center gap-1.5">
+          <MosqueDomeIcon className="w-4 h-4 sm:w-5 sm:h-5 text-amber-300 shrink-0" />
           <div>
-            <p className="text-[10px] font-black tracking-widest text-emerald-300 uppercase leading-none">
+            <p className="text-[9px] sm:text-[10px] font-black tracking-widest text-emerald-300 uppercase leading-none">
               Masjid Al-Mukhlisin
             </p>
-            <p className="text-[8px] font-mono text-emerald-100/60 leading-tight mt-0.5">
+            <p className="text-[7px] sm:text-[8px] font-mono text-emerald-100/60 leading-tight mt-0.5">
               Lagadar, Margaasih
             </p>
           </div>
         </div>
-        <span className="rounded-full bg-emerald-800/80 px-2.5 py-0.5 text-[8px] font-black uppercase tracking-wider text-emerald-200 border border-emerald-500/30">
+        <span className="rounded-full bg-emerald-800/80 px-2 py-0.5 text-[7px] sm:text-[8px] font-black uppercase tracking-wider text-emerald-200 border border-emerald-500/30 whitespace-nowrap">
           {jenisKegiatan || 'Shalat Jumat'}
         </span>
       </div>
 
       {/* Center Subject */}
-      <div className="relative z-10 my-auto text-center py-2 px-2">
-        <p className="text-[9px] font-black tracking-widest text-amber-300 uppercase mb-1">
+      <div className="relative z-10 my-auto text-center py-1 sm:py-2 px-1">
+        <p className="text-[8px] sm:text-[9px] font-black tracking-widest text-amber-300 uppercase mb-0.5 sm:mb-1">
           Jadwal Khutbah & Majelis Ilmu
         </p>
-        <h4 className="font-serif-elegant text-lg md:text-xl font-black text-white drop-shadow leading-tight line-clamp-1">
+        <h4 className="font-serif-elegant text-sm sm:text-base md:text-xl font-black text-white drop-shadow leading-tight line-clamp-1">
           {khotib}
         </h4>
-        <p className="text-[11px] text-emerald-200/90 italic mt-1 line-clamp-1">
+        <p className="text-[10px] sm:text-[11px] text-emerald-200/90 italic mt-0.5 sm:mt-1 line-clamp-1">
           "{tema || 'Tema Khutbah / Kajian'}"
         </p>
       </div>
 
       {/* Bottom Footer */}
-      <div className="relative z-10 flex items-center justify-between text-[9px] text-emerald-200/80 border-t border-emerald-500/20 pt-2.5">
+      <div className="relative z-10 flex items-center justify-between text-[8px] sm:text-[9px] text-emerald-200/80 border-t border-emerald-500/20 pt-1.5 sm:pt-2.5">
         <div className="flex items-center gap-1">
-          <CalendarDays size={11} className="text-amber-300" />
-          <span className="font-bold">{tanggal || 'Jadwal Kajian'}</span>
+          <CalendarDays size={10} className="text-amber-300 shrink-0" />
+          <span className="font-bold truncate max-w-[110px] sm:max-w-none">{tanggal || 'Jadwal Kajian'}</span>
         </div>
-        <span className="text-[8px] tracking-wider uppercase font-black text-amber-300/90">
+        <span className="text-[7px] sm:text-[8px] tracking-wider uppercase font-black text-amber-300/90 whitespace-nowrap">
           Poster Default Resmi
         </span>
       </div>
