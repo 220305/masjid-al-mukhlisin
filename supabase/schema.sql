@@ -161,16 +161,19 @@ CREATE POLICY "Auth manage petugas" ON public.petugas_jumat FOR ALL USING (auth.
 -- Polisi Zakat & Qurban
 DROP POLICY IF EXISTS "Public can view zakat" ON public.zakat_qurban;
 CREATE POLICY "Public can view zakat" ON public.zakat_qurban FOR SELECT USING (true);
-DROP POLICY IF EXISTS "Auth manage zakat" ON public.zakat_qurban FOR ALL USING (auth.role() = 'authenticated');
+DROP POLICY IF EXISTS "Auth manage zakat" ON public.zakat_qurban;
+CREATE POLICY "Auth manage zakat" ON public.zakat_qurban FOR ALL USING (auth.role() = 'authenticated');
 
 -- Polisi Inventaris & Wakaf
 DROP POLICY IF EXISTS "Public can view inventories" ON public.inventories;
 CREATE POLICY "Public can view inventories" ON public.inventories FOR SELECT USING (true);
-DROP POLICY IF EXISTS "Auth manage inventories" ON public.inventories FOR ALL USING (auth.role() = 'authenticated');
+DROP POLICY IF EXISTS "Auth manage inventories" ON public.inventories;
+CREATE POLICY "Auth manage inventories" ON public.inventories FOR ALL USING (auth.role() = 'authenticated');
 
 DROP POLICY IF EXISTS "Public can view wakaf" ON public.wakaf;
 CREATE POLICY "Public can view wakaf" ON public.wakaf FOR SELECT USING (true);
-DROP POLICY IF EXISTS "Auth manage wakaf" ON public.wakaf FOR ALL USING (auth.role() = 'authenticated');
+DROP POLICY IF EXISTS "Auth manage wakaf" ON public.wakaf;
+CREATE POLICY "Auth manage wakaf" ON public.wakaf FOR ALL USING (auth.role() = 'authenticated');
 
 -- Storage Bucket Poster Khutbah
 INSERT INTO storage.buckets (id, name, public)
