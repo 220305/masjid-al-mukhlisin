@@ -318,7 +318,7 @@ export default function HomePage() {
       </header>
 
       {/* --- HERO SECTION --- */}
-      <section className="relative flex min-h-[90vh] items-center px-4 md:min-h-screen md:px-8 overflow-hidden">
+      <section className="relative flex min-h-[72vh] sm:min-h-[82vh] md:min-h-screen items-center px-4 md:px-8 overflow-hidden">
         {/* Video Background */}
         <video
           autoPlay
@@ -333,15 +333,17 @@ export default function HomePage() {
 
         {/* Overlay Gelap dengan Gradasi Hijau Tua */}
         <div className="absolute inset-0 bg-[#0a1f18]/85 mix-blend-multiply" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#f4f7f6] via-transparent to-[#0a1f18]/40" />
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0a1f18]/70 via-[#0a1f18]/85 to-[#0a1f18]" />
+        {/* Transisi Halus ke Bagian Bawah */}
+        <div className="absolute inset-x-0 bottom-0 h-24 sm:h-36 bg-gradient-to-t from-[#f4f7f6] to-transparent pointer-events-none" />
 
-        {/* Konten Hero (Rata Kiri) */}
-        <div className="relative z-10 mx-auto w-full max-w-7xl pt-24 pb-12">
+        {/* Konten Hero */}
+        <div className="relative z-10 mx-auto w-full max-w-7xl pt-20 sm:pt-28 md:pt-36 pb-10 sm:pb-16 md:pb-24">
           <div className="max-w-3xl">
             {/* Subteks Atas dengan Garis Emas & ID Kemenag */}
-            <div className="mb-4 flex flex-wrap items-center gap-3">
-              <span className="h-[2px] w-8 bg-[#d4af37]" />
-              <div className="inline-flex items-center gap-2.5 rounded-full border border-emerald-400/30 bg-emerald-950/70 px-4 py-1 text-[11px] font-semibold text-emerald-300 backdrop-blur-md shadow-inner">
+            <div className="mb-3 sm:mb-4 flex flex-wrap items-center gap-2.5 sm:gap-3">
+              <span className="h-[2px] w-6 sm:w-8 bg-[#d4af37]" />
+              <div className="inline-flex items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-950/80 px-3 sm:px-4 py-1 text-[10px] sm:text-[11px] font-semibold text-emerald-300 backdrop-blur-md shadow-inner">
                 <span className="tracking-wide">Kartu Masjid Kemenag RI</span>
                 <span className="text-white/30">|</span>
                 <span className="font-mono text-white tracking-wider font-bold">ID 01.4.13.04.06.000158</span>
@@ -354,44 +356,47 @@ export default function HomePage() {
             </h1>
 
             {/* Alamat Resmi Hero & Tanggal Hijriah */}
-            <div className="mb-6 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs md:text-sm text-emerald-200/90 font-medium">
+            <div className="mb-4 sm:mb-6 flex flex-wrap items-center gap-x-3 gap-y-2 text-xs md:text-sm text-emerald-200/90 font-medium">
               <span className="flex items-center gap-1.5">
-                <MapPin size={16} className="text-[#d4af37] shrink-0" />
-                <span>Kp. Jalan Cagak RT.005 RW.004 Desa Lagadar</span>
+                <MapPin size={14} className="text-[#d4af37] shrink-0 sm:size-[16px]" />
+                <span className="text-[11px] sm:text-xs md:text-sm">Kp. Jalan Cagak RT.005 RW.004 Desa Lagadar</span>
               </span>
               {todayDateString && (
-                <>
-                  <span className="hidden sm:inline text-white/30">•</span>
-                  <span className="flex items-center gap-1.5 text-emerald-300 font-semibold bg-emerald-950/60 px-3 py-1 rounded-full border border-emerald-800/40">
-                    <CalendarDays size={14} className="text-[#d4af37]" />
-                    <span>
-                      {todayDateString}
-                      {hijriDateString ? ` · ${hijriDateString}` : ''}
-                    </span>
+                <span className="flex items-center gap-1.5 text-emerald-300 font-semibold bg-emerald-950/70 px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full border border-emerald-800/40 text-[10px] sm:text-xs">
+                  <CalendarDays size={12} className="text-[#d4af37] shrink-0 sm:size-[14px]" />
+                  <span>
+                    {todayDateString}
+                    {hijriDateString ? ` · ${hijriDateString}` : ''}
                   </span>
-                </>
+                </span>
               )}
             </div>
 
             {/* Subjudul Dua Warna */}
-            <h2 className="font-serif-elegant mb-6 sm:mb-8 text-2xl sm:text-3xl leading-tight font-bold md:text-4xl lg:text-5xl">
-              <span className="text-[#0d8a5e]">Menyinari Negeri,</span>{' '}
+            <h2 className="font-serif-elegant mb-3 sm:mb-6 text-xl sm:text-3xl leading-snug sm:leading-tight font-bold md:text-4xl lg:text-5xl">
+              <span className="text-emerald-400">Menyinari Negeri,</span>{' '}
               <span className="text-[#d4af37]">Menjaga Harmoni.</span>
             </h2>
 
             {/* Deskripsi */}
-            <p className="mb-10 max-w-xl text-sm leading-relaxed font-medium text-slate-300 md:text-lg">
+            <p className="mb-6 sm:mb-8 max-w-xl text-xs sm:text-sm md:text-base leading-relaxed font-medium text-slate-300/95">
               Selamat datang di Masjid Al-Mukhlisin, simbol ukhuwah dan pusat peradaban islami. Merajut
               persaudaraan dan menebar kedamaian untuk seluruh alam melalui transparansi dan pelayanan umat.
             </p>
 
-            <div className="flex flex-wrap items-center gap-4">
+            <div className="flex flex-wrap items-center gap-3">
               <a
                 href="#jadwal"
-                className="group flex h-12 w-12 items-center justify-center rounded-full bg-[#0d8a5e] text-white shadow-lg shadow-emerald-900/40 transition-all hover:bg-emerald-500 hover:scale-105 active:scale-95"
-                title="Scroll ke Bawah"
+                className="inline-flex items-center gap-2 rounded-full bg-[#0d8a5e] hover:bg-emerald-500 text-white font-bold text-xs sm:text-sm px-4 sm:px-5 py-2.5 sm:py-3 shadow-lg shadow-emerald-950/60 transition-all hover:scale-105 active:scale-95"
               >
-                <ChevronDown size={28} className="animate-bounce transition-transform group-hover:scale-110" />
+                <span>Jadwal Shalat Hari Ini</span>
+                <ChevronDown size={15} className="animate-bounce" />
+              </a>
+              <a
+                href="#khutbah"
+                className="inline-flex items-center gap-1.5 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-white font-bold text-xs sm:text-sm px-4 sm:px-5 py-2.5 sm:py-3 backdrop-blur-xs transition-all hover:bg-white/15"
+              >
+                <span>Majelis Ilmu</span>
               </a>
             </div>
           </div>
@@ -399,7 +404,7 @@ export default function HomePage() {
       </section>
 
       {/* --- MAIN CONTENT SECTIONS --- */}
-      <main className="relative z-20 mx-auto -mt-10 max-w-7xl space-y-16 sm:space-y-24 px-3 sm:px-6 md:px-8 py-10 sm:py-12 md:-mt-20 md:space-y-32 md:py-20">
+      <main className="relative z-20 mx-auto -mt-6 sm:-mt-10 max-w-7xl space-y-12 sm:space-y-24 px-3 sm:px-6 md:px-8 py-8 sm:py-12 md:-mt-20 md:space-y-32 md:py-20">
         {/* --- 1. JADWAL SHALAT REAL-TIME --- */}
         <section id="jadwal" className="scroll-mt-32">
           <div className="rounded-[2rem] border border-slate-100 bg-white p-6 shadow-2xl shadow-slate-200/50 md:p-10">
