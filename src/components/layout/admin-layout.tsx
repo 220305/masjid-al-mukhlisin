@@ -23,7 +23,6 @@ import {
   MapPin,
 } from 'lucide-react';
 import { useAuth } from '@/lib/auth-context';
-import MobileBottomNav from './mobile-bottom-nav';
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -36,15 +35,15 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const navItems = [
-    { title: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-    { title: 'Buku Kas Keuangan', href: '/finance', icon: Wallet },
-    { title: 'Zakat & Qurban', href: '/admin-zakat', icon: HandHeart },
-    { title: 'Data Jamaah', href: '/admin-jamaah', icon: Users },
-    { title: 'Jadwal Petugas Jumat', href: '/petugas-jumat', icon: UserCheck },
-    { title: 'Khutbah & Kajian', href: '/khutbah', icon: CalendarDays },
-    { title: 'Inventaris & Wakaf', href: '/inventory', icon: Package },
-    { title: 'Laporan Resmi (SIMAS)', href: '/admin-laporan', icon: FileText },
-    { title: 'Pengaturan & Backup', href: '/pengaturan', icon: Settings },
+    { title: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
+    { title: 'Buku Kas Keuangan', href: '/admin/finance', icon: Wallet },
+    { title: 'Zakat & Qurban', href: '/admin/zakat', icon: HandHeart },
+    { title: 'Data Jamaah', href: '/admin/jamaah', icon: Users },
+    { title: 'Jadwal Petugas Jumat', href: '/admin/petugas-jumat', icon: UserCheck },
+    { title: 'Khutbah & Kajian', href: '/admin/khutbah', icon: CalendarDays },
+    { title: 'Inventaris & Wakaf', href: '/admin/inventory', icon: Package },
+    { title: 'Laporan Resmi (SIMAS)', href: '/admin/laporan', icon: FileText },
+    { title: 'Pengaturan & Backup', href: '/admin/pengaturan', icon: Settings },
   ];
 
   const handleLogout = async () => {
@@ -199,12 +198,9 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       </aside>
 
       {/* Main Page Area */}
-      <main className="flex-1 min-w-0 bg-[#f8fafc] overflow-y-auto pb-24 md:pb-0">
+      <main className="flex-1 min-w-0 bg-[#f8fafc] overflow-y-auto pb-8 md:pb-0">
         {children}
       </main>
-
-      {/* Mobile Bottom Navigation Bar (7 Tabs: Beranda, Kas, Jamaah, Agenda, Zakat, Aset, Laporan) */}
-      <MobileBottomNav variant="admin" />
     </div>
   );
 }

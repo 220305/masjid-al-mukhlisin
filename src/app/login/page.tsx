@@ -27,7 +27,7 @@ export default function LoginPage() {
     try {
       const res = await login(password);
       if (res.success) {
-        router.push('/dashboard');
+        router.push('/admin/dashboard');
       } else {
         setErrorMessage(res.error || 'Kata sandi tidak sesuai. Silakan coba lagi.');
       }

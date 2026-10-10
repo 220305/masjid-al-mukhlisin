@@ -27,7 +27,7 @@ export default function RegisterPage() {
       if (res.success) {
         setSuccessMessage('Registrasi pengurus berhasil! Mengalihkan ke dashboard...');
         setTimeout(() => {
-          router.push('/dashboard');
+          router.push('/admin/dashboard');
         }, 1200);
       } else {
         setErrorMessage(res.error || 'Pendaftaran gagal');

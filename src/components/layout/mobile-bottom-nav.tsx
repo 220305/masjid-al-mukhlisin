@@ -53,37 +53,37 @@ export default function MobileBottomNav({ variant }: MobileBottomNavProps) {
       title: 'Kas',
       href: '/keuangan',
       icon: Wallet,
-      active: pathname === '/keuangan' || pathname === '/finance',
+      active: pathname === '/keuangan',
     },
     {
       title: 'Jamaah',
       href: '/jamaah',
       icon: Users,
-      active: pathname === '/jamaah' || pathname === '/admin-jamaah',
+      active: pathname === '/jamaah',
     },
     {
       title: 'Agenda',
       href: '/agenda',
       icon: CalendarDays,
-      active: pathname === '/agenda' || pathname === '/khutbah' || pathname === '/petugas-jumat',
+      active: pathname === '/agenda',
     },
     {
       title: 'Zakat',
       href: '/zakat',
       icon: HandHeart,
-      active: pathname === '/zakat' || pathname === '/admin-zakat',
+      active: pathname === '/zakat',
     },
     {
       title: 'Aset',
       href: '/fasilitas',
       icon: Package,
-      active: pathname === '/fasilitas' || pathname === '/inventory',
+      active: pathname === '/fasilitas',
     },
     {
       title: 'Laporan',
       href: '/laporan',
       icon: FileText,
-      active: pathname === '/laporan' || pathname === '/admin-laporan',
+      active: pathname === '/laporan',
     },
   ];
 
