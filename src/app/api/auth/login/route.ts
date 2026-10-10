@@ -23,8 +23,8 @@ export async function POST(request: Request) {
       });
     }
 
-    const defaultMasterPw = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || 'Mukhlisin2026!';
-    if (password !== defaultMasterPw && password !== 'Mukhlisin2026!' && password !== 'admin123') {
+    const defaultMasterPw = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || 'Almukhlisin0504$';
+    if (password !== defaultMasterPw && password !== 'Almukhlisin0504$') {
       return NextResponse.json({ message: 'Kata sandi tidak sesuai' }, { status: 401 });
     }
 

@@ -59,7 +59,7 @@ export default function PengaturanPage() {
       const stored =
         localStorage.getItem('masjid_admin_password') ||
         process.env.NEXT_PUBLIC_ADMIN_PASSWORD ||
-        'Mukhlisin2026!';
+        'Almukhlisin0504$';
       setCurrentPw(stored);
     }
   }, []);
@@ -357,7 +357,7 @@ export default function PengaturanPage() {
                 Kata Sandi Aktif Saat Ini
               </span>
               <p className="font-mono text-sm font-bold text-emerald-800">
-                {currentPw || 'Mukhlisin2026!'}
+                {currentPw || 'Almukhlisin0504$'}
               </p>
             </div>
 
