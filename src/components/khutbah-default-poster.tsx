@@ -142,9 +142,10 @@ export default function KhutbahDefaultPoster({
             <CalendarDays size={11} className="text-amber-300" />
             <span className="font-bold">{tanggal || 'Tanggal Pelaksanaan'}</span>
           </div>
-          <span className="text-[8px] tracking-wider uppercase font-black text-amber-300/90">
-            Poster Default Resmi
-          </span>
+          <div className="flex items-center gap-1 text-[8px] text-emerald-300/90">
+            <MapPin size={9} className="text-emerald-400" />
+            <span>Masjid Al-Mukhlisin</span>
+          </div>
         </div>
       </div>
     );
@@ -279,11 +280,12 @@ export default function KhutbahDefaultPoster({
       <div className="relative z-10 flex items-center justify-between text-[8px] sm:text-[9px] text-emerald-200/80 border-t border-emerald-500/20 pt-1.5 sm:pt-2.5">
         <div className="flex items-center gap-1">
           <CalendarDays size={10} className="text-amber-300 shrink-0" />
-          <span className="font-bold truncate max-w-[110px] sm:max-w-none">{tanggal || 'Jadwal Kajian'}</span>
+          <span className="font-bold truncate max-w-[120px] sm:max-w-none">{tanggal || 'Jadwal Kajian'}</span>
         </div>
-        <span className="text-[7px] sm:text-[8px] tracking-wider uppercase font-black text-amber-300/90 whitespace-nowrap">
-          Poster Default Resmi
-        </span>
+        <div className="flex items-center gap-1 text-[7px] sm:text-[8px] text-emerald-300/90 whitespace-nowrap">
+          <MapPin size={8} className="text-emerald-400 shrink-0" />
+          <span>Masjid Al-Mukhlisin</span>
+        </div>
       </div>
     </div>
   );
