@@ -355,30 +355,32 @@ export default function AgendaPublicPage() {
                   >
                     {/* Poster Area */}
                     <div className="relative aspect-16/9 bg-slate-900 overflow-hidden shrink-0">
-                    {item.image && isCustomPosterImage(item.image) ? (
-                      <img
-                        src={item.image}
-                        alt={item.tema || 'Kajian Masjid'}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                      />
-                    ) : (
-                      <KhutbahDefaultPoster
-                        variant="card"
-                        jenisKegiatan={item.jenis_kegiatan}
-                        khotib={item.khotib}
-                        tema={item.tema || 'Kajian Rutin'}
-                        tanggal={new Date(item.tanggal).toLocaleDateString('id-ID', {
-                          weekday: 'short',
-                          day: 'numeric',
-                          month: 'short',
-                        })}
-                        className="h-full w-full"
-                      />
-                    )}
-                    <span className="absolute top-2.5 right-2.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-black/60 backdrop-blur-md text-white border border-white/20">
-                      {item.jenis_kegiatan}
-                    </span>
-                  </div>
+                      {item.image && isCustomPosterImage(item.image) ? (
+                        <>
+                          <img
+                            src={item.image}
+                            alt={item.tema || 'Kajian Masjid'}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                          />
+                          <span className="absolute top-2.5 right-2.5 px-2.5 py-1 rounded-full text-[10px] font-bold bg-black/60 backdrop-blur-md text-white border border-white/20">
+                            {item.jenis_kegiatan}
+                          </span>
+                        </>
+                      ) : (
+                        <KhutbahDefaultPoster
+                          variant="card"
+                          jenisKegiatan={item.jenis_kegiatan}
+                          khotib={item.khotib}
+                          tema={item.tema || 'Kajian Rutin'}
+                          tanggal={new Date(item.tanggal).toLocaleDateString('id-ID', {
+                            weekday: 'short',
+                            day: 'numeric',
+                            month: 'short',
+                          })}
+                          className="h-full w-full"
+                        />
+                      )}
+                    </div>
 
                   {/* Body Info */}
                   <div className="p-4 sm:p-5 flex-1 flex flex-col justify-between space-y-3">
