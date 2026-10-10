@@ -23,6 +23,7 @@ import {
   MapPin,
 } from 'lucide-react';
 import { useAuth } from '@/lib/auth-context';
+import MobileBottomNav from './mobile-bottom-nav';
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -198,9 +199,12 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       </aside>
 
       {/* Main Page Area */}
-      <main className="flex-1 min-w-0 bg-[#f8fafc] overflow-y-auto">
+      <main className="flex-1 min-w-0 bg-[#f8fafc] overflow-y-auto pb-24 md:pb-0">
         {children}
       </main>
+
+      {/* Mobile Bottom Navigation Bar (7 Tabs: Beranda, Kas, Jamaah, Agenda, Zakat, Aset, Laporan) */}
+      <MobileBottomNav variant="admin" />
     </div>
   );
 }

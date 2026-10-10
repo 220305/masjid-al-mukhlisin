@@ -19,6 +19,7 @@ import {
 import * as XLSX from 'xlsx';
 import { DataService } from '@/lib/data-service';
 import { KasItem, IdentitasMasjid } from '@/types';
+import MobileBottomNav from '@/components/layout/mobile-bottom-nav';
 
 export default function KeuanganDetailPage() {
   const [dataKas, setDataKas] = useState<KasItem[]>([]);
@@ -244,7 +245,7 @@ export default function KeuanganDetailPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f4f7f6] font-sans text-slate-900 selection:bg-emerald-200">
+    <div className="min-h-screen bg-[#f4f7f6] font-sans text-slate-900 selection:bg-emerald-200 pb-24 md:pb-0">
       {/* --- TOP BAR HEADER --- */}
       <header className="sticky top-0 z-40 border-b border-emerald-950/20 bg-[#0a1f18]/95 px-4 py-3.5 text-white backdrop-blur-md md:px-8">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4">
@@ -847,6 +848,9 @@ export default function KeuanganDetailPage() {
           </div>
         </div>
       )}
+
+      {/* Mobile Bottom Navigation Bar (7 Tabs: Beranda, Kas, Jamaah, Agenda, Zakat, Aset, Laporan) */}
+      <MobileBottomNav variant="public" />
     </div>
   );
 }

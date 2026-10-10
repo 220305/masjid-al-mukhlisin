@@ -21,6 +21,7 @@ import {
   RefreshCw,
   ExternalLink,
 } from 'lucide-react';
+import MobileBottomNav from '@/components/layout/mobile-bottom-nav';
 
 const IconInstagram = ({ size = 18 }: { size?: number }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -1119,6 +1120,9 @@ export default function HomePage() {
           </div>
         </div>
       </footer>
+
+      {/* Mobile Bottom Navigation Bar (7 Tabs: Beranda, Kas, Jamaah, Agenda, Zakat, Aset, Laporan) */}
+      <MobileBottomNav variant="public" />
     </div>
   );
 }

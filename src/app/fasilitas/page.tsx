@@ -28,6 +28,7 @@ import {
   Check,
 } from 'lucide-react';
 import * as XLSX from 'xlsx';
+import MobileBottomNav from '@/components/layout/mobile-bottom-nav';
 import { DataService } from '@/lib/data-service';
 import { InventoryItem, WakafItem, IdentitasMasjid } from '@/types';
 
@@ -796,6 +797,9 @@ export default function FasilitasDetailPage() {
           </div>
         </div>
       )}
+
+      {/* Mobile Bottom Navigation Bar (7 Tabs: Beranda, Kas, Jamaah, Agenda, Zakat, Aset, Laporan) */}
+      <MobileBottomNav variant="public" />
     </div>
   );
 }
