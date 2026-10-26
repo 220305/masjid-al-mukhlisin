@@ -11,6 +11,7 @@ import {
   Package,
   FileText,
   X,
+  MessageSquareHeart,
 } from 'lucide-react';
 
 function MosqueIcon({ size = 18, className = '' }: { size?: number; className?: string }) {
@@ -97,6 +98,18 @@ export default function MobileBottomNav({ variant }: MobileBottomNavProps) {
       active: pathname === '/laporan',
     },
   ];
+
+  const desktopNavItems = [
+    ...navItems,
+    {
+      title: 'Saran',
+      fullTitle: 'Kotak Saran & Aspirasi',
+      href: '/saran',
+      icon: MessageSquareHeart,
+      active: pathname === '/saran',
+    },
+  ];
+
 
   // Mouse hover handlers with slight delay on exit
   const handleMouseEnter = () => {
@@ -202,7 +215,7 @@ export default function MobileBottomNav({ variant }: MobileBottomNavProps) {
               : 'opacity-0 translate-y-6 scale-90 pointer-events-none'
           }`}
         >
-          {navItems.map((item, index) => {
+          {desktopNavItems.map((item, index) => {
             const Icon = item.icon;
             const isActive = item.active;
 

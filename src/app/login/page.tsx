@@ -1,10 +1,12 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Lock, Eye, EyeOff, ArrowLeft, ShieldCheck } from 'lucide-react';
 import { useAuth } from '@/lib/auth-context';
+import { DataService } from '@/lib/data-service';
+import { IdentitasMasjid } from '@/types';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -13,6 +15,13 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [identitas, setIdentitas] = useState<IdentitasMasjid | null>(null);
+
+  useEffect(() => {
+    DataService.getIdentitas()
+      .then((id) => setIdentitas(id))
+      .catch((err) => console.error(err));
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -55,14 +64,20 @@ export default function LoginPage() {
       <div className="w-full max-w-md rounded-2xl sm:rounded-[3rem] bg-white p-6 sm:p-8 md:p-10 shadow-2xl relative z-10">
         <div className="mb-8 text-center">
           <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-900 border border-emerald-500/30 shadow-md overflow-hidden">
-            <img src="/icon.svg" alt="Masjid Al-Mukhlisin" className="h-10 w-10" />
+            <img
+              src={identitas?.logo_url || '/icon.svg'}
+              alt={identitas?.nama || 'Masjid Al-Mukhlisin'}
+              className="h-full w-full object-cover"
+            />
           </div>
-          <h2 className="text-3xl font-black text-emerald-950 font-serif-elegant">Al-Mukhlisin</h2>
+          <h2 className="text-3xl font-black text-emerald-950 font-serif-elegant">
+            {identitas?.nama || 'Al-Mukhlisin'}
+          </h2>
           <p className="text-[10px] font-black tracking-widest text-slate-400 uppercase mt-1">
             Pusat Komando Administrator
           </p>
           <div className="mt-2 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 text-[10px] font-semibold border border-emerald-100">
-            <span className="font-mono font-bold">ID 01.4.13.04.06.000158</span>
+            <span className="font-mono font-bold">ID {identitas?.nomor_id_kemenag || '01.4.13.04.06.000158'}</span>
             <span className="text-emerald-300">|</span>
             <span>Desa Lagadar</span>
           </div>

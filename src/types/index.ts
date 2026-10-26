@@ -121,6 +121,33 @@ export interface IdentitasMasjid {
   alamat: string;
   ketua_dkm: string;
   bendahara: string;
+  logo_url?: string | null;
+  updated_at?: string;
+}
+
+export type KategoriSaran =
+  | 'Umum'
+  | 'Fasilitas & Kebersihan'
+  | 'Kajian & Dakwah'
+  | 'Pelayanan DKM'
+  | 'Keuangan'
+  | 'Lainnya';
+
+export type StatusSaran = 'baru' | 'ditinjau' | 'ditindaklanjuti' | 'selesai';
+
+export interface SaranKritikItem {
+  id: number | string;
+  nama: string;
+  no_hp?: string | null;
+  kategori: KategoriSaran;
+  pesan: string;
+  status: StatusSaran;
+  tanggapan_dkm?: string | null;
+  ditanggapi_oleh?: string | null;
+  ditanggapi_pada?: string | null;
+  is_publik: boolean;
+  user_id?: string | null;
+  created_at: string;
   updated_at?: string;
 }
 
@@ -130,3 +157,4 @@ export interface AppUser {
   name: string;
   role?: string;
 }
+

@@ -230,14 +230,18 @@ export default function LaporanPublicPage() {
 
             <div className="flex items-center gap-2.5">
               <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-emerald-500/30 bg-emerald-800/80 shadow-xs overflow-hidden">
-                <img src="/icon.svg" alt="Masjid Al-Mukhlisin" className="h-6 w-6" />
+                <img
+                  src={identitas?.logo_url || '/icon.svg'}
+                  alt={identitas?.nama || 'Masjid Al-Mukhlisin'}
+                  className="h-full w-full object-cover"
+                />
               </div>
               <div>
                 <h1 className="font-serif-elegant text-sm font-bold tracking-wide text-white md:text-base leading-none">
-                  Masjid Al-Mukhlisin
+                  Masjid {identitas?.nama || 'Al-Mukhlisin'}
                 </h1>
                 <p className="text-[9px] font-mono text-emerald-300/80 leading-tight mt-0.5">
-                  ID SIMAS 01.4.13.04.06.000158 | Lagadar
+                  ID SIMAS {identitas?.nomor_id_kemenag || '01.4.13.04.06.000158'} | Lagadar
                 </p>
               </div>
             </div>
@@ -338,7 +342,11 @@ export default function LaporanPublicPage() {
           <div className="border-b-2 border-slate-800 pb-5 text-center space-y-1.5 relative">
             <div className="flex items-center justify-center gap-3">
               <div className="h-12 w-12 rounded-xl bg-emerald-800 border border-emerald-600 flex items-center justify-center shrink-0 overflow-hidden">
-                <img src="/icon.svg" alt="Masjid Al-Mukhlisin" className="h-9 w-9" />
+                <img
+                  src={identitas?.logo_url || '/icon.svg'}
+                  alt={identitas?.nama || 'Masjid Al-Mukhlisin'}
+                  className="h-full w-full object-cover"
+                />
               </div>
               <div className="text-left">
                 <h2 className="font-serif-elegant text-xl sm:text-2xl font-black text-slate-900 tracking-wide uppercase leading-tight">

@@ -262,14 +262,18 @@ export default function KeuanganDetailPage() {
 
             <div className="flex items-center gap-2.5">
               <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-emerald-500/30 bg-emerald-800/80 shadow-xs overflow-hidden">
-                <img src="/icon.svg" alt="Masjid Al-Mukhlisin" className="h-6 w-6" />
+                <img
+                  src={identitas?.logo_url || '/icon.svg'}
+                  alt={identitas?.nama || 'Masjid Al-Mukhlisin'}
+                  className="h-full w-full object-cover"
+                />
               </div>
               <div>
                 <h1 className="font-serif-elegant text-sm font-bold tracking-wide text-white md:text-base leading-none">
-                  Masjid Al-Mukhlisin
+                  Masjid {identitas?.nama || 'Al-Mukhlisin'}
                 </h1>
                 <p className="text-[9px] font-mono text-emerald-300/80 leading-tight mt-0.5">
-                  ID SIMAS 01.4.13.04.06.000158 | Lagadar
+                  ID SIMAS {identitas?.nomor_id_kemenag || '01.4.13.04.06.000158'} | Lagadar
                 </p>
               </div>
             </div>

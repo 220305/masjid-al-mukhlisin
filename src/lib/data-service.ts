@@ -8,6 +8,7 @@ import {
   ZakatQurbanItem,
   WakafItem,
   IdentitasMasjid,
+  SaranKritikItem,
 } from '@/types';
 
 // ==============================================================================
@@ -20,6 +21,7 @@ const INITIAL_IDENTITAS: IdentitasMasjid = {
   alamat: 'Kp. Jalan Cagak RT.005 RW.004 Desa Lagadar',
   ketua_dkm: 'Ustadz H. Ahmad Sobari',
   bendahara: 'H. Mulyadi, S.E.',
+  logo_url: null,
 };
 
 const INITIAL_KAS: KasItem[] = [];
@@ -29,6 +31,47 @@ const INITIAL_ZAKAT_QURBAN: ZakatQurbanItem[] = [];
 const INITIAL_INVENTORY: InventoryItem[] = [];
 const INITIAL_WAKAF: WakafItem[] = [];
 const INITIAL_KHUTBAH: KhutbahItem[] = [];
+const INITIAL_SARAN_KRITIK: SaranKritikItem[] = [
+  {
+    id: 1,
+    nama: 'Haji Hendra Kusuma',
+    no_hp: '081234567890',
+    kategori: 'Fasilitas & Kebersihan',
+    pesan: 'Mohon agar kran tempat wudhu bagian selatan diperbaiki karena ada dua kran yang debit airnya kecil saat jam shalat Jumat.',
+    status: 'selesai',
+    tanggapan_dkm: 'Alhamdulillah, terima kasih atas sarannya Pak Haji Hendra. Tim sarpras DKM telah mengganti sil kran dan pipa saluran wudhu kemarin sore. Saat ini debit air sudah kembali lancar dan normal.',
+    ditanggapi_oleh: 'H. Mulyadi, S.E. (Sarpras DKM)',
+    ditanggapi_pada: '2026-10-25T14:30:00.000Z',
+    is_publik: true,
+    created_at: '2026-10-24T08:15:00.000Z',
+  },
+  {
+    id: 2,
+    nama: 'Hamba Allah',
+    kategori: 'Kajian & Dakwah',
+    pesan: 'Apakah bisa diadakan kajian rutin khusus fiqih muamalah kontemporer atau parenting islami untuk remaja dan pemuda masjid di malam minggu?',
+    status: 'ditindaklanjuti',
+    tanggapan_dkm: 'Jazakallahu khairan atas usulan yang sangat baik. Agenda kajian pemuda sedang kami godok bersama Remaja Masjid (IRMA) dan insyaAllah akan dimulai bulan depan dengan mengundang asatidz tamu.',
+    ditanggapi_oleh: 'Ustadz H. Ahmad Sobari (Ketua DKM)',
+    ditanggapi_pada: '2026-10-25T19:00:00.000Z',
+    is_publik: true,
+    created_at: '2026-10-24T16:20:00.000Z',
+  },
+  {
+    id: 3,
+    nama: 'Ibu Siti Rahmawati',
+    no_hp: '085712349988',
+    kategori: 'Fasilitas & Kebersihan',
+    pesan: 'Untuk area shalat akhwat / jamaah wanita di lantai 2, mohon ditambah beberapa mukena bersih cadangan dan pewangi ruangan.',
+    status: 'selesai',
+    tanggapan_dkm: 'Terima kasih atas masukannya Bu Siti. Divisi Muslimah DKM sudah mencuci dan menambahkan 10 set mukena baru serta memasang diffuser aromaterapi di shaf wanita.',
+    ditanggapi_oleh: 'Divisi Keputrian DKM',
+    ditanggapi_pada: '2026-10-25T11:20:00.000Z',
+    is_publik: true,
+    created_at: '2026-10-23T10:00:00.000Z',
+  },
+];
+
 
 // Helper local storage & Auto-purge cache lama agar mulai bersih dari 0
 const STORAGE_DATA_VERSION = 'v2_clean_zero_production';
@@ -85,30 +128,47 @@ export const DataService = {
   // IDENTITAS MASJID & SIMAS KEMENAG RI
   // ==========================================
   async getIdentitas(): Promise<IdentitasMasjid> {
+    const stored = getStored<IdentitasMasjid>('masjid_identitas_data', INITIAL_IDENTITAS);
     if (isSupabaseConfigured && supabase) {
-      const { data, error } = await supabase
-        .from('identitas_masjid')
-        .select('*')
-        .eq('id', 1)
-        .maybeSingle();
-      if (!error && data) return data as IdentitasMasjid;
+      try {
+        const { data, error } = await supabase
+          .from('identitas_masjid')
+          .select('*')
+          .eq('id', 1)
+          .maybeSingle();
+        if (!error && data) {
+          return { ...stored, ...(data as IdentitasMasjid) };
+        }
+      } catch (err) {
+        console.warn('Supabase getIdentitas error:', err);
+      }
     }
-    return getStored<IdentitasMasjid>('masjid_identitas_data', INITIAL_IDENTITAS);
+    return stored;
   },
 
   async updateIdentitas(item: Partial<IdentitasMasjid>): Promise<IdentitasMasjid> {
     const payload = { ...item, updated_at: new Date().toISOString() };
+    let savedData: IdentitasMasjid | null = null;
     if (isSupabaseConfigured && supabase) {
-      const { data, error } = await supabase
-        .from('identitas_masjid')
-        .upsert({ id: 1, ...payload })
-        .select()
-        .single();
-      if (!error && data) return data as IdentitasMasjid;
+      try {
+        const { data, error } = await supabase
+          .from('identitas_masjid')
+          .upsert({ id: 1, ...payload })
+          .select()
+          .single();
+        if (!error && data) {
+          savedData = data as IdentitasMasjid;
+        }
+      } catch (err) {
+        console.warn('Supabase updateIdentitas fallback to localStorage:', err);
+      }
     }
     const current = getStored<IdentitasMasjid>('masjid_identitas_data', INITIAL_IDENTITAS);
-    const updated = { ...current, ...payload };
+    const updated = { ...current, ...payload, ...(savedData || {}) };
     setStored('masjid_identitas_data', updated);
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('masjid_identitas_updated', { detail: updated }));
+    }
     return updated;
   },
 
@@ -533,6 +593,70 @@ export const DataService = {
     });
   },
 
+  async uploadLogoImage(file: File): Promise<string> {
+    // 1. Client-side image compression to ~400px (fast, lightweight, ultra-crisp)
+    const compressedDataUrl = await new Promise<string>((resolve) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          let width = img.width;
+          let height = img.height;
+          const maxDim = 400;
+          if (width > height) {
+            if (width > maxDim) {
+              height = Math.round((height * maxDim) / width);
+              width = maxDim;
+            }
+          } else {
+            if (height > maxDim) {
+              width = Math.round((width * maxDim) / height);
+              height = maxDim;
+            }
+          }
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          if (ctx) {
+            ctx.drawImage(img, 0, 0, width, height);
+            const isPng = file.type === 'image/png' || file.name.toLowerCase().endsWith('.png');
+            resolve(canvas.toDataURL(isPng ? 'image/png' : 'image/webp', 0.9));
+          } else {
+            resolve(e.target?.result as string);
+          }
+        };
+        img.onerror = () => resolve(e.target?.result as string);
+        img.src = e.target?.result as string;
+      };
+      reader.readAsDataURL(file);
+    });
+
+    // 2. Coba upload ke Supabase Storage jika terhubung
+    if (isSupabaseConfigured && supabase) {
+      try {
+        const ext = file.name.split('.').pop() || 'png';
+        const cleanFileName = `logo_${Date.now()}.${ext}`;
+        const { error: uploadError } = await supabase.storage
+          .from('khutbah-images')
+          .upload(cleanFileName, file);
+
+        if (!uploadError) {
+          const { data: publicUrlData } = supabase.storage
+            .from('khutbah-images')
+            .getPublicUrl(cleanFileName);
+          if (publicUrlData?.publicUrl) {
+            return publicUrlData.publicUrl;
+          }
+        }
+      } catch (err) {
+        console.warn('Storage upload fallback to compressed image:', err);
+      }
+    }
+
+    return compressedDataUrl;
+  },
+
   async addKhutbah(item: Omit<KhutbahItem, 'id'>, file?: File | null): Promise<KhutbahItem> {
     let imageUrl = item.image;
     if (file) {
@@ -603,10 +727,140 @@ export const DataService = {
   },
 
   // ==========================================
+  // SARAN & KRITIK (ASPIRASI JAMAAH)
+  // ==========================================
+  async getSaranKritik(onlyPublic = false): Promise<SaranKritikItem[]> {
+    if (isSupabaseConfigured && supabase) {
+      try {
+        let query = supabase
+          .from('saran_kritik')
+          .select('*')
+          .order('created_at', { ascending: false });
+        if (onlyPublic) {
+          query = query.eq('is_publik', true);
+        }
+        const { data, error } = await query;
+        if (!error && data) return data as SaranKritikItem[];
+      } catch (err) {
+        console.warn('Supabase getSaranKritik error:', err);
+      }
+    }
+    const stored = getStored<SaranKritikItem[]>('masjid_saran_data', INITIAL_SARAN_KRITIK);
+    if (onlyPublic) {
+      return stored.filter((s) => s.is_publik !== false);
+    }
+    return stored;
+  },
+
+  async addSaranKritik(
+    item: Omit<SaranKritikItem, 'id' | 'created_at'> & Partial<Pick<SaranKritikItem, 'status' | 'is_publik'>>
+  ): Promise<SaranKritikItem> {
+    const payload = {
+      nama: item.nama || 'Hamba Allah',
+      no_hp: item.no_hp || null,
+      kategori: item.kategori || 'Umum',
+      pesan: item.pesan,
+      status: item.status || 'baru',
+      is_publik: item.is_publik !== undefined ? item.is_publik : true,
+      tanggapan_dkm: item.tanggapan_dkm || null,
+      ditanggapi_oleh: item.ditanggapi_oleh || null,
+      ditanggapi_pada: item.ditanggapi_pada || null,
+    };
+
+    if (isSupabaseConfigured && supabase) {
+      try {
+        const { data, error } = await supabase
+          .from('saran_kritik')
+          .insert([payload])
+          .select()
+          .single();
+        if (!error && data) {
+          const newItem = data as SaranKritikItem;
+          if (typeof window !== 'undefined') {
+            window.dispatchEvent(new CustomEvent('masjid_saran_updated', { detail: newItem }));
+          }
+          return newItem;
+        }
+      } catch (err) {
+        console.warn('Supabase addSaranKritik error:', err);
+      }
+    }
+
+    const current = getStored<SaranKritikItem[]>('masjid_saran_data', INITIAL_SARAN_KRITIK);
+    const newItem: SaranKritikItem = {
+      id: Date.now(),
+      created_at: new Date().toISOString(),
+      ...payload,
+    };
+    const updated = [newItem, ...current];
+    setStored('masjid_saran_data', updated);
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('masjid_saran_updated', { detail: newItem }));
+    }
+    return newItem;
+  },
+
+  async updateSaranKritik(id: number | string, item: Partial<SaranKritikItem>): Promise<SaranKritikItem> {
+    const payload = { ...item, updated_at: new Date().toISOString() };
+    if (isSupabaseConfigured && supabase) {
+      try {
+        const { data, error } = await supabase
+          .from('saran_kritik')
+          .update(payload)
+          .eq('id', id)
+          .select()
+          .single();
+        if (!error && data) {
+          const updatedItem = data as SaranKritikItem;
+          if (typeof window !== 'undefined') {
+            window.dispatchEvent(new CustomEvent('masjid_saran_updated', { detail: updatedItem }));
+          }
+          return updatedItem;
+        }
+      } catch (err) {
+        console.warn('Supabase updateSaranKritik error:', err);
+      }
+    }
+
+    const current = getStored<SaranKritikItem[]>('masjid_saran_data', INITIAL_SARAN_KRITIK);
+    const updated = current.map((s) => (String(s.id) === String(id) ? { ...s, ...payload } : s));
+    setStored('masjid_saran_data', updated);
+    const target = updated.find((s) => String(s.id) === String(id)) as SaranKritikItem;
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('masjid_saran_updated', { detail: target }));
+    }
+    return target;
+  },
+
+  async deleteSaranKritik(id: number | string): Promise<boolean> {
+    if (isSupabaseConfigured && supabase) {
+      try {
+        const { error } = await supabase.from('saran_kritik').delete().eq('id', id);
+        if (!error) {
+          if (typeof window !== 'undefined') {
+            window.dispatchEvent(new CustomEvent('masjid_saran_updated', { detail: { id, deleted: true } }));
+          }
+          return true;
+        }
+      } catch (err) {
+        console.warn('Supabase deleteSaranKritik error:', err);
+      }
+    }
+
+    const current = getStored<SaranKritikItem[]>('masjid_saran_data', INITIAL_SARAN_KRITIK);
+    const updated = current.filter((s) => String(s.id) !== String(id));
+    setStored('masjid_saran_data', updated);
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('masjid_saran_updated', { detail: { id, deleted: true } }));
+    }
+    return true;
+  },
+
+  // ==========================================
   // BACKUP & RESTORE DATA (JSON)
   // ==========================================
   async exportAllData(): Promise<Record<string, any>> {
-    const [id, kas, jam, ag, zk, inv, wk, jd] = await Promise.all([
+    const [id, kas, jam, ag, zk, inv, wk, jd, sr] = await Promise.all([
       this.getIdentitas(),
       this.getKas(),
       this.getJamaah(),
@@ -615,6 +869,7 @@ export const DataService = {
       this.getInventories(),
       this.getWakaf(),
       this.getPetugasJumat(),
+      this.getSaranKritik(),
     ]);
 
     return {
@@ -628,6 +883,7 @@ export const DataService = {
       inventaris: inv,
       wakaf: wk,
       petugas_jumat: jd,
+      saran_kritik: sr,
     };
   },
 
@@ -644,6 +900,7 @@ export const DataService = {
     if (data.inventaris) setStored('masjid_inventory_data', data.inventaris);
     if (data.wakaf) setStored('masjid_wakaf_data', data.wakaf);
     if (data.petugas_jumat) setStored('masjid_petugas_jumat_data', data.petugas_jumat);
+    if (data.saran_kritik) setStored('masjid_saran_data', data.saran_kritik);
 
     return true;
   },
@@ -657,7 +914,11 @@ export const DataService = {
       localStorage.removeItem('masjid_inventory_data');
       localStorage.removeItem('masjid_wakaf_data');
       localStorage.removeItem('masjid_petugas_jumat_data');
+      localStorage.removeItem('masjid_saran_data');
     }
     return true;
   },
 };
+
+export default DataService;
+

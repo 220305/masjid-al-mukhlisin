@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import KhutbahDefaultPoster, { isCustomPosterImage } from '@/components/khutbah-default-poster';
 import {
@@ -20,6 +20,19 @@ import {
   ArrowRight,
   RefreshCw,
   ExternalLink,
+  MessageSquareHeart,
+  Send,
+  ShieldCheck,
+  CheckCircle2,
+  Sunrise,
+  Sunset,
+  Sun,
+  SunMedium,
+  Moon,
+  MoonStar,
+  Timer,
+  Compass,
+  Info,
 } from 'lucide-react';
 import MobileBottomNav from '@/components/layout/mobile-bottom-nav';
 
@@ -44,7 +57,7 @@ const IconFacebook = ({ size = 18 }: { size?: number }) => (
   </svg>
 );
 import { DataService } from '@/lib/data-service';
-import { InventoryItem, KasItem, KhutbahItem } from '@/types';
+import { InventoryItem, KasItem, KhutbahItem, IdentitasMasjid, SaranKritikItem, KategoriSaran } from '@/types';
 
 function KajianCardMedia({ item }: { item: KhutbahItem }) {
   const [imgError, setImgError] = useState(false);
@@ -123,11 +136,142 @@ export default function HomePage() {
   const [todayDateString, setTodayDateString] = useState('');
   const [hijriDateString, setHijriDateString] = useState('');
   const [currentYear, setCurrentYear] = useState<number>(2026);
+  const [identitas, setIdentitas] = useState<IdentitasMasjid | null>(null);
+
+  // Live Clock & Real-time Prayer Tracker
+  const [currentTime, setCurrentTime] = useState<Date | null>(null);
+
+  useEffect(() => {
+    setCurrentTime(new Date());
+    const clockInterval = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+    return () => clearInterval(clockInterval);
+  }, []);
+
+  const currentTimeString = useMemo(() => {
+    if (!currentTime) return '--:--:--';
+    return currentTime
+      .toLocaleTimeString('id-ID', {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+      })
+      .replace(/\./g, ':');
+  }, [currentTime]);
+
+  const getPrayerTime = (key: string): string => {
+    if (!jadwalShalat) return '--:--';
+    if (jadwalShalat[key]) return jadwalShalat[key].split(' ')[0];
+    if (key === 'Imsak' && jadwalShalat.Fajr) {
+      const [h, m] = jadwalShalat.Fajr.split(':').map(Number);
+      let totalM = h * 60 + m - 10;
+      if (totalM < 0) totalM += 1440;
+      const ih = String(Math.floor(totalM / 60)).padStart(2, '0');
+      const im = String(totalM % 60).padStart(2, '0');
+      return `${ih}:${im}`;
+    }
+    return '--:--';
+  };
+
+  const prayerList = [
+    { key: 'Imsak', label: 'Imsak', desc: 'Batas Sahur', icon: MoonStar, color: 'text-amber-500' },
+    { key: 'Fajr', label: 'Subuh', desc: 'Shalat Fardhu', icon: Sunrise, color: 'text-teal-500' },
+    { key: 'Dhuhr', label: 'Dzuhur', desc: 'Shalat Fardhu', icon: Sun, color: 'text-amber-500' },
+    { key: 'Asr', label: 'Ashar', desc: 'Shalat Fardhu', icon: SunMedium, color: 'text-orange-500' },
+    { key: 'Maghrib', label: 'Maghrib', desc: 'Buka Puasa', icon: Sunset, color: 'text-rose-500' },
+    { key: 'Isha', label: 'Isya', desc: 'Shalat Fardhu', icon: Moon, color: 'text-indigo-400' },
+  ];
+
+  const prayerInfo = useMemo(() => {
+    if (!jadwalShalat || !currentTime) {
+      return {
+        activeKey: 'Dhuhr',
+        nextKey: 'Asr',
+        nextLabel: 'Ashar',
+        nextTime: '--:--',
+        countdownText: '',
+      };
+    }
+
+    const nowMinutes = currentTime.getHours() * 60 + currentTime.getMinutes();
+    const nowSeconds = currentTime.getSeconds();
+
+    const timingsList = [
+      { key: 'Imsak', label: 'Imsak', time: getPrayerTime('Imsak') },
+      { key: 'Fajr', label: 'Subuh', time: getPrayerTime('Fajr') },
+      { key: 'Dhuhr', label: 'Dzuhur', time: getPrayerTime('Dhuhr') },
+      { key: 'Asr', label: 'Ashar', time: getPrayerTime('Asr') },
+      { key: 'Maghrib', label: 'Maghrib', time: getPrayerTime('Maghrib') },
+      { key: 'Isha', label: 'Isya', time: getPrayerTime('Isha') },
+    ];
+
+    let nextItem = null;
+    let activeItem = timingsList[timingsList.length - 1]; // default Isya (night)
+
+    for (let i = 0; i < timingsList.length; i++) {
+      const item = timingsList[i];
+      if (item.time === '--:--') continue;
+      const [h, m] = item.time.split(':').map(Number);
+      const itemMinutes = h * 60 + m;
+      if (nowMinutes < itemMinutes || (nowMinutes === itemMinutes && nowSeconds === 0)) {
+        nextItem = item;
+        activeItem = i > 0 ? timingsList[i - 1] : timingsList[timingsList.length - 1];
+        break;
+      }
+    }
+
+    if (!nextItem) {
+      // Past Isha, next is tomorrow's Imsak
+      nextItem = timingsList[0];
+      activeItem = timingsList[timingsList.length - 1];
+    }
+
+    let diffSecondsTotal = 0;
+    if (nextItem.time !== '--:--') {
+      const [nh, nm] = nextItem.time.split(':').map(Number);
+      const targetDate = new Date(currentTime);
+      targetDate.setHours(nh, nm, 0, 0);
+      if (targetDate.getTime() <= currentTime.getTime()) {
+        targetDate.setDate(targetDate.getDate() + 1);
+      }
+      diffSecondsTotal = Math.max(0, Math.floor((targetDate.getTime() - currentTime.getTime()) / 1000));
+    }
+
+    const hours = Math.floor(diffSecondsTotal / 3600);
+    const minutes = Math.floor((diffSecondsTotal % 3600) / 60);
+    const seconds = diffSecondsTotal % 60;
+
+    let countdownText = '';
+    if (hours > 0) {
+      countdownText = `${hours}j ${minutes}m ${seconds}d`;
+    } else {
+      countdownText = `${minutes}m ${seconds}d`;
+    }
+
+    return {
+      activeKey: activeItem.key,
+      nextKey: nextItem.key,
+      nextLabel: nextItem.label,
+      nextTime: nextItem.time,
+      countdownText,
+    };
+  }, [jadwalShalat, currentTime]);
 
   // Modals & Slides
   const [selectedKajian, setSelectedKajian] = useState<KhutbahItem | null>(null);
   const [dataKeuangan, setDataKeuangan] = useState<KasItem[]>([]);
   const [fasilitas, setFasilitas] = useState<InventoryItem[]>([]);
+
+  // Saran & Aspirasi State
+  const [saranList, setSaranList] = useState<SaranKritikItem[]>([]);
+  const [saranNama, setSaranNama] = useState('');
+  const [saranIsAnonim, setSaranIsAnonim] = useState(false);
+  const [saranNoHp, setSaranNoHp] = useState('');
+  const [saranKategori, setSaranKategori] = useState<KategoriSaran>('Umum');
+  const [saranPesan, setSaranPesan] = useState('');
+  const [saranSubmitting, setSaranSubmitting] = useState(false);
+  const [saranSuccess, setSaranSuccess] = useState(false);
 
   // Carousel Slides
   const [activeSlide, setActiveSlide] = useState(0);
@@ -148,6 +292,40 @@ export default function HomePage() {
     }, 10000);
     return () => clearInterval(interval);
   }, []);
+
+  const handleKirimSaran = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!saranPesan.trim()) return;
+    setSaranSubmitting(true);
+    try {
+      if (typeof DataService?.addSaranKritik === 'function') {
+        await DataService.addSaranKritik({
+          nama: saranIsAnonim ? 'Hamba Allah' : (saranNama.trim() || 'Hamba Allah'),
+          no_hp: saranNoHp.trim() || undefined,
+          kategori: saranKategori,
+          pesan: saranPesan.trim(),
+          status: 'baru',
+          is_publik: true,
+        });
+      }
+      setSaranSuccess(true);
+      setSaranNama('');
+      setSaranNoHp('');
+      setSaranPesan('');
+      setSaranIsAnonim(false);
+      setSaranKategori('Umum');
+      if (typeof DataService?.getSaranKritik === 'function') {
+        const updatedSaran = await DataService.getSaranKritik(true);
+        setSaranList(Array.isArray(updatedSaran) ? updatedSaran : []);
+      }
+      setTimeout(() => setSaranSuccess(false), 4000);
+    } catch (err) {
+      console.error('Failed to submit saran from beranda:', err);
+      alert('Gagal mengirimkan masukan. Silakan coba kembali.');
+    } finally {
+      setSaranSubmitting(false);
+    }
+  };
 
   // Fetch internal data and prayer times
   useEffect(() => {
@@ -176,11 +354,17 @@ export default function HomePage() {
     const fetchInternalData = async () => {
       setLoading(true);
       try {
-        const [khutbahData, kasData, invData] = await Promise.all([
+        const [khutbahData, kasData, invData, idData, saranData] = await Promise.all([
           DataService.getKhutbahs(),
           DataService.getKas(),
           DataService.getInventories(),
+          DataService.getIdentitas(),
+          typeof DataService?.getSaranKritik === 'function'
+            ? DataService.getSaranKritik(true)
+            : Promise.resolve([]),
         ]);
+
+        if (idData) setIdentitas(idData);
 
         // 1. Khutbah: Urutkan terdekat dan ambil 3 teratas
         setJadwal(khutbahData.slice(0, 3));
@@ -196,12 +380,28 @@ export default function HomePage() {
         // 3. Inventaris
         setTotalFasilitas(invData.length);
         setFasilitas(invData);
+
+        // 4. Saran Jamaah
+        setSaranList(Array.isArray(saranData) ? saranData : []);
       } catch (err) {
         console.error('Error fetching internal data:', err);
       } finally {
         setLoading(false);
       }
     };
+
+    const handleIdentitasUpdated = (e: any) => {
+      if (e?.detail) setIdentitas(e.detail);
+      else DataService.getIdentitas().then((d) => setIdentitas(d));
+    };
+    const handleSaranUpdated = () => {
+      if (typeof DataService?.getSaranKritik === 'function') {
+        DataService.getSaranKritik(true).then((s) => setSaranList(Array.isArray(s) ? s : []));
+      }
+    };
+
+    window.addEventListener('masjid_identitas_updated', handleIdentitasUpdated);
+    window.addEventListener('masjid_saran_updated', handleSaranUpdated);
 
     const fetchShalat = async () => {
       try {
@@ -214,6 +414,7 @@ export default function HomePage() {
         console.warn('Gagal memuat jadwal shalat dari API, menggunakan fallback jam default', error);
         // Fallback waktu shalat Bandung Barat
         setJadwalShalat({
+          Imsak: '04:26',
           Fajr: '04:36',
           Sunrise: '05:48',
           Dhuhr: '11:55',
@@ -228,6 +429,11 @@ export default function HomePage() {
 
     fetchInternalData();
     fetchShalat();
+
+    return () => {
+      window.removeEventListener('masjid_identitas_updated', handleIdentitasUpdated);
+      window.removeEventListener('masjid_saran_updated', handleSaranUpdated);
+    };
   }, []);
 
   return (
@@ -243,10 +449,14 @@ export default function HomePage() {
             {/* Logo & Brand */}
             <Link href="/" className="flex items-center gap-2.5 group">
               <div className="h-9 w-9 rounded-xl bg-emerald-800/80 border border-emerald-500/30 flex items-center justify-center shadow-inner group-hover:scale-105 transition-transform overflow-hidden">
-                <img src="/icon.svg" alt="Masjid Al-Mukhlisin" className="h-7 w-7" />
+                <img
+                  src={identitas?.logo_url || '/icon.svg'}
+                  alt={identitas?.nama || "Masjid Al-Mukhlisin"}
+                  className="h-full w-full object-cover"
+                />
               </div>
-              <span className="font-serif-elegant text-xl font-bold tracking-wide text-white md:text-2xl block group-hover:text-emerald-300 transition-colors">
-                Al-Mukhlisin
+              <span className="font-serif-elegant text-xl font-bold tracking-wide text-white md:text-2xl whitespace-nowrap block group-hover:text-emerald-300 transition-colors">
+                {identitas?.nama || 'Al-Mukhlisin'}
               </span>
             </Link>
 
@@ -264,13 +474,16 @@ export default function HomePage() {
               <a href="#keuangan" className="transition-colors hover:text-white">
                 Transparansi
               </a>
+              <a href="#saran" className="transition-colors hover:text-white text-emerald-300">
+                Kotak Saran
+              </a>
             </div>
 
-            {/* Right Side: Portal Link & Burger Button */}
+            {/* Right Side: Portal Link (Desktop only) & Burger Button */}
             <div className="flex items-center gap-2.5">
               <Link
                 href="/login"
-                className="flex items-center gap-1.5 px-3.5 py-1.5 md:px-4 md:py-2 rounded-full text-xs font-bold text-slate-200 hover:text-white bg-white/10 hover:bg-white/15 transition-all"
+                className="hidden md:flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold text-slate-200 hover:text-white bg-white/10 hover:bg-white/15 transition-all"
               >
                 <Shield size={13} className="text-emerald-400" />
                 <span>Portal Pengurus</span>
@@ -289,7 +502,7 @@ export default function HomePage() {
           {/* Mobile Menu (Dropdown) */}
           <div
             className={`overflow-hidden transition-all duration-300 md:hidden ${
-              isMenuOpen ? 'max-h-72 opacity-100' : 'max-h-0 opacity-0'
+              isMenuOpen ? 'max-h-80 opacity-100' : 'max-h-0 opacity-0'
             }`}
           >
             <div className="flex flex-col items-center gap-4 border-t border-white/5 pt-4 pb-6 text-[10px] font-black tracking-[0.2em] text-slate-300 uppercase">
@@ -305,6 +518,9 @@ export default function HomePage() {
               <a href="#keuangan" onClick={() => setIsMenuOpen(false)} className="py-1.5 transition-colors hover:text-white">
                 Transparansi
               </a>
+              <a href="#saran" onClick={() => setIsMenuOpen(false)} className="py-1.5 transition-colors text-emerald-300 hover:text-white">
+                Kotak Saran
+              </a>
               <Link
                 href="/login"
                 onClick={() => setIsMenuOpen(false)}
@@ -318,7 +534,7 @@ export default function HomePage() {
       </header>
 
       {/* --- HERO SECTION --- */}
-      <section className="relative flex min-h-[72vh] sm:min-h-[82vh] md:min-h-screen items-center px-4 md:px-8 overflow-hidden">
+      <section className="relative flex min-h-[85vh] lg:min-h-[92vh] xl:min-h-screen items-center px-4 md:px-8 overflow-hidden">
         {/* Video Background */}
         <video
           autoPlay
@@ -331,17 +547,17 @@ export default function HomePage() {
           <source src="/videos/masjid-cinematic.mp4" type="video/mp4" />
         </video>
 
-        {/* Overlay Gelap dengan Gradasi Hijau Tua */}
-        <div className="absolute inset-0 bg-[#0a1f18]/85 mix-blend-multiply" />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0a1f18]/70 via-[#0a1f18]/85 to-[#0a1f18]" />
+        {/* Overlay Directional: Gelap di kiri agar teks tajam, lembut & transparan di kanan agar video & kubah masjid terlihat jelas */}
+        <div className="absolute inset-0 bg-gradient-to-r from-[#0a1f18]/92 via-[#0a1f18]/60 to-[#0a1f18]/20" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0a1f18]/85 via-transparent to-[#0a1f18]/40" />
         {/* Transisi Halus ke Bagian Bawah */}
-        <div className="absolute inset-x-0 bottom-0 h-24 sm:h-36 bg-gradient-to-t from-[#f4f7f6] to-transparent pointer-events-none" />
+        <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-[#f4f7f6] to-transparent pointer-events-none" />
 
         {/* Konten Hero */}
-        <div className="relative z-10 mx-auto w-full max-w-7xl pt-20 sm:pt-28 md:pt-36 pb-10 sm:pb-16 md:pb-24">
+        <div className="relative z-10 mx-auto w-full max-w-7xl pt-32 sm:pt-36 md:pt-40 pb-20 sm:pb-24 md:pb-28">
           <div className="max-w-3xl">
             {/* Subteks Atas dengan Garis Emas & ID Kemenag */}
-            <div className="mb-3 sm:mb-4 flex flex-wrap items-center gap-2.5 sm:gap-3">
+            <div className="mb-4 sm:mb-5 flex flex-wrap items-center gap-2.5 sm:gap-3">
               <span className="h-[2px] w-6 sm:w-8 bg-[#d4af37]" />
               <div className="inline-flex items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-950/80 px-3 sm:px-4 py-1 text-[10px] sm:text-[11px] font-semibold text-emerald-300 backdrop-blur-md shadow-inner">
                 <span className="tracking-wide">Kartu Masjid Kemenag RI</span>
@@ -350,13 +566,13 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Judul Utama Serif */}
-            <h1 className="font-serif-elegant mb-2 text-3xl sm:text-5xl leading-tight font-bold text-white md:text-7xl lg:text-[5.5rem] drop-shadow-md">
-              Masjid Al-Mukhlisin
+            {/* Judul Utama Serif (Al-Mukhlisin dilindungi whitespace-nowrap agar tidak patah tanda hubung '-') */}
+            <h1 className="font-serif-elegant mb-3.5 sm:mb-5 text-3xl sm:text-5xl md:text-6xl lg:text-[4.5rem] leading-[1.08] font-bold text-white drop-shadow-md">
+              Masjid <span className="whitespace-nowrap">Al-Mukhlisin</span>
             </h1>
 
             {/* Alamat Resmi Hero & Tanggal Hijriah */}
-            <div className="mb-4 sm:mb-6 flex flex-wrap items-center gap-x-3 gap-y-2 text-xs md:text-sm text-emerald-200/90 font-medium">
+            <div className="mb-5 sm:mb-7 flex flex-wrap items-center gap-x-3 gap-y-2 text-xs md:text-sm text-emerald-200/90 font-medium">
               <span className="flex items-center gap-1.5">
                 <MapPin size={14} className="text-[#d4af37] shrink-0 sm:size-[16px]" />
                 <span className="text-[11px] sm:text-xs md:text-sm">Kp. Jalan Cagak RT.005 RW.004 Desa Lagadar</span>
@@ -373,28 +589,45 @@ export default function HomePage() {
             </div>
 
             {/* Subjudul Dua Warna */}
-            <h2 className="font-serif-elegant mb-3 sm:mb-6 text-xl sm:text-3xl leading-snug sm:leading-tight font-bold md:text-4xl lg:text-5xl">
-              <span className="text-emerald-400">Menyinari Negeri,</span>{' '}
-              <span className="text-[#d4af37]">Menjaga Harmoni.</span>
+            <h2 className="font-serif-elegant mb-4 sm:mb-6 text-xl sm:text-3xl leading-snug sm:leading-tight font-bold md:text-4xl lg:text-[2.6rem]">
+              <span className="text-emerald-400">Ikhlas Beribadah,</span>{' '}
+              <span className="text-[#d4af37]">Merajut Berkah.</span>
             </h2>
 
+            {/* Mini Real-Time Info Badges */}
+            <div className="mb-5 flex flex-wrap items-center gap-2.5 text-xs">
+              <div className="inline-flex items-center gap-2 rounded-full bg-emerald-950/75 border border-emerald-500/35 px-3 py-1 text-emerald-300 backdrop-blur-md shadow-sm">
+                <Clock size={12} className="text-emerald-400" />
+                <span className="font-mono font-bold text-white text-[11px] sm:text-xs">{currentTimeString} WIB</span>
+              </div>
+              <div className="inline-flex items-center gap-1.5 rounded-full bg-white/10 border border-white/20 px-3 py-1 text-slate-200 backdrop-blur-md shadow-sm text-[11px] sm:text-xs">
+                <Timer size={12} className="text-emerald-400 animate-pulse" />
+                <span>Menuju {prayerInfo.nextLabel} ({prayerInfo.nextTime})</span>
+                {prayerInfo.countdownText && (
+                  <span className="font-mono font-bold text-emerald-300">
+                    · {prayerInfo.countdownText}
+                  </span>
+                )}
+              </div>
+            </div>
+
             {/* Deskripsi */}
-            <p className="mb-6 sm:mb-8 max-w-xl text-xs sm:text-sm md:text-base leading-relaxed font-medium text-slate-300/95">
-              Selamat datang di Masjid Al-Mukhlisin, simbol ukhuwah dan pusat peradaban islami. Merajut
-              persaudaraan dan menebar kedamaian untuk seluruh alam melalui transparansi dan pelayanan umat.
+            <p className="mb-7 sm:mb-9 max-w-xl text-xs sm:text-sm md:text-base leading-relaxed sm:leading-loose font-medium text-slate-300/95">
+              Menghidupkan syiar Islam dengan hati yang tulus dan penuh kedamaian. Selamat datang di rumah
+              ibadah kita bersama, tempat bertumbuhnya iman dan kebersamaan warga.
             </p>
 
-            <div className="flex flex-wrap items-center gap-3">
+            <div className="flex flex-wrap items-center gap-3 sm:gap-4">
               <a
                 href="#jadwal"
-                className="inline-flex items-center gap-2 rounded-full bg-[#0d8a5e] hover:bg-emerald-500 text-white font-bold text-xs sm:text-sm px-4 sm:px-5 py-2.5 sm:py-3 shadow-lg shadow-emerald-950/60 transition-all hover:scale-105 active:scale-95"
+                className="inline-flex items-center gap-2 rounded-full bg-[#0d8a5e] hover:bg-emerald-500 text-white font-bold text-xs sm:text-sm px-5 py-3 shadow-lg shadow-emerald-950/60 transition-all hover:scale-105 active:scale-95"
               >
                 <span>Jadwal Shalat Hari Ini</span>
                 <ChevronDown size={15} className="animate-bounce" />
               </a>
               <a
                 href="#khutbah"
-                className="inline-flex items-center gap-1.5 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-white font-bold text-xs sm:text-sm px-4 sm:px-5 py-2.5 sm:py-3 backdrop-blur-xs transition-all hover:bg-white/15"
+                className="inline-flex items-center gap-1.5 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-white font-bold text-xs sm:text-sm px-5 py-3 backdrop-blur-xs transition-all hover:bg-white/15"
               >
                 <span>Majelis Ilmu</span>
               </a>
@@ -404,62 +637,203 @@ export default function HomePage() {
       </section>
 
       {/* --- MAIN CONTENT SECTIONS --- */}
-      <main className="relative z-20 mx-auto -mt-6 sm:-mt-10 max-w-7xl space-y-12 sm:space-y-24 px-3 sm:px-6 md:px-8 py-8 sm:py-12 md:-mt-20 md:space-y-32 md:py-20">
+      <main className="relative z-20 mx-auto -mt-2 sm:-mt-6 max-w-7xl space-y-12 sm:space-y-24 px-3 sm:px-6 md:px-8 py-8 sm:py-12 md:-mt-16 md:space-y-32 md:py-20">
         {/* --- 1. JADWAL SHALAT REAL-TIME --- */}
         <section id="jadwal" className="scroll-mt-32">
-          <div className="rounded-[2rem] border border-slate-100 bg-white p-6 shadow-2xl shadow-slate-200/50 md:p-10">
-            <div className="mb-8 flex flex-col items-center justify-between gap-4 border-b border-slate-100 pb-6 md:flex-row">
+          <div className="relative overflow-hidden rounded-[2.5rem] border border-slate-200/80 bg-white p-5 sm:p-7 md:p-10 shadow-2xl shadow-slate-200/60">
+            {/* Header Bagian Waktu Shalat */}
+            <div className="mb-6 flex flex-col items-center justify-between gap-4 border-b border-slate-100 pb-5 md:flex-row md:items-end">
               <div className="text-center md:text-left">
-                <h2 className="font-serif-elegant text-2xl font-bold text-[#0a1f18] md:text-3xl">
+                <div className="inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1 text-[11px] font-extrabold uppercase tracking-widest text-[#0d8a5e] mb-2 border border-emerald-100/80">
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-600"></span>
+                  </span>
+                  Jadwal Shalat & Imsakiyah
+                </div>
+                <h2 className="font-serif-elegant text-2xl font-bold text-[#0a1f18] sm:text-3xl md:text-4xl">
                   Waktu Shalat Hari Ini
                 </h2>
-                <p className="mt-2 flex items-center justify-center gap-1.5 text-xs font-bold text-slate-500 md:justify-start">
-                  <MapPin size={15} className="text-[#0d8a5e]" /> Kp. Jalan Cagak RT.005 RW.004 Desa Lagadar
+                <p className="mt-1.5 flex items-center justify-center gap-1.5 text-xs font-semibold text-slate-500 md:justify-start">
+                  <MapPin size={15} className="text-[#0d8a5e] shrink-0" />
+                  <span>Kp. Jalan Cagak RT.005 RW.004 Desa Lagadar, Margaasih</span>
                 </p>
               </div>
-              <div className="flex items-center gap-2 text-xs font-bold text-emerald-800 bg-emerald-50 px-4 py-2 rounded-full border border-emerald-100">
-                <CalendarDays size={14} className="text-[#0d8a5e]" />
-                <span>
-                  {todayDateString || 'Hari Ini'}
-                  {hijriDateString ? ` · ${hijriDateString}` : ''}
-                </span>
+
+              {/* Tanggal Masehi & Hijriah */}
+              <div className="flex flex-col sm:flex-row items-center gap-2">
+                <div className="inline-flex items-center gap-2 text-xs font-bold text-emerald-900 bg-emerald-50/90 px-4 py-2 rounded-full border border-emerald-200/80 shadow-xs">
+                  <CalendarDays size={14} className="text-[#0d8a5e]" />
+                  <span>{todayDateString || 'Hari Ini'}</span>
+                  {hijriDateString && (
+                    <>
+                      <span className="text-emerald-300 font-normal">|</span>
+                      <span className="text-[#0d8a5e]">{hijriDateString}</span>
+                    </>
+                  )}
+                </div>
               </div>
             </div>
 
+            {/* Banner Digital Clock & Countdown Shalat Berikutnya */}
+            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#092219] via-[#0f382a] to-[#071913] p-5 sm:p-6 text-white shadow-xl border border-emerald-800/40 mb-6">
+              {/* Background ambient lighting */}
+              <div className="pointer-events-none absolute -top-12 -right-12 h-44 w-44 rounded-full bg-emerald-500/20 blur-3xl" />
+              <div className="pointer-events-none absolute -bottom-12 -left-12 h-44 w-44 rounded-full bg-teal-500/15 blur-3xl" />
+
+              <div className="relative z-10 grid gap-5 md:grid-cols-12 md:items-center">
+                {/* Sisi Kiri: Real-Time Jam Digital */}
+                <div className="space-y-1.5 text-center md:text-left md:col-span-7">
+                  <div className="inline-flex items-center gap-2 rounded-full bg-emerald-500/15 border border-emerald-400/20 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-300">
+                    <Clock size={12} className="text-emerald-400" />
+                    <span>Jam Real-Time Wilayah Lagadar</span>
+                  </div>
+                  <div className="flex items-baseline justify-center md:justify-start gap-2">
+                    <span className="font-mono text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-white drop-shadow-sm">
+                      {currentTimeString}
+                    </span>
+                    <span className="text-emerald-400 font-bold text-xs sm:text-sm tracking-widest uppercase">
+                      WIB
+                    </span>
+                  </div>
+                </div>
+
+                {/* Sisi Kanan: Kartu Highlight Waktu Shalat Berikutnya */}
+                <div className="md:col-span-5">
+                  <div className="rounded-xl bg-white/10 backdrop-blur-md border border-white/15 p-3.5 sm:p-4 shadow-inner">
+                    <div className="flex items-center justify-between gap-2 mb-2">
+                      <span className="inline-flex items-center gap-1.5 text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-emerald-300">
+                        <Timer size={13} className="text-emerald-400 animate-pulse" />
+                        Shalat Berikutnya
+                      </span>
+                      <span className="text-[11px] font-extrabold bg-emerald-500/25 text-emerald-200 border border-emerald-400/30 px-2 py-0.5 rounded-full">
+                        {prayerInfo.nextTime} WIB
+                      </span>
+                    </div>
+
+                    <div className="flex items-center justify-between gap-3">
+                      <div>
+                        <h4 className="text-lg sm:text-2xl font-black text-white tracking-wide">
+                          {prayerInfo.nextLabel}
+                        </h4>
+                        <p className="text-[10px] sm:text-[11px] text-emerald-200/80 font-medium">
+                          Menuju kumandang adzan:
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <span className="inline-block font-mono text-sm sm:text-lg font-black text-emerald-200 bg-emerald-950/70 border border-emerald-500/40 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg shadow-inner">
+                          {prayerInfo.countdownText || '--:--'}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Grid 6 Waktu Shalat (Imsak, Subuh, Dzuhur, Ashar, Maghrib, Isya) */}
             {loadingShalat ? (
-              <div className="flex h-24 items-center justify-center font-bold text-slate-400 gap-2">
-                <RefreshCw size={18} className="animate-spin text-emerald-600" />
+              <div className="flex h-36 items-center justify-center font-bold text-slate-400 gap-2">
+                <RefreshCw size={20} className="animate-spin text-emerald-600" />
                 <span>Menyinkronkan waktu shalat...</span>
               </div>
             ) : (
-              <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-5">
-                {[
-                  { key: 'Fajr', label: 'Subuh' },
-                  { key: 'Dhuhr', label: 'Dzuhur' },
-                  { key: 'Asr', label: 'Ashar' },
-                  { key: 'Maghrib', label: 'Maghrib' },
-                  { key: 'Isha', label: 'Isya' },
-                ].map((item, idx) => {
-                  const waktuJam = jadwalShalat ? jadwalShalat[item.key] : '--:--';
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 md:grid-cols-6">
+                {prayerList.map((item, idx) => {
+                  const waktuJam = getPrayerTime(item.key);
+                  const isNext = item.key === prayerInfo.nextKey;
+                  const Icon = item.icon;
+
                   return (
                     <div
                       key={idx}
-                      className="group rounded-2xl border border-slate-100 bg-slate-50/80 p-5 text-center transition-all hover:bg-emerald-600 hover:text-white hover:shadow-lg hover:shadow-emerald-900/10 hover:-translate-y-1"
+                      className={`group relative rounded-2xl p-4 text-center transition-all duration-300 hover:-translate-y-1 ${
+                        isNext
+                          ? 'border-2 border-emerald-500 bg-gradient-to-b from-emerald-50 via-emerald-100/40 to-white shadow-lg shadow-emerald-700/15 ring-2 ring-emerald-500/20'
+                          : 'border border-slate-200/80 bg-slate-50/70 hover:border-emerald-300 hover:bg-white hover:shadow-md'
+                      }`}
                     >
-                      <p className="text-[10px] font-black tracking-widest text-slate-400 uppercase group-hover:text-emerald-100">
+                      {/* Badge 'Berikutnya' jika aktif */}
+                      {isNext ? (
+                        <div className="mb-2">
+                          <span className="inline-flex items-center gap-1 rounded-full bg-emerald-600 px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-white shadow-xs">
+                            <span className="h-1.5 w-1.5 rounded-full bg-emerald-200 animate-ping" />
+                            Berikutnya
+                          </span>
+                        </div>
+                      ) : (
+                        <div className="mb-2">
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 group-hover:text-emerald-700 transition-colors">
+                            {item.desc}
+                          </span>
+                        </div>
+                      )}
+
+                      {/* Icon Waktu Shalat */}
+                      <div className="mx-auto mb-2.5 flex h-11 w-11 items-center justify-center rounded-xl transition-transform group-hover:scale-110">
+                        <div
+                          className={`flex h-full w-full items-center justify-center rounded-xl ${
+                            isNext
+                              ? 'bg-emerald-600 text-white shadow-md shadow-emerald-700/30'
+                              : 'bg-white text-emerald-800 border border-slate-200/90 shadow-xs group-hover:bg-emerald-50 group-hover:text-emerald-700 group-hover:border-emerald-300'
+                          }`}
+                        >
+                          <Icon size={20} strokeWidth={isNext ? 2.5 : 2} />
+                        </div>
+                      </div>
+
+                      {/* Nama Shalat */}
+                      <p
+                        className={`text-xs font-black uppercase tracking-wider ${
+                          isNext ? 'text-emerald-950' : 'text-slate-700 group-hover:text-emerald-900'
+                        }`}
+                      >
                         {item.label}
                       </p>
-                      <p className="font-serif-elegant mt-2 text-2xl font-bold text-[#0a1f18] group-hover:text-white md:text-3xl">
-                        {waktuJam ? waktuJam.split(' ')[0] : '--:--'}
+
+                      {/* Jam Shalat */}
+                      <p
+                        className={`font-serif-elegant mt-1 text-2xl sm:text-3xl font-extrabold ${
+                          isNext ? 'text-[#0a1f18]' : 'text-slate-800 group-hover:text-[#0a1f18]'
+                        }`}
+                      >
+                        {waktuJam}
                       </p>
-                      <span className="text-[9px] font-bold text-emerald-700 group-hover:text-emerald-100 mt-1 block">
-                        WIB
-                      </span>
+
+                      {/* WIB Label */}
+                      <div className="mt-1 flex items-center justify-center">
+                        <span
+                          className={`inline-block text-[10px] font-bold px-2 py-0.5 rounded-md ${
+                            isNext
+                              ? 'bg-emerald-200/70 text-emerald-900 font-extrabold'
+                              : 'bg-slate-200/60 text-slate-500 group-hover:bg-emerald-100 group-hover:text-emerald-800'
+                          }`}
+                        >
+                          WIB
+                        </span>
+                      </div>
                     </div>
                   );
                 })}
               </div>
             )}
+
+            {/* Note bawah */}
+            <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-3 rounded-xl bg-slate-50 px-4 py-3 border border-slate-200/60 text-center sm:text-left text-xs text-slate-500">
+              <p className="flex items-center gap-1.5 font-medium">
+                <Compass size={15} className="text-[#0d8a5e] shrink-0" />
+                <span>
+                  Waktu adzan disinkronkan otomatis sesuai koordinat Kp. Jalan Cagak, Desa Lagadar.
+                </span>
+              </p>
+              <a
+                href="#khutbah"
+                className="font-bold text-[#0d8a5e] hover:text-emerald-700 hover:underline flex items-center gap-1 shrink-0"
+              >
+                <span>Lihat Jadwal Kajian & Khutbah</span>
+                <ArrowRight size={13} />
+              </a>
+            </div>
           </div>
         </section>
 
@@ -473,7 +847,7 @@ export default function HomePage() {
                   <span className="h-px w-6 bg-[#0d8a5e]" /> Tentang Masjid
                 </div>
                 <h2 className="font-serif-elegant text-3xl font-bold leading-tight text-[#0a1f18] md:text-5xl">
-                  Pusat Ibadah, Pembinaan Umat & Laboratorium Peradaban
+                  Pusat Ibadah, Pembinaan Umat & Penguat Ukhuwah
                 </h2>
                 <div className="space-y-4 text-sm leading-relaxed text-slate-600 font-medium md:text-base">
                   <p>
@@ -991,36 +1365,275 @@ export default function HomePage() {
             </div>
           </div>
         </section>
+
+        {/* --- 5. KOTAK SARAN & ASPIRASI JAMAAH --- */}
+        <section id="saran" className="scroll-mt-32">
+          <div className="rounded-[2.5rem] md:rounded-[3rem] bg-gradient-to-br from-[#0a1f18] via-[#0f2e24] to-[#164436] p-6 sm:p-10 md:p-14 text-white shadow-2xl border border-emerald-900/60 relative overflow-hidden">
+            {/* Background pattern decor */}
+            <div className="absolute inset-0 opacity-5 pointer-events-none bg-[radial-gradient(#d4af37_1px,transparent_1px)] [background-size:20px_20px]" />
+            <div className="pointer-events-none absolute -bottom-10 -right-10 opacity-10">
+              <MessageSquareHeart size={300} />
+            </div>
+
+            <div className="relative z-10 space-y-10">
+              {/* Header Section */}
+              <div className="text-center max-w-2xl mx-auto space-y-3">
+                <p className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 border border-white/15 text-[10px] font-black tracking-widest text-[#d4af37] uppercase">
+                  <MessageSquareHeart size={13} />
+                  <span>Musyawarah & Aspirasi Jamaah</span>
+                </p>
+                <h2 className="font-serif-elegant text-3xl md:text-5xl font-bold tracking-tight text-white leading-tight">
+                  Kotak Saran & Masukan Jamaah
+                </h2>
+                <p className="text-xs md:text-sm text-slate-300 leading-relaxed font-medium">
+                  "Agama adalah nasehat." (HR. Muslim). Setiap masukan, kritik konstruktif, dan usulan jamaah sangat berharga demi kemakmuran dan kenyamanan ibadah bersama di Masjid Al-Mukhlisin.
+                </p>
+              </div>
+
+              {/* Two Column Grid: Left Form, Right Preview Respon DKM */}
+              <div className="grid gap-8 lg:grid-cols-12 items-start">
+                {/* Form Input (Left: 7 cols) */}
+                <div className="lg:col-span-7 bg-white/10 backdrop-blur-md rounded-3xl p-6 sm:p-8 border border-white/15 shadow-xl">
+                  <div className="flex items-center justify-between gap-3 mb-6 pb-4 border-b border-white/10">
+                    <div className="flex items-center gap-2.5">
+                      <div className="p-2 bg-emerald-500/20 text-emerald-300 rounded-xl border border-emerald-400/30">
+                        <Send size={18} />
+                      </div>
+                      <h3 className="font-bold text-base md:text-lg text-white">
+                        Sampaikan Aspirasi Anda
+                      </h3>
+                    </div>
+                    <span className="text-[10px] font-bold text-emerald-300 bg-emerald-950/80 px-2.5 py-1 rounded-full border border-emerald-700/50">
+                      Bisa Anonim
+                    </span>
+                  </div>
+
+                  {saranSuccess ? (
+                    <div className="p-6 text-center space-y-3 bg-emerald-900/60 rounded-2xl border border-emerald-500/40">
+                      <div className="w-12 h-12 bg-emerald-400 text-emerald-950 rounded-full flex items-center justify-center mx-auto shadow-lg">
+                        <CheckCircle size={28} />
+                      </div>
+                      <h4 className="font-bold text-white text-base">Jazakallahu Khairan!</h4>
+                      <p className="text-xs text-emerald-200 leading-relaxed max-w-sm mx-auto">
+                        Alhamdulillah, aspirasi Anda telah tersimpan dan akan segera ditinjau oleh pengurus DKM.
+                      </p>
+                    </div>
+                  ) : (
+                    <form onSubmit={handleKirimSaran} className="space-y-4">
+                      {/* Opsi Kirim Sebagai Anonim */}
+                      <div className="flex items-center justify-between p-3 rounded-2xl bg-black/20 border border-white/10">
+                        <div className="text-xs">
+                          <span className="font-bold text-white block">Kirim sebagai Anonim</span>
+                          <span className="text-[10px] text-slate-300">
+                            Nama tampil sebagai "Hamba Allah"
+                          </span>
+                        </div>
+                        <input
+                          type="checkbox"
+                          checked={saranIsAnonim}
+                          onChange={(e) => setSaranIsAnonim(e.target.checked)}
+                          className="h-4 w-4 rounded-sm border-white/30 text-emerald-500 focus:ring-emerald-400 cursor-pointer"
+                        />
+                      </div>
+
+                      <div className="grid sm:grid-cols-2 gap-3">
+                        {!saranIsAnonim ? (
+                          <div>
+                            <label className="block text-[11px] font-bold text-slate-200 mb-1">
+                              Nama Lengkap / Panggilan
+                            </label>
+                            <input
+                              type="text"
+                              value={saranNama}
+                              onChange={(e) => setSaranNama(e.target.value)}
+                              placeholder="Contoh: Pak Hendra / Ibu Siti"
+                              className="w-full px-3.5 py-2.5 rounded-xl border border-white/15 bg-white/5 text-xs text-white placeholder-slate-400 focus:outline-hidden focus:border-emerald-400 focus:bg-white/10"
+                            />
+                          </div>
+                        ) : (
+                          <div>
+                            <label className="block text-[11px] font-bold text-slate-200 mb-1">
+                              Nama Pengirim
+                            </label>
+                            <input
+                              type="text"
+                              disabled
+                              value="Hamba Allah"
+                              className="w-full px-3.5 py-2.5 rounded-xl border border-white/10 bg-white/5 text-xs text-slate-400 font-medium cursor-not-allowed"
+                            />
+                          </div>
+                        )}
+
+                        <div>
+                          <label className="block text-[11px] font-bold text-slate-200 mb-1">
+                            No. WhatsApp (Opsional)
+                          </label>
+                          <input
+                            type="tel"
+                            value={saranNoHp}
+                            onChange={(e) => setSaranNoHp(e.target.value)}
+                            placeholder="Contoh: 081234567890"
+                            className="w-full px-3.5 py-2.5 rounded-xl border border-white/15 bg-white/5 text-xs text-white placeholder-slate-400 focus:outline-hidden focus:border-emerald-400 focus:bg-white/10"
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-[11px] font-bold text-slate-200 mb-1">
+                          Kategori Aspirasi
+                        </label>
+                        <select
+                          value={saranKategori}
+                          onChange={(e) => setSaranKategori(e.target.value as KategoriSaran)}
+                          className="w-full px-3.5 py-2.5 rounded-xl border border-white/15 bg-[#0a1f18] text-xs text-white focus:outline-hidden focus:border-emerald-400"
+                        >
+                          <option value="Umum">Umum</option>
+                          <option value="Fasilitas & Kebersihan">Fasilitas & Kebersihan</option>
+                          <option value="Kajian & Dakwah">Kajian & Dakwah</option>
+                          <option value="Pelayanan DKM">Pelayanan DKM</option>
+                          <option value="Keuangan">Transparansi Keuangan</option>
+                          <option value="Lainnya">Lainnya</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-[11px] font-bold text-slate-200 mb-1">
+                          Isi Masukan, Saran, atau Kritik Konstruktif <span className="text-[#d4af37]">*</span>
+                        </label>
+                        <textarea
+                          required
+                          rows={3}
+                          value={saranPesan}
+                          onChange={(e) => setSaranPesan(e.target.value)}
+                          placeholder="Tuliskan saran atau masukan Anda dengan bahasa santun demi perbaikan bersama..."
+                          className="w-full px-3.5 py-2.5 rounded-xl border border-white/15 bg-white/5 text-xs text-white placeholder-slate-400 focus:outline-hidden focus:border-emerald-400 focus:bg-white/10"
+                        />
+                      </div>
+
+                      <button
+                        type="submit"
+                        disabled={saranSubmitting || !saranPesan.trim()}
+                        className="w-full py-3 rounded-2xl bg-gradient-to-r from-emerald-500 to-[#0d8a5e] hover:brightness-110 text-white font-bold text-xs tracking-wide shadow-lg active:scale-98 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                      >
+                        <Send size={14} />
+                        <span>{saranSubmitting ? 'Mengirimkan...' : 'Kirim Aspirasi Sekarang'}</span>
+                      </button>
+                    </form>
+                  )}
+                </div>
+
+                {/* Preview Cuplikan Respon DKM (Right: 5 cols) */}
+                <div className="lg:col-span-5 space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-[10px] font-black tracking-widest text-[#d4af37] uppercase">
+                        Keterbukaan DKM
+                      </p>
+                      <h3 className="font-serif-elegant text-xl font-bold text-white">
+                        Respon Resmi Terkini
+                      </h3>
+                    </div>
+                    <Link
+                      href="/saran"
+                      className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-300 hover:text-white underline underline-offset-4"
+                    >
+                      <span>Lihat Semua</span>
+                      <ArrowRight size={13} />
+                    </Link>
+                  </div>
+
+                  {saranList.filter((s) => Boolean(s.tanggapan_dkm)).length === 0 ? (
+                    <div className="bg-white/5 rounded-3xl p-6 border border-white/10 text-center text-xs text-slate-300">
+                      Belum ada tanggapan publik. Masukan yang Anda kirim akan segera ditinjau oleh pengurus DKM.
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {saranList
+                        .filter((s) => Boolean(s.tanggapan_dkm))
+                        .slice(0, 2)
+                        .map((item) => (
+                          <div
+                            key={item.id}
+                            className="bg-white/10 backdrop-blur-md rounded-2xl p-4 sm:p-5 border border-white/10 space-y-3 hover:border-emerald-400/40 transition-colors"
+                          >
+                            <div className="flex items-center justify-between text-[11px]">
+                              <span className="font-bold text-white">{item.nama}</span>
+                              <span className="px-2 py-0.5 rounded-md text-[9px] font-bold bg-white/10 text-emerald-300">
+                                {item.kategori}
+                              </span>
+                            </div>
+
+                            <p className="text-xs text-slate-300 italic font-medium line-clamp-2">
+                              "{item.pesan}"
+                            </p>
+
+                            <div className="bg-emerald-950/70 p-3 rounded-xl border border-emerald-500/30 space-y-1">
+                              <div className="flex items-center gap-1.5 text-[10px] font-bold text-emerald-300 uppercase tracking-wider">
+                                <ShieldCheck size={12} className="text-emerald-400" />
+                                <span>Tanggapan DKM</span>
+                              </div>
+                              <p className="text-xs text-white leading-relaxed font-medium line-clamp-3">
+                                {item.tanggapan_dkm}
+                              </p>
+                            </div>
+                          </div>
+                        ))}
+                    </div>
+                  )}
+
+                  <Link
+                    href="/saran"
+                    className="block w-full py-3.5 px-4 rounded-2xl bg-white/10 hover:bg-white/15 text-center text-xs font-bold text-emerald-200 hover:text-white border border-white/15 transition-all shadow-md"
+                  >
+                    Buka Halaman Khusus Saran & Kritik Jamaah &rarr;
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
       </main>
 
       {/* --- FOOTER --- */}
       <footer className="border-t border-slate-200 bg-white pt-14 sm:pt-20 pb-28 md:pb-10">
         <div className="mx-auto max-w-7xl px-4 md:px-8">
-          <div className="mb-16 grid gap-12 md:grid-cols-4">
+          <div className="mb-16 grid gap-12 lg:grid-cols-12">
             {/* Info Masjid */}
-            <div className="md:col-span-2">
+            <div className="lg:col-span-7">
               <div className="mb-6 flex items-center gap-3">
                 <div className="h-10 w-10 rounded-2xl bg-[#0a1f18] border border-emerald-900/40 flex items-center justify-center shadow-sm overflow-hidden">
-                  <img src="/icon.svg" alt="Masjid Al-Mukhlisin" className="h-8 w-8" />
+                  <img
+                    src={identitas?.logo_url || '/icon.svg'}
+                    alt={identitas?.nama || "Masjid Al-Mukhlisin"}
+                    className="h-full w-full object-cover"
+                  />
                 </div>
                 <span className="font-serif-elegant text-2xl md:text-3xl font-bold text-[#0a1f18] block leading-none">
-                  Al-Mukhlisin
+                  {identitas?.nama || 'Al-Mukhlisin'}
                 </span>
               </div>
               <p className="mb-8 max-w-md text-sm leading-relaxed font-medium text-slate-500">
                 Menjadi pusat ibadah yang makmur, melayani jamaah dengan sistem modern, transparansi penuh, dan
                 berlandaskan Al-Qur'an serta As-Sunnah.
               </p>
-              <Link
-                href="/login"
-                className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-6 py-3 text-xs font-bold text-slate-600 transition-all hover:border-[#0d8a5e] hover:bg-[#0d8a5e] hover:text-white"
-              >
-                <Shield size={16} /> Portal Pengurus Masjid
-              </Link>
+              <div className="flex flex-wrap items-center gap-3">
+                <Link
+                  href="/login"
+                  className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-6 py-3 text-xs font-bold text-slate-600 transition-all hover:border-[#0d8a5e] hover:bg-[#0d8a5e] hover:text-white"
+                >
+                  <Shield size={16} /> Portal Pengurus Masjid
+                </Link>
+                <Link
+                  href="/saran"
+                  className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-6 py-3 text-xs font-bold text-emerald-800 transition-all hover:bg-emerald-600 hover:text-white"
+                >
+                  <MessageSquareHeart size={16} /> Kotak Saran & Aspirasi
+                </Link>
+              </div>
             </div>
 
             {/* Kontak & Alamat */}
-            <div>
+            <div className="lg:col-span-5">
               <h4 className="mb-6 font-bold text-[#0a1f18]">Informasi & Lokasi</h4>
               <ul className="space-y-4">
                 <li className="flex gap-3 text-sm text-slate-500">
@@ -1038,34 +1651,6 @@ export default function HomePage() {
                 </li>
               </ul>
             </div>
-
-            {/* Media Sosial */}
-            <div>
-              <h4 className="mb-6 font-bold text-[#0a1f18]">Media Sosial</h4>
-              <div className="flex gap-3">
-                <a
-                  href="#"
-                  className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-slate-600 transition-all hover:bg-[#0d8a5e] hover:text-white"
-                  title="Instagram"
-                >
-                  <IconInstagram size={18} />
-                </a>
-                <a
-                  href="#"
-                  className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-slate-600 transition-all hover:bg-[#0d8a5e] hover:text-white"
-                  title="YouTube"
-                >
-                  <IconYoutube size={18} />
-                </a>
-                <a
-                  href="#"
-                  className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-slate-600 transition-all hover:bg-[#0d8a5e] hover:text-white"
-                  title="Facebook"
-                >
-                  <IconFacebook size={18} />
-                </a>
-              </div>
-            </div>
           </div>
 
           <div className="flex flex-col items-center justify-between gap-4 border-t border-slate-200 pt-8 text-center md:flex-row md:text-left">
@@ -1078,6 +1663,18 @@ export default function HomePage() {
           </div>
         </div>
       </footer>
+
+      {/* Floating Quick Action Button khusus Mobile */}
+      <div className="fixed bottom-20 right-4 z-40 md:hidden">
+        <a
+          href="#saran"
+          className="flex items-center gap-2 px-4 py-3 rounded-full bg-gradient-to-r from-emerald-600 to-[#0d8a5e] text-white font-bold text-xs shadow-2xl shadow-emerald-950/50 hover:scale-105 active:scale-95 transition-all border border-emerald-400/40"
+          title="Kirim Saran Jamaah"
+        >
+          <MessageSquareHeart size={16} />
+          <span>Kotak Saran</span>
+        </a>
+      </div>
 
       {/* Mobile Bottom Navigation Bar (7 Tabs: Beranda, Kas, Jamaah, Agenda, Zakat, Aset, Laporan) */}
       <MobileBottomNav variant="public" />

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import {
@@ -21,8 +21,11 @@ import {
   FileText,
   Settings,
   MapPin,
+  MessageSquareHeart,
 } from 'lucide-react';
 import { useAuth } from '@/lib/auth-context';
+import { DataService } from '@/lib/data-service';
+import { IdentitasMasjid } from '@/types';
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -33,9 +36,57 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   const router = useRouter();
   const { user, logout, isSupabaseConnected } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [identitas, setIdentitas] = useState<IdentitasMasjid | null>(null);
+  const [unreadSaran, setUnreadSaran] = useState(0);
+
+  useEffect(() => {
+    let isMounted = true;
+    const fetchIdentitas = async () => {
+      try {
+        const data = await DataService.getIdentitas();
+        if (isMounted) setIdentitas(data);
+      } catch (e) {
+        console.error('Failed to load identitas in layout:', e);
+      }
+    };
+    const fetchUnreadSaran = async () => {
+      try {
+        if (typeof DataService?.getSaranKritik === 'function') {
+          const saranList = await DataService.getSaranKritik();
+          if (isMounted && Array.isArray(saranList)) {
+            const baruCount = saranList.filter((s) => s.status === 'baru').length;
+            setUnreadSaran(baruCount);
+          }
+        }
+      } catch (e) {
+        console.error('Failed to load saran count in layout:', e);
+      }
+    };
+
+    fetchIdentitas();
+    fetchUnreadSaran();
+
+    const handleUpdated = (e: any) => {
+      if (e?.detail) setIdentitas(e.detail);
+      else fetchIdentitas();
+    };
+
+    const handleSaranUpdated = () => {
+      fetchUnreadSaran();
+    };
+
+    window.addEventListener('masjid_identitas_updated', handleUpdated);
+    window.addEventListener('masjid_saran_updated', handleSaranUpdated);
+    return () => {
+      isMounted = false;
+      window.removeEventListener('masjid_identitas_updated', handleUpdated);
+      window.removeEventListener('masjid_saran_updated', handleSaranUpdated);
+    };
+  }, []);
 
   const navItems = [
     { title: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
+    { title: 'Saran & Kritik Jamaah', href: '/admin/saran', icon: MessageSquareHeart, badge: unreadSaran },
     { title: 'Buku Kas Keuangan', href: '/admin/finance', icon: Wallet },
     { title: 'Zakat & Qurban', href: '/admin/zakat', icon: HandHeart },
     { title: 'Data Jamaah', href: '/admin/jamaah', icon: Users },
@@ -45,6 +96,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     { title: 'Laporan Resmi (SIMAS)', href: '/admin/laporan', icon: FileText },
     { title: 'Pengaturan & Backup', href: '/admin/pengaturan', icon: Settings },
   ];
+
 
   const handleLogout = async () => {
     await logout();
@@ -57,11 +109,19 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       <header className="md:hidden flex items-center justify-between px-5 py-4 bg-[#0a1f18] text-white border-b border-emerald-900/40 sticky top-0 z-40">
         <div className="flex items-center gap-2.5">
           <div className="h-8 w-8 rounded-lg bg-emerald-800/80 border border-emerald-500/30 flex items-center justify-center shrink-0 overflow-hidden">
-            <img src="/icon.svg" alt="Masjid Al-Mukhlisin" className="h-6 w-6" />
+            <img
+              src={identitas?.logo_url || '/icon.svg'}
+              alt={identitas?.nama || 'Masjid Al-Mukhlisin'}
+              className="h-full w-full object-cover"
+            />
           </div>
           <div>
-            <h1 className="font-serif-elegant text-lg font-bold leading-none tracking-wide text-white">Al-Mukhlisin</h1>
-            <p className="text-[9px] font-mono text-emerald-300 mt-1">ID 01.4.13.04.06.000158 | Desa Lagadar</p>
+            <h1 className="font-serif-elegant text-lg font-bold leading-none tracking-wide text-white">
+              {identitas?.nama || 'Al-Mukhlisin'}
+            </h1>
+            <p className="text-[9px] font-mono text-emerald-300 mt-1">
+              ID {identitas?.nomor_id_kemenag || '01.4.13.04.06.000158'}
+            </p>
           </div>
         </div>
         <button
@@ -91,11 +151,15 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="h-10 w-10 rounded-xl bg-emerald-800/80 border border-emerald-500/30 flex items-center justify-center shrink-0 shadow overflow-hidden">
-                <img src="/icon.svg" alt="Masjid Al-Mukhlisin" className="h-8 w-8" />
+                <img
+                  src={identitas?.logo_url || '/icon.svg'}
+                  alt={identitas?.nama || 'Masjid Al-Mukhlisin'}
+                  className="h-full w-full object-cover"
+                />
               </div>
               <div>
                 <span className="font-serif-elegant text-2xl font-bold tracking-wide text-white block leading-tight">
-                  Al-Mukhlisin
+                  {identitas?.nama || 'Al-Mukhlisin'}
                 </span>
                 <span className="text-[10px] font-black tracking-widest text-emerald-400 uppercase flex items-center gap-1 mt-0.5">
                   <Shield size={11} /> Admin Portal
@@ -126,10 +190,12 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
             {/* Identitas SIMAS & Alamat */}
             <div className="border-t border-emerald-900/40 pt-2 text-[10px] space-y-0.5">
-              <span className="font-mono font-bold text-emerald-400 block">ID 01.4.13.04.06.000158</span>
+              <span className="font-mono font-bold text-emerald-400 block">
+                ID {identitas?.nomor_id_kemenag || '01.4.13.04.06.000158'}
+              </span>
               <p className="text-slate-300 flex items-start gap-1 leading-tight">
                 <MapPin size={11} className="shrink-0 text-emerald-500 mt-0.5" />
-                <span>Kp. Jalan Cagak RT.005 RW.004 Desa Lagadar</span>
+                <span>{identitas?.alamat || 'Kp. Jalan Cagak RT.005 RW.004 Desa Lagadar'}</span>
               </p>
             </div>
           </div>
@@ -154,7 +220,12 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                   }`}
                 >
                   <Icon size={18} className={isActive ? 'text-white' : 'text-emerald-400'} />
-                  <span>{item.title}</span>
+                  <span className="flex-1">{item.title}</span>
+                  {item.badge !== undefined && item.badge > 0 && (
+                    <span className="ml-auto px-2 py-0.5 rounded-full text-[10px] font-black bg-amber-400 text-emerald-950 shadow-sm animate-pulse">
+                      {item.badge} baru
+                    </span>
+                  )}
                 </Link>
               );
             })}

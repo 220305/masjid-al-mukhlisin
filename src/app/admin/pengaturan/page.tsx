@@ -13,6 +13,9 @@ import {
   KeyRound,
   Lock,
   Trash2,
+  Upload,
+  RotateCcw,
+  Image as ImageIcon,
 } from 'lucide-react';
 import AdminLayout from '@/components/layout/admin-layout';
 import { DataService } from '@/lib/data-service';
@@ -25,10 +28,15 @@ export default function PengaturanPage() {
     alamat: 'Kp. Jalan Cagak RT.005 RW.004 Desa Lagadar',
     ketua_dkm: 'Ustadz H. Ahmad Sobari',
     bendahara: 'H. Mulyadi, S.E.',
+    logo_url: null,
   });
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [savedOk, setSavedOk] = useState(false);
+
+  // Logo upload state
+  const [logoUploading, setLogoUploading] = useState(false);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   // Backup states
   const [backupJson, setBackupJson] = useState('');
@@ -51,6 +59,37 @@ export default function PengaturanPage() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleLogoFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      alert('Mohon pilih file gambar (JPG, PNG, WebP, atau SVG).');
+      return;
+    }
+
+    if (file.size > 10 * 1024 * 1024) {
+      alert('Ukuran file foto terlalu besar (maksimal 10MB).');
+      return;
+    }
+
+    setLogoUploading(true);
+    try {
+      const uploadedUrl = await DataService.uploadLogoImage(file);
+      setIdentitas((prev) => ({ ...prev, logo_url: uploadedUrl }));
+    } catch (err: any) {
+      console.error('Gagal memproses foto:', err);
+      alert('Gagal memproses gambar foto logo. Silakan coba file lain.');
+    } finally {
+      setLogoUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
+
+  const handleResetLogo = () => {
+    setIdentitas((prev) => ({ ...prev, logo_url: null }));
   };
 
   useEffect(() => {
@@ -171,7 +210,83 @@ export default function PengaturanPage() {
           {loading ? (
             <p className="text-sm text-slate-400 text-center py-6">Memuat data identitas...</p>
           ) : (
-            <form onSubmit={handleSave} className="space-y-5 text-sm">
+            <form onSubmit={handleSave} className="space-y-6 text-sm">
+              {/* Logo & Foto Profil Masjid */}
+              <div className="rounded-2xl border border-slate-200/80 bg-slate-50/70 p-4 sm:p-5">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6">
+                  {/* Preview Logo */}
+                  <div className="relative group shrink-0">
+                    <div className="h-20 w-20 sm:h-24 sm:w-24 rounded-2xl bg-white border-2 border-emerald-500/30 shadow-md p-1.5 flex items-center justify-center overflow-hidden transition-all duration-300 group-hover:border-emerald-500">
+                      <img
+                        src={identitas.logo_url || '/icon.svg'}
+                        alt={identitas.nama || 'Logo Masjid'}
+                        className="h-full w-full object-contain rounded-xl"
+                      />
+                    </div>
+                    {identitas.logo_url && (
+                      <span className="absolute -top-1.5 -right-1.5 flex h-4 w-4">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-4 w-4 bg-emerald-600 border border-white"></span>
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Actions & Info */}
+                  <div className="space-y-2 flex-1">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <h3 className="font-bold text-slate-800 text-sm">Logo / Foto Profil Masjid</h3>
+                      <span
+                        className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full ${
+                          identitas.logo_url
+                            ? 'bg-emerald-100 text-emerald-800 border border-emerald-300/60'
+                            : 'bg-slate-200 text-slate-700'
+                        }`}
+                      >
+                        {identitas.logo_url ? 'Foto Kustom Aktif' : 'Logo Standar Sistem'}
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-slate-500 leading-relaxed">
+                      Unggah foto lambang DKM, foto kubah/masjid, atau logo resmi Anda. Foto logo ini otomatis tampil di header website publik, laporan resmi, dan portal admin.
+                    </p>
+
+                    <div className="flex items-center gap-2 pt-1 flex-wrap">
+                      <input
+                        type="file"
+                        ref={fileInputRef}
+                        onChange={handleLogoFileChange}
+                        accept="image/png,image/jpeg,image/webp,image/svg+xml"
+                        className="hidden"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => fileInputRef.current?.click()}
+                        disabled={logoUploading}
+                        className="flex items-center gap-2 px-3.5 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold shadow-sm transition disabled:opacity-60 cursor-pointer"
+                      >
+                        {logoUploading ? (
+                          <RefreshCw size={14} className="animate-spin" />
+                        ) : (
+                          <Upload size={14} />
+                        )}
+                        {logoUploading ? 'Mengunggah & Mengoptimalkan...' : 'Pilih Foto / Ganti Logo'}
+                      </button>
+
+                      {identitas.logo_url && (
+                        <button
+                          type="button"
+                          onClick={handleResetLogo}
+                          className="flex items-center gap-1.5 px-3 py-2 border border-rose-200 text-rose-700 hover:bg-rose-50 rounded-xl text-xs font-bold transition cursor-pointer"
+                          title="Hapus foto kustom dan gunakan logo standar"
+                        >
+                          <RotateCcw size={13} />
+                          <span>Reset ke Logo Standar</span>
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div>
                   <label className="block font-bold text-slate-700 mb-1.5 text-xs uppercase tracking-wide">
