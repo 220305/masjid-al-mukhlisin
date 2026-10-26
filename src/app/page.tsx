@@ -1367,7 +1367,7 @@ export default function HomePage() {
         </section>
 
         {/* --- 5. KOTAK SARAN & ASPIRASI JAMAAH --- */}
-        <section id="saran" className="scroll-mt-32">
+        <section id="saran" className="scroll-mt-40 md:scroll-mt-48">
           <div className="rounded-[2.5rem] md:rounded-[3rem] bg-gradient-to-br from-[#0a1f18] via-[#0f2e24] to-[#164436] p-6 sm:p-10 md:p-14 text-white shadow-2xl border border-emerald-900/60 relative overflow-hidden">
             {/* Background pattern decor */}
             <div className="absolute inset-0 opacity-5 pointer-events-none bg-[radial-gradient(#d4af37_1px,transparent_1px)] [background-size:20px_20px]" />
@@ -1522,15 +1522,15 @@ export default function HomePage() {
                   )}
                 </div>
 
-                {/* Preview Cuplikan Respon DKM (Right: 5 cols) */}
+                {/* Preview Cuplikan Respon DKM & Aspirasi Masuk (Right: 5 cols) */}
                 <div className="lg:col-span-5 space-y-4">
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-[10px] font-black tracking-widest text-[#d4af37] uppercase">
-                        Keterbukaan DKM
+                        Aspirasi Jamaah
                       </p>
                       <h3 className="font-serif-elegant text-xl font-bold text-white">
-                        Respon Resmi Terkini
+                        Masukan & Respon Terkini
                       </h3>
                     </div>
                     <Link
@@ -1542,42 +1542,57 @@ export default function HomePage() {
                     </Link>
                   </div>
 
-                  {saranList.filter((s) => Boolean(s.tanggapan_dkm)).length === 0 ? (
+                  {saranList.length === 0 ? (
                     <div className="bg-white/5 rounded-3xl p-6 border border-white/10 text-center text-xs text-slate-300">
-                      Belum ada tanggapan publik. Masukan yang Anda kirim akan segera ditinjau oleh pengurus DKM.
+                      Belum ada aspirasi masuk. Sampaikan masukan atau saran pertama Anda melalui formulir di samping.
                     </div>
                   ) : (
                     <div className="space-y-3">
-                      {saranList
-                        .filter((s) => Boolean(s.tanggapan_dkm))
-                        .slice(0, 2)
-                        .map((item) => (
-                          <div
-                            key={item.id}
-                            className="bg-white/10 backdrop-blur-md rounded-2xl p-4 sm:p-5 border border-white/10 space-y-3 hover:border-emerald-400/40 transition-colors"
-                          >
-                            <div className="flex items-center justify-between text-[11px]">
-                              <span className="font-bold text-white">{item.nama}</span>
-                              <span className="px-2 py-0.5 rounded-md text-[9px] font-bold bg-white/10 text-emerald-300">
+                      {saranList.slice(0, 2).map((item) => (
+                        <div
+                          key={item.id}
+                          className="bg-white/10 backdrop-blur-md rounded-2xl p-4 sm:p-5 border border-white/10 space-y-3 hover:border-emerald-400/40 transition-colors"
+                        >
+                          <div className="flex items-center justify-between text-[11px] gap-2">
+                            <div className="flex items-center gap-2 min-w-0">
+                              <span className="font-bold text-white truncate">{item.nama}</span>
+                              <span className="px-2 py-0.5 rounded-md text-[9px] font-bold bg-white/10 text-emerald-300 shrink-0">
                                 {item.kategori}
                               </span>
                             </div>
+                            {item.tanggapan_dkm ? (
+                              <span className="text-[9px] font-bold text-emerald-300 bg-emerald-950/80 border border-emerald-500/40 px-2 py-0.5 rounded-full flex items-center gap-1 shrink-0">
+                                <CheckCircle size={10} /> Direspon
+                              </span>
+                            ) : (
+                              <span className="text-[9px] font-bold text-amber-300 bg-amber-950/70 border border-amber-500/40 px-2 py-0.5 rounded-full flex items-center gap-1 shrink-0">
+                                <Clock size={10} /> Ditinjau
+                              </span>
+                            )}
+                          </div>
 
-                            <p className="text-xs text-slate-300 italic font-medium line-clamp-2">
-                              "{item.pesan}"
-                            </p>
+                          <p className="text-xs text-slate-200 italic font-medium line-clamp-2">
+                            "{item.pesan}"
+                          </p>
 
+                          {item.tanggapan_dkm ? (
                             <div className="bg-emerald-950/70 p-3 rounded-xl border border-emerald-500/30 space-y-1">
                               <div className="flex items-center gap-1.5 text-[10px] font-bold text-emerald-300 uppercase tracking-wider">
                                 <ShieldCheck size={12} className="text-emerald-400" />
-                                <span>Tanggapan DKM</span>
+                                <span>Tanggapan Resmi DKM</span>
                               </div>
                               <p className="text-xs text-white leading-relaxed font-medium line-clamp-3">
                                 {item.tanggapan_dkm}
                               </p>
                             </div>
-                          </div>
-                        ))}
+                          ) : (
+                            <div className="bg-amber-950/30 p-2.5 rounded-xl border border-amber-500/20 flex items-center gap-2 text-[10px] text-amber-200">
+                              <Clock size={11} className="text-amber-400 shrink-0" />
+                              <span>Aspirasi ini telah masuk dan sedang dipelajari oleh pengurus DKM.</span>
+                            </div>
+                          )}
+                        </div>
+                      ))}
                     </div>
                   )}
 

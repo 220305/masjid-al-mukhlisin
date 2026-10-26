@@ -192,7 +192,7 @@ export default function SaranKritikPublicPage() {
       </header>
 
       {/* Hero Banner Header */}
-      <section className="bg-gradient-to-b from-[#0a1f18] via-[#0f2e24] to-[#143d30] text-white pt-10 pb-16 px-4 md:px-8 relative overflow-hidden">
+      <section className="bg-gradient-to-b from-[#0a1f18] via-[#0f2e24] to-[#143d30] text-white pt-16 sm:pt-20 pb-16 sm:pb-20 px-4 md:px-8 relative overflow-hidden">
         <div className="absolute inset-0 opacity-5 pointer-events-none bg-[radial-gradient(#d4af37_1px,transparent_1px)] [background-size:16px_16px]" />
 
         <div className="max-w-7xl mx-auto relative z-10 text-center space-y-4">
