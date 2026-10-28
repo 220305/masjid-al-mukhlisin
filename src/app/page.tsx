@@ -3,6 +3,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { getHijriDateString } from '@/lib/hijri';
+import { getOfficialPrayerTimes } from '@/lib/prayer-service';
 import KhutbahDefaultPoster, { isCustomPosterImage } from '@/components/khutbah-default-poster';
 import {
   CalendarDays,
@@ -404,23 +405,10 @@ export default function HomePage() {
 
     const fetchShalat = async () => {
       try {
-        const res = await fetch('https://api.aladhan.com/v1/timingsByCity?city=Bandung&country=Indonesia&method=20');
-        const json = await res.json();
-        if (json?.data?.timings) {
-          setJadwalShalat(json.data.timings);
-        }
+        const timings = await getOfficialPrayerTimes(now);
+        setJadwalShalat(timings);
       } catch (error) {
-        console.warn('Gagal memuat jadwal shalat dari API, menggunakan fallback jam default', error);
-        // Fallback waktu shalat Bandung Barat
-        setJadwalShalat({
-          Imsak: '04:26',
-          Fajr: '04:36',
-          Sunrise: '05:48',
-          Dhuhr: '11:55',
-          Asr: '15:10',
-          Maghrib: '17:58',
-          Isha: '19:07',
-        });
+        console.warn('Gagal memuat jadwal shalat dari API:', error);
       } finally {
         setLoadingShalat(false);
       }

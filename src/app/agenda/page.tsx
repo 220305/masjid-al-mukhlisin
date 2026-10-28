@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { DataService } from '@/lib/data-service';
 import { getHijriDateString } from '@/lib/hijri';
+import { getOfficialPrayerTimes } from '@/lib/prayer-service';
 import { KhutbahItem, PetugasJumatItem, IdentitasMasjid } from '@/types';
 import KhutbahDefaultPoster, { isCustomPosterImage } from '@/components/khutbah-default-poster';
 import MobileBottomNav from '@/components/layout/mobile-bottom-nav';
@@ -80,13 +81,10 @@ export default function AgendaPublicPage() {
     );
     setHijriDateStr(getHijriDateString(now));
 
-    // Fetch live shalat timings from Aladhan API
-    fetch('https://api.aladhan.com/v1/timingsByCity?city=Bandung&country=Indonesia&method=20')
-      .then((res) => res.json())
-      .then((json) => {
-        if (json?.data?.timings) {
-          setJadwalShalat(json.data.timings);
-        }
+    // Fetch live shalat timings from Kemenag RI
+    getOfficialPrayerTimes(now)
+      .then((timings) => {
+        setJadwalShalat(timings);
       })
       .catch((err) => {
         console.warn('API Shalat fallback active:', err);
@@ -187,7 +185,7 @@ export default function AgendaPublicPage() {
               <div className="flex items-center gap-2">
                 <Clock size={16} className="text-emerald-300" />
                 <span className="text-xs font-bold uppercase tracking-wider text-emerald-200">
-                  Waktu Shalat Hari Ini (Wilayah Bandung Barat)
+                  Waktu Shalat Hari Ini (Kemenag RI · Lagadar, Kab. Bandung)
                 </span>
               </div>
               <span className="text-[10px] font-mono text-slate-300">Zona WIB (UTC+7)</span>
