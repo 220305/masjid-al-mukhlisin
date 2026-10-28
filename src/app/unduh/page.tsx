@@ -99,7 +99,7 @@ export default function UnduhApkPage() {
 
       <main className="flex-1">
         {/* --- HERO SECTION --- */}
-        <section className="relative overflow-hidden bg-gradient-to-b from-[#0a1f18] via-[#0d2a20] to-[#0a1f18] text-white pt-12 pb-16 px-4 sm:px-6 lg:px-8">
+        <section data-theme="dark" className="relative overflow-hidden bg-gradient-to-b from-[#0a1f18] via-[#0d2a20] to-[#0a1f18] text-white pt-12 pb-16 px-4 sm:px-6 lg:px-8">
           {/* Subtle Islamic Motif BG Decoration */}
           <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#d4af37_1px,transparent_1px)] [background-size:24px_24px] pointer-events-none" />
 

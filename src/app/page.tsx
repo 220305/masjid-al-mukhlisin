@@ -536,7 +536,7 @@ export default function HomePage() {
       </header>
 
       {/* --- HERO SECTION --- */}
-      <section className="relative flex min-h-[85vh] lg:min-h-[92vh] xl:min-h-screen items-center px-4 md:px-8 overflow-hidden">
+      <section data-theme="dark" className="relative flex min-h-[85vh] lg:min-h-[92vh] xl:min-h-screen items-center px-4 md:px-8 overflow-hidden">
         {/* Video Background */}
         <video
           autoPlay
@@ -1466,7 +1466,7 @@ export default function HomePage() {
 
         {/* --- 5. KOTAK SARAN & ASPIRASI JAMAAH --- */}
         <section id="saran" className="scroll-mt-40 md:scroll-mt-48">
-          <div className="rounded-[2.5rem] md:rounded-[3rem] bg-gradient-to-br from-[#0a1f18] via-[#0f2e24] to-[#164436] p-6 sm:p-10 md:p-14 text-white shadow-2xl border border-emerald-900/60 relative overflow-hidden">
+          <div data-theme="dark" className="rounded-[2.5rem] md:rounded-[3rem] bg-gradient-to-br from-[#0a1f18] via-[#0f2e24] to-[#164436] p-6 sm:p-10 md:p-14 text-white shadow-2xl border border-emerald-900/60 relative overflow-hidden">
             {/* Background pattern decor */}
             <div className="absolute inset-0 opacity-5 pointer-events-none bg-[radial-gradient(#d4af37_1px,transparent_1px)] [background-size:20px_20px]" />
             <div className="pointer-events-none absolute -bottom-10 -right-10 opacity-10">
