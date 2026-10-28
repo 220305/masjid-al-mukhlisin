@@ -42,12 +42,12 @@ async function build() {
   const sourceApk = path.join(rootDir, 'android/app/build/outputs/apk/debug/app-debug.apk');
   const destDir = path.join(rootDir, 'public/downloads');
   if (!fs.existsSync(destDir)) fs.mkdirSync(destDir, { recursive: true });
-  const destApk = path.join(destDir, 'masjid-al-mukhlisin.apk');
+  const destApk = path.join(destDir, 'al-mukhlisin.apk');
   fs.copyFileSync(sourceApk, destApk);
 
   const stats = fs.statSync(destApk);
   const sizeMb = (stats.size / (1024 * 1024)).toFixed(2);
-  console.log(`\n🎉 SUCCESS! APK ready at public/downloads/masjid-al-mukhlisin.apk`);
+  console.log(`\n🎉 SUCCESS! APK ready at public/downloads/al-mukhlisin.apk`);
   console.log(`📦 Final Size: ${sizeMb} MB (Tanpa file APK di dalam APK!)`);
 }
 
