@@ -2,6 +2,7 @@
 
 import React, { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
+import { getHijriDateString } from '@/lib/hijri';
 import KhutbahDefaultPoster, { isCustomPosterImage } from '@/components/khutbah-default-poster';
 import {
   CalendarDays,
@@ -339,17 +340,7 @@ export default function HomePage() {
         year: 'numeric',
       })
     );
-    try {
-      setHijriDateString(
-        new Intl.DateTimeFormat('id-ID-u-ca-islamic-civil', {
-          day: 'numeric',
-          month: 'long',
-          year: 'numeric',
-        }).format(now)
-      );
-    } catch {
-      setHijriDateString('');
-    }
+    setHijriDateString(getHijriDateString(now));
 
     const fetchInternalData = async () => {
       setLoading(true);

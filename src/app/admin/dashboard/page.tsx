@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import AdminLayout from '@/components/layout/admin-layout';
 import { DataService } from '@/lib/data-service';
+import { getHijriDateString } from '@/lib/hijri';
 import { KasItem, InventoryItem, KhutbahItem } from '@/types';
 
 export default function DashboardPage() {
@@ -71,14 +72,7 @@ export default function DashboardPage() {
       month: 'long',
       year: 'numeric',
     });
-    let hijri = '';
-    try {
-      hijri = new Intl.DateTimeFormat('id-ID-u-ca-islamic-civil', {
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric',
-      }).format(now);
-    } catch {}
+    const hijri = getHijriDateString(now);
     setTodayDateStr(hijri ? `${masehi} · ${hijri}` : masehi);
   }, []);
 

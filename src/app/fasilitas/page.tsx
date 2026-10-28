@@ -28,6 +28,7 @@ import {
   Check,
 } from 'lucide-react';
 import * as XLSX from 'xlsx';
+import { getHijriDateString } from '@/lib/hijri';
 import MobileBottomNav from '@/components/layout/mobile-bottom-nav';
 import { DataService } from '@/lib/data-service';
 import { InventoryItem, WakafItem, IdentitasMasjid } from '@/types';
@@ -85,17 +86,7 @@ export default function FasilitasDetailPage() {
         year: 'numeric',
       })
     );
-    try {
-      setHijriDateStr(
-        new Intl.DateTimeFormat('id-ID-u-ca-islamic-civil', {
-          day: 'numeric',
-          month: 'long',
-          year: 'numeric',
-        }).format(now)
-      );
-    } catch {
-      setHijriDateStr('');
-    }
+    setHijriDateStr(getHijriDateString(now));
   }, []);
 
   // Filtered Inventories

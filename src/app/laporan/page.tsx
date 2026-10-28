@@ -23,6 +23,7 @@ import {
 } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import { DataService } from '@/lib/data-service';
+import { getHijriDateString } from '@/lib/hijri';
 import {
   IdentitasMasjid,
   KasItem,
@@ -101,17 +102,7 @@ export default function LaporanPublicPage() {
         year: 'numeric',
       })
     );
-    try {
-      setHijriDateStr(
-        new Intl.DateTimeFormat('id-ID-u-ca-islamic-civil', {
-          day: 'numeric',
-          month: 'long',
-          year: 'numeric',
-        }).format(now)
-      );
-    } catch {
-      setHijriDateStr('');
-    }
+    setHijriDateStr(getHijriDateString(now));
   }, []);
 
   // Filter Data by Periode
@@ -252,7 +243,7 @@ export default function LaporanPublicPage() {
               <div className="hidden lg:flex flex-col text-right">
                 <span className="text-[10px] font-bold text-slate-300">{todayDateStr}</span>
                 {hijriDateStr && (
-                  <span className="text-[9px] font-mono text-amber-300">{hijriDateStr} H</span>
+                  <span className="text-[9px] font-mono text-amber-300">{hijriDateStr}</span>
                 )}
               </div>
             )}

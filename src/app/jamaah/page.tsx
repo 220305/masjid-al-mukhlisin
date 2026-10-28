@@ -21,6 +21,7 @@ import {
   Calendar,
 } from 'lucide-react';
 import * as XLSX from 'xlsx';
+import { getHijriDateString } from '@/lib/hijri';
 import { DataService } from '@/lib/data-service';
 import { JamaahItem, IdentitasMasjid } from '@/types';
 import MobileBottomNav from '@/components/layout/mobile-bottom-nav';
@@ -70,17 +71,7 @@ export default function JamaahPublicPage() {
         year: 'numeric',
       })
     );
-    try {
-      setHijriDateStr(
-        new Intl.DateTimeFormat('id-ID-u-ca-islamic-civil', {
-          day: 'numeric',
-          month: 'long',
-          year: 'numeric',
-        }).format(now)
-      );
-    } catch {
-      setHijriDateStr('');
-    }
+    setHijriDateStr(getHijriDateString(now));
   }, []);
 
   // Stats
@@ -181,7 +172,7 @@ export default function JamaahPublicPage() {
               <div className="hidden lg:flex flex-col text-right">
                 <span className="text-[10px] font-bold text-slate-300">{todayDateStr}</span>
                 {hijriDateStr && (
-                  <span className="text-[9px] font-mono text-amber-300">{hijriDateStr} H</span>
+                  <span className="text-[9px] font-mono text-amber-300">{hijriDateStr}</span>
                 )}
               </div>
             )}

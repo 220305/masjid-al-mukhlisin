@@ -18,6 +18,7 @@ import {
   ArrowRight,
 } from 'lucide-react';
 import { DataService } from '@/lib/data-service';
+import { getHijriDateString } from '@/lib/hijri';
 import { KhutbahItem, PetugasJumatItem, IdentitasMasjid } from '@/types';
 import KhutbahDefaultPoster, { isCustomPosterImage } from '@/components/khutbah-default-poster';
 import MobileBottomNav from '@/components/layout/mobile-bottom-nav';
@@ -77,17 +78,7 @@ export default function AgendaPublicPage() {
         year: 'numeric',
       })
     );
-    try {
-      setHijriDateStr(
-        new Intl.DateTimeFormat('id-ID-u-ca-islamic-civil', {
-          day: 'numeric',
-          month: 'long',
-          year: 'numeric',
-        }).format(now)
-      );
-    } catch {
-      setHijriDateStr('');
-    }
+    setHijriDateStr(getHijriDateString(now));
 
     // Fetch live shalat timings from Aladhan API
     fetch('https://api.aladhan.com/v1/timingsByCity?city=Bandung&country=Indonesia&method=20')
@@ -160,7 +151,7 @@ export default function AgendaPublicPage() {
               <div className="hidden lg:flex flex-col text-right">
                 <span className="text-[10px] font-bold text-slate-300">{todayDateStr}</span>
                 {hijriDateStr && (
-                  <span className="text-[9px] font-mono text-amber-300">{hijriDateStr} H</span>
+                  <span className="text-[9px] font-mono text-amber-300">{hijriDateStr}</span>
                 )}
               </div>
             )}

@@ -55,7 +55,7 @@ var as=Math.atan(1/(1+Math.tan(Math.abs(LAT*r-dec))))/r,i=.034;
 return[["Subuh",dh-H(-20)+i],["Terbit",dh-H(-.833)-i],["Dzuhur",dh+i],["Ashar",dh+H(as)+i],["Maghrib",dh+H(-.833)+i],["Isya",dh+H(-18)+i]]}
 function nextP(){var d=new Date(),T=times(d),h=d.getHours()+d.getMinutes()/60+d.getSeconds()/3600;
 for(var i=0;i<T.length;i++)if(i!=1&&T[i][1]>h)return{n:T[i][0],s:(T[i][1]-h)*3600};return{n:"Subuh",s:(T[0][1]+24-h)*3600}}
-function hj(d){try{return new Intl.DateTimeFormat("id-ID-u-ca-islamic-civil",{day:"numeric",month:"long",year:"numeric"}).format(d)}catch(x){return""}}
+function hj(d){try{var p=new Intl.DateTimeFormat("en-u-ca-islamic-civil-nu-latn",{day:"numeric",month:"numeric",year:"numeric"}).formatToParts(d),dy=(p.find(x=>x.type=="day")||{}).value,mo=parseInt((p.find(x=>x.type=="month")||{}).value||"1",10),yr=(p.find(x=>x.type=="year")||{}).value,m=["Muharram","Safar","Rabiul Awwal","Rabiul Akhir","Jumadil Awal","Jumadil Akhir","Rajab","Sya'ban","Ramadhan","Syawal","Dzulqa'dah","Dzulhijjah"];return dy&&yr?dy+" "+m[mo-1]+" "+yr+" H":""}catch(x){return""}}
 function cdt(s){s=Math.max(0,Math.floor(s));return p2(Math.floor(s/3600))+":"+p2(Math.floor(s%3600/60))+":"+p2(s%60)}
 function sum(k,f){return D[k].filter(f||(()=>1)).reduce((a,x)=>a+(+x.v||0),0)}
 function kasS(){var i=sum("kas",x=>x.j=="Masuk"),o=sum("kas",x=>x.j=="Keluar");return{i:i,o:o,s:i-o}}

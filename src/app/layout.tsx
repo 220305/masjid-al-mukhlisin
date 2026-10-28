@@ -3,7 +3,7 @@ import './globals.css';
 import { AuthProvider } from '@/lib/auth-context';
 
 export const metadata: Metadata = {
-  title: 'Masjid Al-Mukhlisin - Portal Resmi & Pusat Komando',
+  title: 'Masjid Al-Mukhlisin',
   description:
     'Sistem Informasi dan Manajemen Masjid Al-Mukhlisin. Transparansi kas umat, jadwal kajian & khutbah, serta manajemen inventaris terpadu.',
   icons: {
