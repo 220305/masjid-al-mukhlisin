@@ -1173,34 +1173,34 @@ export default function HomePage() {
 
         {/* --- 3. INVENTARIS / FASILITAS SLIDE --- */}
         <section id="fasilitas" className="scroll-mt-32 overflow-hidden">
-          <div className="relative overflow-hidden min-h-[340px] sm:min-h-[400px] rounded-2xl sm:rounded-[2.5rem] md:rounded-[3rem] bg-[#0a1f18] text-white shadow-2xl transition-all duration-700">
+          <div className="relative overflow-hidden min-h-[260px] sm:min-h-[360px] md:min-h-[400px] rounded-2xl sm:rounded-[2.5rem] md:rounded-[3rem] bg-[#0a1f18] text-white shadow-2xl transition-all duration-700">
             {/* Tombol Manual Slide */}
-            <div className="absolute right-6 sm:right-8 bottom-5 sm:bottom-6 z-30 flex gap-2">
+            <div className="absolute right-4 sm:right-8 bottom-3 sm:bottom-6 z-30 flex gap-1.5 sm:gap-2">
               <button
                 onClick={() => setActiveSlide(0)}
-                className={`h-2.5 rounded-full transition-all ${activeSlide === 0 ? 'w-8 bg-[#d4af37]' : 'w-2.5 bg-white/20'}`}
+                className={`h-2 sm:h-2.5 rounded-full transition-all ${activeSlide === 0 ? 'w-6 sm:w-8 bg-[#d4af37]' : 'w-2 sm:w-2.5 bg-white/20'}`}
                 title="Ringkasan Fasilitas"
               />
               <button
                 onClick={() => setActiveSlide(1)}
-                className={`h-2.5 rounded-full transition-all ${activeSlide === 1 ? 'w-8 bg-[#d4af37]' : 'w-2.5 bg-white/20'}`}
+                className={`h-2 sm:h-2.5 rounded-full transition-all ${activeSlide === 1 ? 'w-6 sm:w-8 bg-[#d4af37]' : 'w-2 sm:w-2.5 bg-white/20'}`}
                 title="Tabel Aset Fisik"
               />
             </div>
 
             {/* SLIDE 1: Ringkas Inventaris */}
             <div
-              className={`flex flex-col transition-all duration-700 md:flex-row w-full min-h-[340px] sm:min-h-[400px] ${
+              className={`flex flex-col transition-all duration-700 md:flex-row w-full min-h-[260px] sm:min-h-[360px] md:min-h-[400px] ${
                 activeSlide === 0
                   ? 'translate-x-0 opacity-100'
                   : 'pointer-events-none absolute inset-0 -translate-x-full opacity-0'
               }`}
             >
-              <div className="relative z-10 flex-1 p-6 sm:p-10 md:p-12 lg:p-14 flex flex-col justify-center">
-                <p className="mb-3 sm:mb-4 flex items-center gap-2.5 text-[10px] font-black tracking-widest text-[#d4af37] uppercase">
-                  <span className="h-px w-5 sm:w-6 bg-[#d4af37]" /> Manajemen Fasilitas
+              <div className="relative z-10 flex-1 p-4 sm:p-8 md:p-12 lg:p-14 flex flex-col justify-center">
+                <p className="mb-2 sm:mb-4 flex items-center gap-2 text-[10px] font-black tracking-widest text-[#d4af37] uppercase">
+                  <span className="h-px w-4 sm:w-6 bg-[#d4af37]" /> Manajemen Fasilitas
                 </p>
-                <h2 className="font-serif-elegant mb-3 sm:mb-4 text-2xl sm:text-3xl leading-tight font-bold md:text-5xl">
+                <h2 className="font-serif-elegant mb-2 sm:mb-4 text-lg sm:text-2xl md:text-3xl lg:text-5xl leading-tight font-bold">
                   Kenyamanan Ibadah <br className="hidden sm:block" /> Jamaah Selalu Terjaga
                 </h2>
                 <p className="max-w-lg text-xs sm:text-sm text-slate-300 leading-relaxed font-medium">
@@ -1209,27 +1209,27 @@ export default function HomePage() {
                 </p>
               </div>
 
-              <div className="flex items-center justify-center bg-[#071510] p-6 sm:p-10 md:w-1/3 self-stretch rounded-b-2xl sm:rounded-b-[2.5rem] md:rounded-b-none md:rounded-r-[2.5rem] lg:rounded-r-[3rem]">
-                <div className="text-center">
-                  <p className="font-serif-elegant text-6xl font-bold text-white md:text-8xl">
+              <div className="flex items-center justify-center bg-[#071510] p-4 sm:p-8 md:p-10 md:w-1/3 self-stretch rounded-b-2xl sm:rounded-b-[2.5rem] md:rounded-b-none md:rounded-r-[2.5rem] lg:rounded-r-[3rem]">
+                <div className="text-center py-2 sm:py-0">
+                  <p className="font-serif-elegant text-5xl sm:text-7xl md:text-8xl font-bold text-white">
                     {totalFasilitas}
                   </p>
-                  <p className="mt-2 sm:mt-3 border-t border-[#0d8a5e]/30 pt-2.5 sm:pt-3 text-[10px] font-black tracking-widest text-[#0d8a5e] uppercase">
+                  <p className="mt-1.5 sm:mt-3 border-t border-[#0d8a5e]/30 pt-2 sm:pt-3 text-[10px] font-black tracking-widest text-[#0d8a5e] uppercase">
                     Aset Utama Tercatat
                   </p>
-                  <div className="mt-5 sm:mt-6 flex flex-col items-center gap-2">
+                  <div className="mt-3.5 sm:mt-6 flex flex-col items-center gap-1.5 sm:gap-2">
                     <button
                       onClick={() => setActiveSlide(1)}
-                      className="text-xs font-bold text-[#d4af37] hover:text-white uppercase tracking-wider underline flex items-center justify-center gap-1 transition-colors"
+                      className="text-[11px] sm:text-xs font-bold text-[#d4af37] hover:text-white uppercase tracking-wider underline flex items-center justify-center gap-1 transition-colors"
                     >
-                      Buka Pratinjau Aset <ArrowRight size={12} />
+                      Buka Pratinjau Aset <ArrowRight size={11} />
                     </button>
                     <Link
                       href="/fasilitas"
-                      className="text-xs font-bold text-emerald-400 hover:text-white uppercase tracking-wider flex items-center justify-center gap-1 bg-emerald-950/60 px-3.5 py-1.5 rounded-full border border-emerald-800/40 hover:bg-emerald-900/60 transition-colors"
+                      className="text-[11px] sm:text-xs font-bold text-emerald-400 hover:text-white uppercase tracking-wider flex items-center justify-center gap-1 bg-emerald-950/60 px-3 py-1 sm:px-3.5 sm:py-1.5 rounded-full border border-emerald-800/40 hover:bg-emerald-900/60 transition-colors"
                     >
                       <span>Lihat Halaman Detail Penuh</span>
-                      <ExternalLink size={11} />
+                      <ExternalLink size={10} />
                     </Link>
                   </div>
                 </div>
@@ -1238,74 +1238,100 @@ export default function HomePage() {
 
             {/* SLIDE 2: Tabel Fasilitas Lengkap */}
             <div
-              className={`p-5 sm:p-8 md:p-12 transition-all duration-700 ${
+              className={`p-4 sm:p-8 md:p-12 pb-12 sm:pb-12 transition-all duration-700 ${
                 activeSlide === 1
                   ? 'translate-x-0 opacity-100'
                   : 'pointer-events-none absolute inset-0 translate-x-full opacity-0'
               }`}
             >
-              <div className="mb-4 sm:mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div className="mb-3.5 sm:mb-6 flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <p className="text-[10px] font-black tracking-widest text-[#d4af37] uppercase">Daftar Terverifikasi</p>
-                  <h2 className="font-serif-elegant text-xl sm:text-2xl font-bold md:text-3xl text-white">Inventaris Fasilitas</h2>
+                  <h2 className="font-serif-elegant text-lg sm:text-2xl font-bold md:text-3xl text-white">Inventaris Fasilitas</h2>
                 </div>
                 <div className="flex items-center gap-2 flex-wrap">
                   <Link
                     href="/fasilitas"
-                    className="inline-flex items-center gap-1.5 rounded-full bg-[#0d8a5e] px-3.5 py-1.5 text-xs font-bold text-white hover:bg-emerald-500 shadow-md transition-all active:scale-95 whitespace-nowrap"
+                    className="inline-flex items-center gap-1 rounded-full bg-[#0d8a5e] px-3 py-1.5 text-[11px] sm:text-xs font-bold text-white hover:bg-emerald-500 shadow-md transition-all active:scale-95 whitespace-nowrap"
                   >
                     <span>Buka Halaman Detail</span>
-                    <ArrowRight size={13} />
+                    <ArrowRight size={12} />
                   </Link>
                   <button
                     onClick={() => setActiveSlide(0)}
-                    className="rounded-full bg-white/10 px-3.5 py-1.5 text-xs font-bold text-white hover:bg-white/20 transition-colors whitespace-nowrap"
+                    className="rounded-full bg-white/10 px-3 py-1.5 text-[11px] sm:text-xs font-bold text-white hover:bg-white/20 transition-colors whitespace-nowrap"
                   >
                     Kembali ke Ringkasan
                   </button>
                 </div>
               </div>
 
-              <div className="overflow-x-auto rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xs">
-                <table className="w-full min-w-[500px] text-left text-xs">
-                  <thead>
-                    <tr className="border-b border-white/10 bg-white/5 text-[9px] font-black tracking-widest text-slate-400 uppercase">
-                      <th className="p-4">Nama Barang</th>
-                      <th className="p-4 text-center">Jumlah</th>
-                      <th className="p-4 text-center">Kondisi</th>
-                      <th className="p-4">Lokasi Penempatan</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-white/5">
-                    {fasilitas.length === 0 ? (
-                      <tr>
-                        <td colSpan={4} className="p-6 text-center text-xs text-slate-400">
-                          Belum ada data inventaris yang tercatat. Buka halaman detail untuk informasi selengkapnya.
-                        </td>
-                      </tr>
-                    ) : (
-                      fasilitas.slice(0, 5).map((item, idx) => (
-                        <tr key={idx} className="hover:bg-white/5 transition-colors">
-                          <td className="p-4 font-bold text-white">{item.nama_barang}</td>
-                          <td className="p-4 text-center font-mono">{item.jumlah} Unit</td>
-                          <td className="p-4 text-center">
-                            <span
-                              className={`rounded-md px-2.5 py-1 text-[9px] font-black uppercase ${
-                                item.kondisi === 'baik'
-                                  ? 'bg-emerald-500/20 text-emerald-300'
-                                  : 'bg-amber-500/20 text-amber-300'
-                              }`}
-                            >
-                              {item.kondisi}
-                            </span>
-                          </td>
-                          <td className="p-4 text-slate-300">{item.lokasi}</td>
+              {fasilitas.length === 0 ? (
+                <div className="rounded-xl border border-white/10 bg-white/5 p-4 sm:p-6 text-center">
+                  <p className="text-xs sm:text-sm font-semibold text-white">Belum ada data inventaris yang tercatat</p>
+                  <p className="text-[11px] text-slate-400 mt-1">Buka halaman detail untuk informasi inventaris selengkapnya.</p>
+                </div>
+              ) : (
+                <>
+                  {/* Tampilan Mobile Card List (sm:hidden) */}
+                  <div className="space-y-2 sm:hidden">
+                    {fasilitas.slice(0, 4).map((item, idx) => (
+                      <div key={idx} className="rounded-xl border border-white/10 bg-white/5 p-2.5 text-xs">
+                        <div className="flex items-start justify-between gap-2">
+                          <p className="font-bold text-white leading-snug">{item.nama_barang}</p>
+                          <span
+                            className={`shrink-0 rounded px-1.5 py-0.5 text-[9px] font-black uppercase ${
+                              item.kondisi === 'baik'
+                                ? 'bg-emerald-500/20 text-emerald-300'
+                                : 'bg-amber-500/20 text-amber-300'
+                            }`}
+                          >
+                            {item.kondisi}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between text-[11px] text-slate-400 mt-1">
+                          <span className="font-mono text-emerald-400 font-semibold">{item.jumlah} Unit</span>
+                          <span className="truncate max-w-[150px]">{item.lokasi || '-'}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Tampilan Desktop Table (hidden sm:block) */}
+                  <div className="hidden sm:block overflow-x-auto rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xs">
+                    <table className="w-full text-left text-xs">
+                      <thead>
+                        <tr className="border-b border-white/10 bg-white/5 text-[9px] font-black tracking-widest text-slate-400 uppercase">
+                          <th className="p-4">Nama Barang</th>
+                          <th className="p-4 text-center">Jumlah</th>
+                          <th className="p-4 text-center">Kondisi</th>
+                          <th className="p-4">Lokasi Penempatan</th>
                         </tr>
-                      ))
-                    )}
-                  </tbody>
-                </table>
-              </div>
+                      </thead>
+                      <tbody className="divide-y divide-white/5">
+                        {fasilitas.slice(0, 5).map((item, idx) => (
+                          <tr key={idx} className="hover:bg-white/5 transition-colors">
+                            <td className="p-4 font-bold text-white">{item.nama_barang}</td>
+                            <td className="p-4 text-center font-mono">{item.jumlah} Unit</td>
+                            <td className="p-4 text-center">
+                              <span
+                                className={`rounded-md px-2.5 py-1 text-[9px] font-black uppercase ${
+                                  item.kondisi === 'baik'
+                                    ? 'bg-emerald-500/20 text-emerald-300'
+                                    : 'bg-amber-500/20 text-amber-300'
+                                }`}
+                              >
+                                {item.kondisi}
+                              </span>
+                            </td>
+                            <td className="p-4 text-slate-300">{item.lokasi}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </section>
