@@ -1173,7 +1173,7 @@ export default function HomePage() {
 
         {/* --- 3. INVENTARIS / FASILITAS SLIDE --- */}
         <section id="fasilitas" className="scroll-mt-32 overflow-hidden">
-          <div className="relative min-h-[360px] sm:min-h-[420px] rounded-2xl sm:rounded-[2.5rem] md:rounded-[3rem] bg-[#0a1f18] text-white shadow-2xl transition-all duration-700">
+          <div className="relative overflow-hidden min-h-[340px] sm:min-h-[400px] rounded-2xl sm:rounded-[2.5rem] md:rounded-[3rem] bg-[#0a1f18] text-white shadow-2xl transition-all duration-700">
             {/* Tombol Manual Slide */}
             <div className="absolute right-6 sm:right-8 bottom-5 sm:bottom-6 z-30 flex gap-2">
               <button
@@ -1190,7 +1190,7 @@ export default function HomePage() {
 
             {/* SLIDE 1: Ringkas Inventaris */}
             <div
-              className={`flex flex-col transition-all duration-700 md:flex-row ${
+              className={`flex flex-col transition-all duration-700 md:flex-row w-full min-h-[340px] sm:min-h-[400px] ${
                 activeSlide === 0
                   ? 'translate-x-0 opacity-100'
                   : 'pointer-events-none absolute inset-0 -translate-x-full opacity-0'
@@ -1209,7 +1209,7 @@ export default function HomePage() {
                 </p>
               </div>
 
-              <div className="flex items-center justify-center bg-[#071510] p-6 sm:p-10 md:w-1/3">
+              <div className="flex items-center justify-center bg-[#071510] p-6 sm:p-10 md:w-1/3 self-stretch rounded-b-2xl sm:rounded-b-[2.5rem] md:rounded-b-none md:rounded-r-[2.5rem] lg:rounded-r-[3rem]">
                 <div className="text-center">
                   <p className="font-serif-elegant text-6xl font-bold text-white md:text-8xl">
                     {totalFasilitas}
