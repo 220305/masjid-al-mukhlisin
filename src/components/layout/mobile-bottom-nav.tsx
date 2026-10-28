@@ -155,9 +155,12 @@ export default function MobileBottomNav({ variant }: MobileBottomNavProps) {
       {/* ============================================================== */}
       <nav
         aria-label="Navigasi Bawah Mobile"
-        className="fixed bottom-0 left-0 right-0 z-40 md:hidden bg-white/95 backdrop-blur-md border-t border-slate-200/90 shadow-[0_-4px_25px_rgba(0,0,0,0.06)] pb-[env(safe-area-inset-bottom,6px)] pt-1.5 transition-all"
+        className="fixed bottom-0 left-0 right-0 z-40 md:hidden bg-[#0a1f18]/95 backdrop-blur-xl border-t border-emerald-500/20 shadow-[0_-8px_30px_rgba(0,0,0,0.45)] pb-[calc(env(safe-area-inset-bottom,8px)+8px)] pt-2 transition-all"
       >
-        <div className="grid grid-cols-7 items-center max-w-lg mx-auto px-1">
+        {/* Subtle glowing accent line on top */}
+        <div className="absolute top-0 left-0 right-0 h-[1.5px] bg-gradient-to-r from-transparent via-emerald-400/40 to-transparent pointer-events-none" />
+
+        <div className="grid grid-cols-7 items-center max-w-lg mx-auto px-1 gap-0.5">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = item.active;
@@ -166,27 +169,32 @@ export default function MobileBottomNav({ variant }: MobileBottomNavProps) {
               <Link
                 key={item.title}
                 href={item.href}
-                className={`flex flex-col items-center justify-center py-1 px-0.5 rounded-xl transition-all duration-150 active:scale-95 ${
+                className={`relative flex flex-col items-center justify-center py-1 px-0.5 rounded-xl transition-all duration-150 active:scale-95 ${
                   isActive
-                    ? 'text-emerald-700 font-black'
-                    : 'text-slate-400 hover:text-slate-600 font-semibold'
+                    ? 'text-white'
+                    : 'text-slate-300 hover:text-white'
                 }`}
               >
+                {/* Active Indicator Pip */}
+                {isActive && (
+                  <span className="absolute -top-1.5 w-6 h-1 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.9)]" />
+                )}
+
                 <div
-                  className={`flex items-center justify-center w-8 h-8 rounded-xl transition-colors ${
+                  className={`flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-xl transition-all ${
                     isActive
-                      ? 'bg-emerald-50 text-emerald-700 shadow-2xs'
-                      : 'text-slate-400 hover:bg-slate-50'
+                      ? 'bg-gradient-to-tr from-emerald-600 to-teal-500 text-white shadow-md shadow-emerald-950/50 ring-1 ring-emerald-300/40'
+                      : 'text-slate-300 hover:text-white hover:bg-white/10'
                   }`}
                 >
                   <Icon
-                    size={18}
-                    className={isActive ? 'text-emerald-700 stroke-[2.2]' : 'text-slate-400'}
+                    size={20}
+                    className={isActive ? 'text-white stroke-[2.3]' : 'text-slate-300'}
                   />
                 </div>
                 <span
-                  className={`text-[10px] tracking-tight mt-0.5 truncate w-full text-center ${
-                    isActive ? 'text-emerald-800 font-extrabold' : 'text-slate-500 font-semibold'
+                  className={`text-[11px] tracking-tight mt-1 truncate w-full text-center ${
+                    isActive ? 'text-emerald-300 font-bold' : 'text-slate-300 font-medium'
                   }`}
                 >
                   {item.title}

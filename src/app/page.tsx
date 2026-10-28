@@ -1763,7 +1763,7 @@ export default function HomePage() {
       </footer>
 
       {/* Floating Quick Action Button khusus Mobile */}
-      <div className="fixed bottom-20 right-4 z-40 md:hidden">
+      <div className="fixed bottom-[5.5rem] right-4 z-40 md:hidden">
         <a
           href="#saran"
           className="flex items-center gap-2 px-4 py-3 rounded-full bg-gradient-to-r from-emerald-600 to-[#0d8a5e] text-white font-bold text-xs shadow-2xl shadow-emerald-950/50 hover:scale-105 active:scale-95 transition-all border border-emerald-400/40"
