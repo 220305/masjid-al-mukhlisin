@@ -1266,72 +1266,46 @@ export default function HomePage() {
                 </div>
               </div>
 
-              {fasilitas.length === 0 ? (
-                <div className="rounded-xl border border-white/10 bg-white/5 p-4 sm:p-6 text-center">
-                  <p className="text-xs sm:text-sm font-semibold text-white">Belum ada data inventaris yang tercatat</p>
-                  <p className="text-[11px] text-slate-400 mt-1">Buka halaman detail untuk informasi inventaris selengkapnya.</p>
-                </div>
-              ) : (
-                <>
-                  {/* Tampilan Mobile Card List (sm:hidden) */}
-                  <div className="space-y-2 sm:hidden">
-                    {fasilitas.slice(0, 4).map((item, idx) => (
-                      <div key={idx} className="rounded-xl border border-white/10 bg-white/5 p-2.5 text-xs">
-                        <div className="flex items-start justify-between gap-2">
-                          <p className="font-bold text-white leading-snug">{item.nama_barang}</p>
-                          <span
-                            className={`shrink-0 rounded px-1.5 py-0.5 text-[9px] font-black uppercase ${
-                              item.kondisi === 'baik'
-                                ? 'bg-emerald-500/20 text-emerald-300'
-                                : 'bg-amber-500/20 text-amber-300'
-                            }`}
-                          >
-                            {item.kondisi}
-                          </span>
-                        </div>
-                        <div className="flex items-center justify-between text-[11px] text-slate-400 mt-1">
-                          <span className="font-mono text-emerald-400 font-semibold">{item.jumlah} Unit</span>
-                          <span className="truncate max-w-[150px]">{item.lokasi || '-'}</span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Tampilan Desktop Table (hidden sm:block) */}
-                  <div className="hidden sm:block overflow-x-auto rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xs">
-                    <table className="w-full text-left text-xs">
-                      <thead>
-                        <tr className="border-b border-white/10 bg-white/5 text-[9px] font-black tracking-widest text-slate-400 uppercase">
-                          <th className="p-4">Nama Barang</th>
-                          <th className="p-4 text-center">Jumlah</th>
-                          <th className="p-4 text-center">Kondisi</th>
-                          <th className="p-4">Lokasi Penempatan</th>
+              <div className="overflow-x-auto rounded-xl sm:rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xs">
+                <table className="w-full text-left text-[11px] sm:text-xs">
+                  <thead>
+                    <tr className="border-b border-white/10 bg-white/5 text-[9px] font-black tracking-widest text-slate-400 uppercase">
+                      <th className="px-2.5 py-2.5 sm:p-4">Nama Barang</th>
+                      <th className="px-2 py-2.5 sm:p-4 text-center">Jumlah</th>
+                      <th className="px-2 py-2.5 sm:p-4 text-center">Kondisi</th>
+                      <th className="px-2.5 py-2.5 sm:p-4">Lokasi<span className="hidden sm:inline"> Penempatan</span></th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-white/5">
+                    {fasilitas.length === 0 ? (
+                      <tr>
+                        <td colSpan={4} className="py-6 px-3 text-center text-xs text-slate-400">
+                          Belum ada data inventaris yang tercatat. Buka halaman detail untuk informasi selengkapnya.
+                        </td>
+                      </tr>
+                    ) : (
+                      fasilitas.slice(0, 5).map((item, idx) => (
+                        <tr key={idx} className="hover:bg-white/5 transition-colors">
+                          <td className="px-2.5 py-2.5 sm:p-4 font-bold text-white">{item.nama_barang}</td>
+                          <td className="px-2 py-2.5 sm:p-4 text-center font-mono whitespace-nowrap">{item.jumlah} Unit</td>
+                          <td className="px-2 py-2.5 sm:p-4 text-center">
+                            <span
+                              className={`rounded-md px-1.5 py-0.5 sm:px-2.5 sm:py-1 text-[9px] font-black uppercase ${
+                                item.kondisi === 'baik'
+                                  ? 'bg-emerald-500/20 text-emerald-300'
+                                  : 'bg-amber-500/20 text-amber-300'
+                              }`}
+                            >
+                              {item.kondisi}
+                            </span>
+                          </td>
+                          <td className="px-2.5 py-2.5 sm:p-4 text-slate-300 truncate max-w-[85px] sm:max-w-none">{item.lokasi || '-'}</td>
                         </tr>
-                      </thead>
-                      <tbody className="divide-y divide-white/5">
-                        {fasilitas.slice(0, 5).map((item, idx) => (
-                          <tr key={idx} className="hover:bg-white/5 transition-colors">
-                            <td className="p-4 font-bold text-white">{item.nama_barang}</td>
-                            <td className="p-4 text-center font-mono">{item.jumlah} Unit</td>
-                            <td className="p-4 text-center">
-                              <span
-                                className={`rounded-md px-2.5 py-1 text-[9px] font-black uppercase ${
-                                  item.kondisi === 'baik'
-                                    ? 'bg-emerald-500/20 text-emerald-300'
-                                    : 'bg-amber-500/20 text-amber-300'
-                                }`}
-                              >
-                                {item.kondisi}
-                              </span>
-                            </td>
-                            <td className="p-4 text-slate-300">{item.lokasi}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </>
-              )}
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </section>
