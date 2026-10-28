@@ -1173,9 +1173,9 @@ export default function HomePage() {
 
         {/* --- 3. INVENTARIS / FASILITAS SLIDE --- */}
         <section id="fasilitas" className="scroll-mt-32 overflow-hidden">
-          <div className="relative min-h-[480px] rounded-[2.5rem] bg-[#0a1f18] text-white shadow-2xl transition-all duration-700 md:rounded-[3rem]">
+          <div className="relative min-h-[380px] sm:min-h-[440px] md:min-h-[480px] rounded-2xl sm:rounded-[2.5rem] md:rounded-[3rem] bg-[#0a1f18] text-white shadow-2xl transition-all duration-700">
             {/* Tombol Manual Slide */}
-            <div className="absolute right-8 bottom-6 z-30 flex gap-2">
+            <div className="absolute right-4 sm:right-8 bottom-4 sm:bottom-6 z-30 flex gap-2">
               <button
                 onClick={() => setActiveSlide(0)}
                 className={`h-2.5 rounded-full transition-all ${activeSlide === 0 ? 'w-8 bg-[#d4af37]' : 'w-2.5 bg-white/20'}`}
@@ -1238,52 +1238,62 @@ export default function HomePage() {
 
             {/* SLIDE 2: Tabel Fasilitas Lengkap */}
             <div
-              className={`p-6 transition-all duration-700 md:p-12 ${
+              className={`p-4 sm:p-8 md:p-12 transition-all duration-700 ${
                 activeSlide === 1
                   ? 'translate-x-0 opacity-100'
                   : 'pointer-events-none absolute inset-0 translate-x-full opacity-0'
               }`}
             >
-              <div className="mb-6 flex items-center justify-between">
+              <div className="mb-4 sm:mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <p className="text-[10px] font-black tracking-widest text-[#d4af37] uppercase">Daftar Terverifikasi</p>
-                  <h2 className="font-serif-elegant text-2xl font-bold md:text-3xl">Inventaris Fasilitas</h2>
+                  <h2 className="font-serif-elegant text-xl sm:text-2xl font-bold md:text-3xl text-white">Inventaris Fasilitas</h2>
                 </div>
                 <div className="flex items-center gap-2">
                   <Link
                     href="/fasilitas"
-                    className="flex items-center gap-1.5 rounded-full bg-[#0d8a5e] px-4 py-2 text-xs font-bold text-white hover:bg-emerald-500 shadow-md transition-all active:scale-95"
+                    className="inline-flex items-center gap-1.5 rounded-full bg-[#0d8a5e] px-3.5 py-1.5 text-xs font-bold text-white hover:bg-emerald-500 shadow-md transition-all active:scale-95 whitespace-nowrap"
                   >
-                    <span>Buka Halaman Detail</span>
+                    <span>Halaman Detail</span>
                     <ArrowRight size={13} />
                   </Link>
                   <button
                     onClick={() => setActiveSlide(0)}
-                    className="rounded-full bg-white/10 px-4 py-2 text-xs font-bold text-white hover:bg-white/20 transition-colors"
+                    className="rounded-full bg-white/10 px-3.5 py-1.5 text-xs font-bold text-white hover:bg-white/20 transition-colors whitespace-nowrap"
                   >
-                    Kembali ke Ringkasan
+                    Kembali
                   </button>
                 </div>
               </div>
 
-              <div className="overflow-x-auto rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xs">
-                <table className="w-full text-left text-xs">
-                  <thead>
-                    <tr className="border-b border-white/10 bg-white/5 text-[9px] font-black tracking-widest text-slate-400 uppercase">
-                      <th className="p-4">Nama Barang</th>
-                      <th className="p-4 text-center">Jumlah</th>
-                      <th className="p-4 text-center">Kondisi</th>
-                      <th className="p-4">Lokasi Penempatan</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-white/5">
+              {fasilitas.length === 0 ? (
+                <div className="rounded-xl sm:rounded-2xl border border-white/10 bg-white/5 p-6 sm:p-8 text-center backdrop-blur-xs">
+                  <div className="mx-auto mb-2.5 flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-xl bg-white/10 text-emerald-400">
+                    <Sparkles size={20} />
+                  </div>
+                  <p className="text-sm sm:text-base font-bold text-white">Data Inventaris Sedang Diperbarui</p>
+                  <p className="mt-1 text-xs text-slate-300 max-w-sm mx-auto leading-relaxed">
+                    Aset fisik dan fasilitas masjid dicatat secara berkala untuk memastikan kenyamanan ibadah seluruh jamaah.
+                  </p>
+                  <div className="mt-4">
+                    <button
+                      onClick={() => setActiveSlide(0)}
+                      className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3.5 py-1.5 text-xs font-bold text-slate-200 hover:bg-white/20 transition-colors"
+                    >
+                      ← Kembali ke Ringkasan
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  {/* Tampilan Mobile Card List (sm:hidden) */}
+                  <div className="space-y-2.5 sm:hidden">
                     {fasilitas.slice(0, 5).map((item, idx) => (
-                      <tr key={idx} className="hover:bg-white/5 transition-colors">
-                        <td className="p-4 font-bold text-white">{item.nama_barang}</td>
-                        <td className="p-4 text-center font-mono">{item.jumlah} Unit</td>
-                        <td className="p-4 text-center">
+                      <div key={idx} className="rounded-xl border border-white/10 bg-white/5 p-3 text-xs">
+                        <div className="flex items-start justify-between gap-2 mb-1.5">
+                          <p className="font-bold text-white leading-snug">{item.nama_barang}</p>
                           <span
-                            className={`rounded-md px-2.5 py-1 text-[9px] font-black uppercase ${
+                            className={`shrink-0 rounded-md px-2 py-0.5 text-[9px] font-black uppercase ${
                               item.kondisi === 'baik'
                                 ? 'bg-emerald-500/20 text-emerald-300'
                                 : 'bg-amber-500/20 text-amber-300'
@@ -1291,13 +1301,50 @@ export default function HomePage() {
                           >
                             {item.kondisi}
                           </span>
-                        </td>
-                        <td className="p-4 text-slate-300">{item.lokasi}</td>
-                      </tr>
+                        </div>
+                        <div className="flex items-center justify-between text-[11px] text-slate-300">
+                          <span className="font-mono text-emerald-400 font-semibold">{item.jumlah} Unit</span>
+                          <span className="truncate max-w-[170px] text-slate-400">{item.lokasi || '-'}</span>
+                        </div>
+                      </div>
                     ))}
-                  </tbody>
-                </table>
-              </div>
+                  </div>
+
+                  {/* Tampilan Desktop Table (hidden sm:block) */}
+                  <div className="hidden sm:block overflow-x-auto rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xs">
+                    <table className="w-full text-left text-xs">
+                      <thead>
+                        <tr className="border-b border-white/10 bg-white/5 text-[9px] font-black tracking-widest text-slate-400 uppercase">
+                          <th className="p-4">Nama Barang</th>
+                          <th className="p-4 text-center">Jumlah</th>
+                          <th className="p-4 text-center">Kondisi</th>
+                          <th className="p-4">Lokasi Penempatan</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-white/5">
+                        {fasilitas.slice(0, 5).map((item, idx) => (
+                          <tr key={idx} className="hover:bg-white/5 transition-colors">
+                            <td className="p-4 font-bold text-white">{item.nama_barang}</td>
+                            <td className="p-4 text-center font-mono">{item.jumlah} Unit</td>
+                            <td className="p-4 text-center">
+                              <span
+                                className={`rounded-md px-2.5 py-1 text-[9px] font-black uppercase ${
+                                  item.kondisi === 'baik'
+                                    ? 'bg-emerald-500/20 text-emerald-300'
+                                    : 'bg-amber-500/20 text-amber-300'
+                                }`}
+                              >
+                                {item.kondisi}
+                              </span>
+                            </td>
+                            <td className="p-4 text-slate-300">{item.lokasi}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </section>
