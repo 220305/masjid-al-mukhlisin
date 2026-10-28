@@ -1196,40 +1196,28 @@ export default function HomePage() {
                   : 'pointer-events-none absolute inset-0 -translate-x-full opacity-0'
               }`}
             >
-              <div className="relative z-10 flex-1 p-8 md:p-14 lg:p-16">
-                <p className="mb-4 flex items-center gap-3 text-[10px] font-black tracking-widest text-[#d4af37] uppercase">
-                  <span className="h-px w-6 bg-[#d4af37]" /> Manajemen Fasilitas
+              <div className="relative z-10 flex-1 p-5 sm:p-8 md:p-14 lg:p-16">
+                <p className="mb-3 sm:mb-4 flex items-center gap-2.5 text-[10px] font-black tracking-widest text-[#d4af37] uppercase">
+                  <span className="h-px w-5 sm:w-6 bg-[#d4af37]" /> Manajemen Fasilitas
                 </p>
-                <h2 className="font-serif-elegant mb-5 text-3xl leading-tight font-bold md:text-5xl">
-                  Kenyamanan Ibadah <br /> Jamaah Selalu Terjaga
+                <h2 className="font-serif-elegant mb-3 sm:mb-5 text-xl sm:text-3xl leading-tight font-bold md:text-5xl">
+                  Kenyamanan Ibadah <br className="hidden sm:block" /> Jamaah Selalu Terjaga
                 </h2>
-                <p className="mb-8 max-w-lg text-sm text-slate-300 leading-relaxed font-medium">
+                <p className="max-w-lg text-xs sm:text-sm text-slate-300 leading-relaxed font-medium">
                   Kami merawat aset fisik dan sarana penunjang ibadah secara berkala. Seluruh aset terinventarisasi
-                  secara teratur untuk memastikan operasional masjid senantiasa optimal.
+                  secara teratur untuk memastikan operasional masjid senantiasa optimal dan transparan bagi seluruh jamaah.
                 </p>
-                <ul className="space-y-3.5">
-                  {[
-                    'Ruang Ibadah Berpendingin Udara (AC Standing Daikin)',
-                    'Sistem Tata Suara Akustik Jernih & Mic Shure',
-                    'Area Bersuci & Fasilitas Wudhu Higienis',
-                    'Daya Cadangan Genset Otomatis saat Pemadaman',
-                  ].map((f, i) => (
-                    <li key={i} className="flex items-center gap-3 text-xs md:text-sm font-bold text-slate-200">
-                      <CheckCircle size={16} className="text-[#0d8a5e] shrink-0" /> {f}
-                    </li>
-                  ))}
-                </ul>
               </div>
 
-              <div className="flex items-center justify-center bg-[#071510] p-8 md:w-1/3">
+              <div className="flex items-center justify-center bg-[#071510] p-6 sm:p-8 md:w-1/3">
                 <div className="text-center">
-                  <p className="font-serif-elegant text-7xl font-bold text-white md:text-8xl">
+                  <p className="font-serif-elegant text-5xl sm:text-7xl font-bold text-white md:text-8xl">
                     {totalFasilitas}
                   </p>
-                  <p className="mt-3 border-t border-[#0d8a5e]/30 pt-3 text-[10px] font-black tracking-widest text-[#0d8a5e] uppercase">
+                  <p className="mt-2 sm:mt-3 border-t border-[#0d8a5e]/30 pt-2.5 sm:pt-3 text-[10px] font-black tracking-widest text-[#0d8a5e] uppercase">
                     Aset Utama Tercatat
                   </p>
-                  <div className="mt-6 flex flex-col items-center gap-2">
+                  <div className="mt-4 sm:mt-6 flex flex-col items-center gap-2">
                     <button
                       onClick={() => setActiveSlide(1)}
                       className="text-[10px] font-bold text-[#d4af37] hover:text-white uppercase tracking-wider underline flex items-center justify-center gap-1"
