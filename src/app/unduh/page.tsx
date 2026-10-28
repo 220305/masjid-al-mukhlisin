@@ -178,80 +178,104 @@ export default function UnduhApkPage() {
         </section>
 
         {/* --- FITUR UNGGULAN APLIKASI --- */}
-        <section className="py-12 sm:py-16 px-4 sm:px-6 lg:px-8 mx-auto max-w-6xl">
-          <div className="text-center mb-10">
-            <span className="text-[11px] font-black tracking-widest text-[#0d8a5e] uppercase">
+        <section className="py-6 sm:py-14 px-3 sm:px-6 lg:px-8 mx-auto max-w-6xl">
+          <div className="text-center mb-4 sm:mb-8">
+            <span className="text-[10px] sm:text-[11px] font-black tracking-widest text-[#0d8a5e] uppercase">
               FITUR UTAMA
             </span>
-            <h3 className="font-serif-elegant text-2xl sm:text-3xl font-bold text-[#0a1f18] mt-1">
+            <h3 className="font-serif-elegant text-lg sm:text-2xl md:text-3xl font-bold text-[#0a1f18] mt-0.5 sm:mt-1">
               Semua Layanan Masjid dalam Satu Sentuhan
             </h3>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-2.5 sm:gap-4 md:gap-5">
             {/* Fitur 1 */}
-            <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs hover:shadow-md transition-shadow">
-              <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center mb-4">
-                <Clock size={20} />
+            <div className="rounded-xl sm:rounded-2xl border border-slate-200/80 bg-white p-3 sm:p-5 shadow-2xs hover:shadow-md transition-shadow">
+              <div className="flex items-center gap-2 mb-1 sm:mb-3">
+                <div className="w-7 h-7 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center shrink-0">
+                  <Clock size={15} className="sm:w-5 sm:h-5" />
+                </div>
+                <h4 className="font-bold text-slate-900 text-xs sm:text-base leading-tight">
+                  Jadwal Shalat
+                </h4>
               </div>
-              <h4 className="font-bold text-slate-900 mb-1.5 text-base">Jadwal Shalat Akurat</h4>
-              <p className="text-xs text-slate-600 leading-relaxed">
-                Sinkronisasi otomatis jadwal shalat Kemenag RI dengan hitung mundur waktu shalat berikutnya dan tanggal Hijriah setiap hari.
+              <p className="text-[10px] sm:text-xs text-slate-600 leading-snug sm:leading-relaxed">
+                Waktu shalat resmi Kemenag RI, hitung mundur & kalender Hijriah.
               </p>
             </div>
 
             {/* Fitur 2 */}
-            <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs hover:shadow-md transition-shadow">
-              <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center mb-4">
-                <Layers size={20} />
+            <div className="rounded-xl sm:rounded-2xl border border-slate-200/80 bg-white p-3 sm:p-5 shadow-2xs hover:shadow-md transition-shadow">
+              <div className="flex items-center gap-2 mb-1 sm:mb-3">
+                <div className="w-7 h-7 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center shrink-0">
+                  <Layers size={15} className="sm:w-5 sm:h-5" />
+                </div>
+                <h4 className="font-bold text-slate-900 text-xs sm:text-base leading-tight">
+                  Kas Terbuka
+                </h4>
               </div>
-              <h4 className="font-bold text-slate-900 mb-1.5 text-base">Transparansi Kas Terbuka</h4>
-              <p className="text-xs text-slate-600 leading-relaxed">
-                Pantau saldo, rekap pemasukan infaq, serta rincian pengeluaran operasional masjid secara akuntabel dan transparan.
+              <p className="text-[10px] sm:text-xs text-slate-600 leading-snug sm:leading-relaxed">
+                Pantau saldo, infaq jamaah, dan laporan kas secara transparan.
               </p>
             </div>
 
             {/* Fitur 3 */}
-            <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs hover:shadow-md transition-shadow">
-              <div className="w-10 h-10 rounded-xl bg-teal-50 text-teal-700 flex items-center justify-center mb-4">
-                <FileCheck size={20} />
+            <div className="rounded-xl sm:rounded-2xl border border-slate-200/80 bg-white p-3 sm:p-5 shadow-2xs hover:shadow-md transition-shadow">
+              <div className="flex items-center gap-2 mb-1 sm:mb-3">
+                <div className="w-7 h-7 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-teal-50 text-teal-700 flex items-center justify-center shrink-0">
+                  <FileCheck size={15} className="sm:w-5 sm:h-5" />
+                </div>
+                <h4 className="font-bold text-slate-900 text-xs sm:text-base leading-tight">
+                  Agenda & Khutbah
+                </h4>
               </div>
-              <h4 className="font-bold text-slate-900 mb-1.5 text-base">Agenda & Khutbah Jumat</h4>
-              <p className="text-xs text-slate-600 leading-relaxed">
-                Ketahui jadwal khatib, imam, dan muadzin Shalat Jumat serta agenda pengajian dan kegiatan PHBI masjid.
+              <p className="text-[10px] sm:text-xs text-slate-600 leading-snug sm:leading-relaxed">
+                Jadwal khatib & imam Shalat Jumat serta agenda pengajian rutin.
               </p>
             </div>
 
             {/* Fitur 4 */}
-            <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs hover:shadow-md transition-shadow">
-              <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center mb-4">
-                <HeartHandshake size={20} />
+            <div className="rounded-xl sm:rounded-2xl border border-slate-200/80 bg-white p-3 sm:p-5 shadow-2xs hover:shadow-md transition-shadow">
+              <div className="flex items-center gap-2 mb-1 sm:mb-3">
+                <div className="w-7 h-7 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center shrink-0">
+                  <HeartHandshake size={15} className="sm:w-5 sm:h-5" />
+                </div>
+                <h4 className="font-bold text-slate-900 text-xs sm:text-base leading-tight">
+                  Kalkulator Zakat
+                </h4>
               </div>
-              <h4 className="font-bold text-slate-900 mb-1.5 text-base">Kalkulator Zakat & Infaq</h4>
-              <p className="text-xs text-slate-600 leading-relaxed">
-                Kemudahan menghitung nisab dan kewajiban zakat fitrah maupun zakat maal secara syar'i langsung dari ponsel.
+              <p className="text-[10px] sm:text-xs text-slate-600 leading-snug sm:leading-relaxed">
+                Hitung nisab zakat fitrah & zakat maal mudah langsung dari HP.
               </p>
             </div>
 
             {/* Fitur 5 */}
-            <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs hover:shadow-md transition-shadow">
-              <div className="w-10 h-10 rounded-xl bg-purple-50 text-purple-700 flex items-center justify-center mb-4">
-                <Zap size={20} />
+            <div className="rounded-xl sm:rounded-2xl border border-slate-200/80 bg-white p-3 sm:p-5 shadow-2xs hover:shadow-md transition-shadow">
+              <div className="flex items-center gap-2 mb-1 sm:mb-3">
+                <div className="w-7 h-7 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-purple-50 text-purple-700 flex items-center justify-center shrink-0">
+                  <Zap size={15} className="sm:w-5 sm:h-5" />
+                </div>
+                <h4 className="font-bold text-slate-900 text-xs sm:text-base leading-tight">
+                  Ringan & Cepat
+                </h4>
               </div>
-              <h4 className="font-bold text-slate-900 mb-1.5 text-base">Ringan & Hemat Kuota</h4>
-              <p className="text-xs text-slate-600 leading-relaxed">
-                Didesain dengan arsitektur Capacitor modern yang responsif, loading instan, dan hemat penggunaan daya baterai serta kuota.
+              <p className="text-[10px] sm:text-xs text-slate-600 leading-snug sm:leading-relaxed">
+                Ukuran hemat (~14 MB), loading instan, dan hemat kuota data.
               </p>
             </div>
 
             {/* Fitur 6 */}
-            <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-xs hover:shadow-md transition-shadow">
-              <div className="w-10 h-10 rounded-xl bg-emerald-50 text-[#0d8a5e] flex items-center justify-center mb-4">
-                <Lock size={20} />
+            <div className="rounded-xl sm:rounded-2xl border border-slate-200/80 bg-white p-3 sm:p-5 shadow-2xs hover:shadow-md transition-shadow">
+              <div className="flex items-center gap-2 mb-1 sm:mb-3">
+                <div className="w-7 h-7 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-emerald-50 text-[#0d8a5e] flex items-center justify-center shrink-0">
+                  <Lock size={15} className="sm:w-5 sm:h-5" />
+                </div>
+                <h4 className="font-bold text-slate-900 text-xs sm:text-base leading-tight">
+                  Kotak Saran
+                </h4>
               </div>
-              <h4 className="font-bold text-slate-900 mb-1.5 text-base">Kotak Saran Jamaah</h4>
-              <p className="text-xs text-slate-600 leading-relaxed">
-                Sampaikan aspirasi, kritik membangun, atau saran fasilitas kapan pun untuk ditindaklanjuti oleh pengurus DKM.
+              <p className="text-[10px] sm:text-xs text-slate-600 leading-snug sm:leading-relaxed">
+                Kirimkan kritik, usulan fasilitas, dan aspirasi ke pengurus DKM.
               </p>
             </div>
           </div>
