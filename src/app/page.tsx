@@ -34,6 +34,7 @@ import {
   Timer,
   Compass,
   Info,
+  UserCheck,
 } from 'lucide-react';
 import MobileBottomNav from '@/components/layout/mobile-bottom-nav';
 
@@ -58,7 +59,7 @@ const IconFacebook = ({ size = 18 }: { size?: number }) => (
   </svg>
 );
 import { DataService } from '@/lib/data-service';
-import { InventoryItem, KasItem, KhutbahItem, IdentitasMasjid, SaranKritikItem, KategoriSaran } from '@/types';
+import { InventoryItem, KasItem, KhutbahItem, IdentitasMasjid, SaranKritikItem, KategoriSaran, PetugasJumatItem } from '@/types';
 
 function KajianCardMedia({ item }: { item: KhutbahItem }) {
   const [imgError, setImgError] = useState(false);
@@ -126,6 +127,7 @@ function KajianModalMedia({ item }: { item: KhutbahItem }) {
 
 export default function HomePage() {
   const [jadwal, setJadwal] = useState<KhutbahItem[]>([]);
+  const [nextJumat, setNextJumat] = useState<PetugasJumatItem | null>(null);
   const [saldo, setSaldo] = useState<number>(0);
   const [totalFasilitas, setTotalFasilitas] = useState<number>(0);
   const [loading, setLoading] = useState(true);
@@ -345,7 +347,7 @@ export default function HomePage() {
     const fetchInternalData = async () => {
       setLoading(true);
       try {
-        const [khutbahData, kasData, invData, idData, saranData] = await Promise.all([
+        const [khutbahData, kasData, invData, idData, saranData, petugasData] = await Promise.all([
           DataService.getKhutbahs(),
           DataService.getKas(),
           DataService.getInventories(),
@@ -353,12 +355,18 @@ export default function HomePage() {
           typeof DataService?.getSaranKritik === 'function'
             ? DataService.getSaranKritik(true)
             : Promise.resolve([]),
+          DataService.getPetugasJumat(),
         ]);
 
         if (idData) setIdentitas(idData);
 
         // 1. Khutbah: Urutkan terdekat dan ambil 3 teratas
         setJadwal(khutbahData.slice(0, 3));
+
+        // 1b. Petugas Shalat Jumat Terdekat
+        if (Array.isArray(petugasData) && petugasData.length > 0) {
+          setNextJumat(petugasData[0]);
+        }
 
         // 2. Keuangan: Hitung total kas & simpan list
         const total = kasData.reduce((acc, curr) => {
@@ -917,6 +925,65 @@ export default function HomePage() {
               </span>
             )}
           </div>
+
+          {/* Highlight Petugas Shalat Jumat Terdekat */}
+          {nextJumat && (
+            <div className="mb-8 md:mb-12 overflow-hidden rounded-2xl sm:rounded-3xl border border-emerald-100/90 bg-gradient-to-br from-emerald-50/80 via-white to-teal-50/40 p-4 sm:p-6 md:p-7 shadow-lg shadow-emerald-950/5">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-emerald-100/70">
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 sm:h-11 sm:w-11 rounded-2xl bg-[#0d8a5e] text-white flex items-center justify-center shadow-md shadow-emerald-700/20 shrink-0">
+                    <UserCheck size={22} />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <h3 className="font-bold text-base sm:text-lg text-[#0a1f18]">
+                        Petugas Shalat Jumat Terdekat
+                      </h3>
+                      <span className="hidden sm:inline-flex px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-100 text-[#0d8a5e] border border-emerald-200">
+                        Pekan Ini
+                      </span>
+                    </div>
+                    <p className="text-xs text-slate-500 font-medium flex items-center gap-1.5 mt-0.5">
+                      <CalendarDays size={13} className="text-[#0d8a5e]" />
+                      <span>
+                        Jumat, {new Date(nextJumat.tanggal).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
+                      </span>
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between sm:justify-end gap-2">
+                  <span className="sm:hidden px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-100 text-[#0d8a5e] border border-emerald-200">
+                    Pekan Ini
+                  </span>
+                  <Link
+                    href="/agenda"
+                    className="inline-flex items-center gap-1.5 text-xs font-bold text-[#0d8a5e] hover:text-emerald-800 transition-colors bg-white px-3 py-1.5 rounded-xl border border-emerald-200/80 shadow-2xs hover:shadow-xs"
+                  >
+                    <span>Semua Agenda</span>
+                    <ArrowRight size={13} />
+                  </Link>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 pt-4">
+                <div className="rounded-xl sm:rounded-2xl bg-white p-3.5 sm:p-4 border border-emerald-100/70 shadow-2xs transition-all hover:border-[#0d8a5e]/30 hover:shadow-xs">
+                  <span className="text-[10px] font-extrabold text-slate-400 block uppercase tracking-wider">Khotib Jumat</span>
+                  <p className="font-bold text-[#0a1f18] text-sm sm:text-base mt-1 line-clamp-1">{nextJumat.khatib}</p>
+                  <p className="text-[11px] text-[#0d8a5e] font-semibold mt-1">Penceramah Utama</p>
+                </div>
+                <div className="rounded-xl sm:rounded-2xl bg-white p-3.5 sm:p-4 border border-emerald-100/70 shadow-2xs transition-all hover:border-[#0d8a5e]/30 hover:shadow-xs">
+                  <span className="text-[10px] font-extrabold text-slate-400 block uppercase tracking-wider">Imam Shalat</span>
+                  <p className="font-bold text-[#0a1f18] text-sm sm:text-base mt-1 line-clamp-1">{nextJumat.imam || nextJumat.khatib}</p>
+                  <p className="text-[11px] text-[#0d8a5e] font-semibold mt-1">Imam Rawatib / Tamu</p>
+                </div>
+                <div className="rounded-xl sm:rounded-2xl bg-white p-3.5 sm:p-4 border border-emerald-100/70 shadow-2xs transition-all hover:border-[#0d8a5e]/30 hover:shadow-xs">
+                  <span className="text-[10px] font-extrabold text-slate-400 block uppercase tracking-wider">Muadzin</span>
+                  <p className="font-bold text-[#0a1f18] text-sm sm:text-base mt-1 line-clamp-1">{nextJumat.muadzin || '-'}</p>
+                  <p className="text-[11px] text-[#0d8a5e] font-semibold mt-1">Adzan & Pengumuman</p>
+                </div>
+              </div>
+            </div>
+          )}
 
           {loading ? (
             <div className="text-center font-bold text-slate-400 py-12 flex justify-center items-center gap-2">
