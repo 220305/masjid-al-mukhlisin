@@ -9,7 +9,6 @@ import {
   ShieldCheck,
   CheckCircle2,
   Clock,
-  Sparkles,
   HelpCircle,
   ChevronDown,
   ChevronUp,
@@ -107,12 +106,6 @@ export default function UnduhApkPage() {
           <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#d4af37_1px,transparent_1px)] [background-size:24px_24px] pointer-events-none" />
 
           <div className="relative mx-auto max-w-5xl text-center">
-            {/* Pill Badge */}
-            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#d4af37]/40 bg-amber-500/10 px-4 py-1 text-[11px] font-black tracking-widest text-[#f5d77f] uppercase shadow-sm">
-              <Sparkles size={13} className="text-[#f5d77f]" />
-              <span>APLIKASI ANDROID RESMI · DKM AL-MUKHLISIN</span>
-            </div>
-
             <h1 className="font-serif-elegant text-3xl sm:text-5xl md:text-6xl font-bold tracking-tight text-white mb-4">
               Masjid Al-Mukhlisin <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 via-teal-200 to-amber-200">
