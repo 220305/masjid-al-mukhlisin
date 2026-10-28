@@ -627,7 +627,7 @@ export default function HomePage() {
       <main className="relative z-20 mx-auto -mt-2 sm:-mt-6 max-w-7xl space-y-12 sm:space-y-24 px-3 sm:px-6 md:px-8 py-8 sm:py-12 md:-mt-16 md:space-y-32 md:py-20">
         {/* --- 1. JADWAL SHALAT REAL-TIME --- */}
         <section id="jadwal" className="scroll-mt-32">
-          <div className="relative overflow-hidden rounded-[2.5rem] border border-slate-200/80 bg-white p-5 sm:p-7 md:p-10 shadow-2xl shadow-slate-200/60">
+          <div className="relative overflow-hidden rounded-[2rem] sm:rounded-[2.5rem] border border-slate-200/80 bg-white p-3 sm:p-7 md:p-10 shadow-2xl shadow-slate-200/60">
             {/* Header Bagian Waktu Shalat */}
             <div className="mb-6 flex flex-col items-center justify-between gap-4 border-b border-slate-100 pb-5 md:flex-row md:items-end">
               <div className="text-center md:text-left">
@@ -725,7 +725,7 @@ export default function HomePage() {
                 <span>Menyinkronkan waktu shalat...</span>
               </div>
             ) : (
-              <div className="flex overflow-x-auto gap-2.5 sm:gap-4 pb-3 pt-1 snap-x snap-mandatory scrollbar-none -mx-2 px-2 sm:mx-0 sm:px-0 md:grid md:grid-cols-6 md:overflow-visible md:pb-0">
+              <div className="grid grid-cols-6 gap-1 sm:gap-3 md:gap-4">
                 {prayerList.map((item, idx) => {
                   const waktuJam = getPrayerTime(item.key);
                   const isNext = item.key === prayerInfo.nextKey;
@@ -734,45 +734,45 @@ export default function HomePage() {
                   return (
                     <div
                       key={idx}
-                      className={`group relative rounded-2xl p-3.5 sm:p-4 text-center transition-all duration-300 hover:-translate-y-1 w-[118px] sm:w-[135px] md:w-auto shrink-0 snap-start flex flex-col justify-between ${
+                      className={`group relative rounded-xl sm:rounded-2xl p-1.5 sm:p-4 text-center transition-all duration-300 hover:-translate-y-1 flex flex-col justify-between ${
                         isNext
-                          ? 'border-2 border-emerald-500 bg-gradient-to-b from-emerald-50 via-emerald-100/40 to-white shadow-lg shadow-emerald-700/15 ring-2 ring-emerald-500/20'
+                          ? 'border-2 border-emerald-500 bg-gradient-to-b from-emerald-50 via-emerald-100/40 to-white shadow-md shadow-emerald-700/15 ring-1 sm:ring-2 ring-emerald-500/20'
                           : 'border border-slate-200/80 bg-slate-50/70 hover:border-emerald-300 hover:bg-white hover:shadow-md'
                       }`}
                     >
-                      {/* Badge 'Berikutnya' jika aktif */}
-                      {isNext ? (
-                        <div className="mb-2">
-                          <span className="inline-flex items-center gap-1 rounded-full bg-emerald-600 px-2 py-0.5 text-[9px] font-black uppercase tracking-wider text-white shadow-xs">
-                            <span className="h-1.5 w-1.5 rounded-full bg-emerald-200 animate-ping" />
-                            Berikutnya
+                      {/* Badge / Tag 'Berikutnya' jika aktif */}
+                      <div className="mb-1 sm:mb-2 h-3.5 sm:h-5 flex items-center justify-center">
+                        {isNext ? (
+                          <span className="inline-flex items-center gap-0.5 sm:gap-1 rounded-full bg-emerald-600 px-1 sm:px-2 py-0.5 text-[7px] sm:text-[9px] font-black uppercase tracking-wider text-white shadow-xs">
+                            <span className="h-1 w-1 rounded-full bg-emerald-200 animate-ping" />
+                            <span className="hidden xs:inline">Next</span>
+                            <span className="xs:hidden">✓</span>
                           </span>
-                        </div>
-                      ) : (
-                        <div className="mb-2">
-                          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 group-hover:text-emerald-700 transition-colors">
+                        ) : (
+                          <span className="hidden sm:block text-[10px] font-bold uppercase tracking-wider text-slate-400 group-hover:text-emerald-700 transition-colors truncate">
                             {item.desc}
                           </span>
-                        </div>
-                      )}
+                        )}
+                      </div>
 
                       {/* Icon Waktu Shalat */}
-                      <div className="mx-auto mb-2.5 flex h-11 w-11 items-center justify-center rounded-xl transition-transform group-hover:scale-110">
+                      <div className="mx-auto mb-1 sm:mb-2.5 flex h-7 w-7 sm:h-11 sm:w-11 items-center justify-center rounded-lg sm:rounded-xl transition-transform group-hover:scale-110">
                         <div
-                          className={`flex h-full w-full items-center justify-center rounded-xl ${
+                          className={`flex h-full w-full items-center justify-center rounded-lg sm:rounded-xl ${
                             isNext
-                              ? 'bg-emerald-600 text-white shadow-md shadow-emerald-700/30'
-                              : 'bg-white text-emerald-800 border border-slate-200/90 shadow-xs group-hover:bg-emerald-50 group-hover:text-emerald-700 group-hover:border-emerald-300'
+                              ? 'bg-emerald-600 text-white shadow-sm sm:shadow-md shadow-emerald-700/30'
+                              : 'bg-white text-emerald-800 border border-slate-200/90 shadow-2xs group-hover:bg-emerald-50 group-hover:text-emerald-700 group-hover:border-emerald-300'
                           }`}
                         >
-                          <Icon size={20} strokeWidth={isNext ? 2.5 : 2} />
+                          <Icon size={14} className="sm:hidden" strokeWidth={isNext ? 2.5 : 2} />
+                          <Icon size={20} className="hidden sm:block" strokeWidth={isNext ? 2.5 : 2} />
                         </div>
                       </div>
 
                       {/* Nama Shalat */}
                       <p
-                        className={`text-xs font-black uppercase tracking-wider ${
-                          isNext ? 'text-emerald-950' : 'text-slate-700 group-hover:text-emerald-900'
+                        className={`text-[9px] sm:text-xs font-black uppercase tracking-tight sm:tracking-wider truncate ${
+                          isNext ? 'text-emerald-950 font-black' : 'text-slate-700 group-hover:text-emerald-900'
                         }`}
                       >
                         {item.label}
@@ -780,17 +780,17 @@ export default function HomePage() {
 
                       {/* Jam Shalat */}
                       <p
-                        className={`font-serif-elegant mt-1 text-2xl sm:text-3xl font-extrabold ${
-                          isNext ? 'text-[#0a1f18]' : 'text-slate-800 group-hover:text-[#0a1f18]'
+                        className={`font-mono sm:font-serif-elegant mt-0.5 sm:mt-1 text-[11px] xs:text-xs sm:text-2xl md:text-3xl font-extrabold tracking-tight ${
+                          isNext ? 'text-[#0a1f18] font-black' : 'text-slate-800 group-hover:text-[#0a1f18]'
                         }`}
                       >
                         {waktuJam}
                       </p>
 
                       {/* WIB Label */}
-                      <div className="mt-1 flex items-center justify-center">
+                      <div className="mt-0.5 sm:mt-1 flex items-center justify-center">
                         <span
-                          className={`inline-block text-[10px] font-bold px-2 py-0.5 rounded-md ${
+                          className={`inline-block text-[7px] sm:text-[10px] font-bold px-1 sm:px-2 py-0.2 sm:py-0.5 rounded ${
                             isNext
                               ? 'bg-emerald-200/70 text-emerald-900 font-extrabold'
                               : 'bg-slate-200/60 text-slate-500 group-hover:bg-emerald-100 group-hover:text-emerald-800'
