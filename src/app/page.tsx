@@ -826,23 +826,23 @@ export default function HomePage() {
 
         {/* --- PROFIL, VISI & MISI MASJID --- */}
         <section id="profil" className="scroll-mt-24">
-          <div className="rounded-[2.5rem] bg-white p-8 border border-slate-200/80 shadow-xl shadow-slate-200/40 md:p-14">
-            <div className="grid gap-12 lg:grid-cols-12 lg:items-center">
+          <div className="rounded-2xl sm:rounded-3xl md:rounded-[2.5rem] bg-white p-4 sm:p-7 md:p-12 border border-slate-200/80 shadow-xl shadow-slate-200/40">
+            <div className="grid gap-4 sm:gap-7 lg:grid-cols-12 lg:items-center">
               {/* Kiri: Deskripsi Sejarah */}
-              <div className="space-y-6 lg:col-span-7">
-                <div className="flex items-center gap-3 text-[10px] font-black tracking-widest text-[#0d8a5e] uppercase">
-                  <span className="h-px w-6 bg-[#0d8a5e]" /> Tentang Masjid
+              <div className="space-y-2 sm:space-y-4 lg:col-span-7">
+                <div className="flex items-center gap-2 text-[10px] font-black tracking-widest text-[#0d8a5e] uppercase">
+                  <span className="h-px w-4 bg-[#0d8a5e]" /> Tentang Masjid
                 </div>
-                <h2 className="font-serif-elegant text-3xl font-bold leading-tight text-[#0a1f18] md:text-5xl">
+                <h2 className="font-serif-elegant text-lg sm:text-2xl md:text-4xl lg:text-5xl font-bold leading-snug sm:leading-tight text-[#0a1f18]">
                   Pusat Ibadah, Pembinaan Umat & Penguat Ukhuwah
                 </h2>
-                <div className="space-y-4 text-sm leading-relaxed text-slate-600 font-medium md:text-base">
+                <div className="space-y-2 text-xs sm:text-sm md:text-base leading-relaxed text-slate-600 font-medium">
                   <p>
                     Masjid Al-Mukhlisin hadir sebagai pusat ibadah dan pembinaan umat di kawasan
                     Kp. Jalan Cagak RT.005 RW.004 Desa Lagadar. Mengusung konsep transparansi modern berbasis teknologi, kami berdedikasi
                     untuk menghadirkan akuntabilitas penuh bagi setiap donasi jamaah.
                   </p>
-                  <p>
+                  <p className="hidden sm:block">
                     Selama bertahun-tahun, masjid ini telah menjadi rumah bagi berbagai kegiatan dakwah, pendidikan TPA,
                     dan santunan sosial masyarakat, menginspirasi ribuan jamaah untuk saling tolong-menolong sesuai
                     tuntunan Al-Qur'an dan As-Sunnah.
@@ -851,41 +851,43 @@ export default function HomePage() {
               </div>
 
               {/* Kanan: Visi & Misi */}
-              <div className="space-y-5 lg:col-span-5">
+              <div className="space-y-2.5 sm:space-y-3.5 lg:col-span-5">
                 {/* Visi */}
-                <div className="group rounded-[2rem] border border-slate-100 bg-slate-50 p-6 transition-all hover:bg-white hover:shadow-xl hover:shadow-emerald-900/5">
-                  <div className="mb-3 flex items-center gap-3">
-                    <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white text-[#0d8a5e] shadow-xs">
-                      <Eye size={22} />
+                <div className="group rounded-xl sm:rounded-2xl border border-slate-100 bg-slate-50/80 p-3 sm:p-4.5 transition-all hover:bg-white hover:shadow-md hover:shadow-emerald-900/5">
+                  <div className="mb-1.5 sm:mb-2 flex items-center gap-2 sm:gap-2.5">
+                    <div className="flex h-7 w-7 sm:h-9 sm:w-9 items-center justify-center rounded-lg bg-white text-[#0d8a5e] shadow-xs">
+                      <Eye size={15} className="sm:hidden" />
+                      <Eye size={18} className="hidden sm:block" />
                     </div>
-                    <h3 className="text-lg font-bold text-[#0a1f18]">Visi Masjid</h3>
+                    <h3 className="text-xs sm:text-sm md:text-base font-bold text-[#0a1f18]">Visi Masjid</h3>
                   </div>
-                  <p className="text-xs leading-relaxed text-slate-500 font-medium">
+                  <p className="text-[11px] sm:text-xs leading-relaxed text-slate-500 font-medium">
                     Menjadi masjid mandiri, pelopor pembangunan peradaban islami yang rahmatan lil 'alamin dan unggul
                     dalam pelayanan umat.
                   </p>
                 </div>
 
                 {/* Misi */}
-                <div className="group rounded-[2rem] border border-slate-100 bg-slate-50 p-6 transition-all hover:bg-white hover:shadow-xl hover:shadow-emerald-900/5">
-                  <div className="mb-3 flex items-center gap-3">
-                    <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white text-[#0d8a5e] shadow-xs">
-                      <Target size={22} />
+                <div className="group rounded-xl sm:rounded-2xl border border-slate-100 bg-slate-50/80 p-3 sm:p-4.5 transition-all hover:bg-white hover:shadow-md hover:shadow-emerald-900/5">
+                  <div className="mb-1.5 sm:mb-2 flex items-center gap-2 sm:gap-2.5">
+                    <div className="flex h-7 w-7 sm:h-9 sm:w-9 items-center justify-center rounded-lg bg-white text-[#0d8a5e] shadow-xs">
+                      <Target size={15} className="sm:hidden" />
+                      <Target size={18} className="hidden sm:block" />
                     </div>
-                    <h3 className="text-lg font-bold text-[#0a1f18]">Misi Masjid</h3>
+                    <h3 className="text-xs sm:text-sm md:text-base font-bold text-[#0a1f18]">Misi Masjid</h3>
                   </div>
-                  <ul className="space-y-2.5 text-xs leading-relaxed text-slate-500 font-medium">
-                    <li className="flex gap-2.5">
-                      <span className="text-[#0d8a5e] font-bold">✓</span>
-                      Mewujudkan masjid sebagai rumah ruhani dan pusat kebangkitan masyarakat.
+                  <ul className="space-y-1 sm:space-y-1.5 text-[11px] sm:text-xs leading-snug sm:leading-relaxed text-slate-500 font-medium">
+                    <li className="flex items-start gap-1.5 sm:gap-2">
+                      <span className="text-[#0d8a5e] font-bold shrink-0 mt-0.5">✓</span>
+                      <span>Mewujudkan masjid sebagai rumah ruhani dan pusat kebangkitan masyarakat.</span>
                     </li>
-                    <li className="flex gap-2.5">
-                      <span className="text-[#0d8a5e] font-bold">✓</span>
-                      Membina generasi qur'ani berakhlak mulia dan berwawasan luas.
+                    <li className="flex items-start gap-1.5 sm:gap-2">
+                      <span className="text-[#0d8a5e] font-bold shrink-0 mt-0.5">✓</span>
+                      <span>Membina generasi qur'ani berakhlak mulia dan berwawasan luas.</span>
                     </li>
-                    <li className="flex gap-2.5">
-                      <span className="text-[#0d8a5e] font-bold">✓</span>
-                      Menerapkan tata kelola keuangan kas dan inventaris yang transparan secara real-time.
+                    <li className="flex items-start gap-1.5 sm:gap-2">
+                      <span className="text-[#0d8a5e] font-bold shrink-0 mt-0.5">✓</span>
+                      <span>Menerapkan tata kelola keuangan kas dan inventaris transparan real-time.</span>
                     </li>
                   </ul>
                 </div>
