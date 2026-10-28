@@ -725,7 +725,7 @@ export default function HomePage() {
                 <span>Menyinkronkan waktu shalat...</span>
               </div>
             ) : (
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 md:grid-cols-6">
+              <div className="flex overflow-x-auto gap-2.5 sm:gap-4 pb-3 pt-1 snap-x snap-mandatory scrollbar-none -mx-2 px-2 sm:mx-0 sm:px-0 md:grid md:grid-cols-6 md:overflow-visible md:pb-0">
                 {prayerList.map((item, idx) => {
                   const waktuJam = getPrayerTime(item.key);
                   const isNext = item.key === prayerInfo.nextKey;
@@ -734,7 +734,7 @@ export default function HomePage() {
                   return (
                     <div
                       key={idx}
-                      className={`group relative rounded-2xl p-4 text-center transition-all duration-300 hover:-translate-y-1 ${
+                      className={`group relative rounded-2xl p-3.5 sm:p-4 text-center transition-all duration-300 hover:-translate-y-1 w-[118px] sm:w-[135px] md:w-auto shrink-0 snap-start flex flex-col justify-between ${
                         isNext
                           ? 'border-2 border-emerald-500 bg-gradient-to-b from-emerald-50 via-emerald-100/40 to-white shadow-lg shadow-emerald-700/15 ring-2 ring-emerald-500/20'
                           : 'border border-slate-200/80 bg-slate-50/70 hover:border-emerald-300 hover:bg-white hover:shadow-md'
