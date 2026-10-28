@@ -281,14 +281,6 @@ export default function HomePage() {
   const [activeSlide, setActiveSlide] = useState(0);
   const [activeKeuanganSlide, setActiveKeuanganSlide] = useState(0);
 
-  // Auto slide Inventaris (8s)
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setActiveSlide((prev) => (prev === 0 ? 1 : 0));
-    }, 8000);
-    return () => clearInterval(interval);
-  }, []);
-
   // Auto slide Keuangan (10s)
   useEffect(() => {
     const interval = setInterval(() => {
@@ -1171,180 +1163,92 @@ export default function HomePage() {
           )}
         </section>
 
-        {/* --- 3. INVENTARIS / FASILITAS SLIDE --- */}
-        <section id="fasilitas" className="scroll-mt-32 overflow-hidden">
-          <div className="relative min-h-[380px] sm:min-h-[440px] md:min-h-[480px] rounded-2xl sm:rounded-[2.5rem] md:rounded-[3rem] bg-[#0a1f18] text-white shadow-2xl transition-all duration-700">
-            {/* Tombol Manual Slide */}
-            <div className="absolute right-4 sm:right-8 bottom-4 sm:bottom-6 z-30 flex gap-2">
-              <button
-                onClick={() => setActiveSlide(0)}
-                className={`h-2.5 rounded-full transition-all ${activeSlide === 0 ? 'w-8 bg-[#d4af37]' : 'w-2.5 bg-white/20'}`}
-                title="Ringkasan Fasilitas"
-              />
-              <button
-                onClick={() => setActiveSlide(1)}
-                className={`h-2.5 rounded-full transition-all ${activeSlide === 1 ? 'w-8 bg-[#d4af37]' : 'w-2.5 bg-white/20'}`}
-                title="Tabel Aset Fisik"
-              />
+        {/* --- 3. INVENTARIS / FASILITAS --- */}
+        <section id="fasilitas" className="scroll-mt-32">
+          <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl md:rounded-[2.5rem] bg-gradient-to-br from-[#0a1f18] via-[#0d2a20] to-[#071510] text-white p-5 sm:p-8 md:p-12 lg:p-14 border border-emerald-500/20 shadow-2xl">
+            {/* Background Icon Watermark */}
+            <div className="pointer-events-none absolute -top-10 -right-10 opacity-5">
+              <Sparkles size={320} />
             </div>
 
-            {/* SLIDE 1: Ringkas Inventaris */}
-            <div
-              className={`flex flex-col transition-all duration-700 md:flex-row ${
-                activeSlide === 0
-                  ? 'translate-x-0 opacity-100'
-                  : 'pointer-events-none absolute inset-0 -translate-x-full opacity-0'
-              }`}
-            >
-              <div className="relative z-10 flex-1 p-5 sm:p-8 md:p-14 lg:p-16">
-                <p className="mb-3 sm:mb-4 flex items-center gap-2.5 text-[10px] font-black tracking-widest text-[#d4af37] uppercase">
-                  <span className="h-px w-5 sm:w-6 bg-[#d4af37]" /> Manajemen Fasilitas
-                </p>
-                <h2 className="font-serif-elegant mb-3 sm:mb-5 text-xl sm:text-3xl leading-tight font-bold md:text-5xl">
-                  Kenyamanan Ibadah <br className="hidden sm:block" /> Jamaah Selalu Terjaga
-                </h2>
-                <p className="max-w-lg text-xs sm:text-sm text-slate-300 leading-relaxed font-medium">
-                  Kami merawat aset fisik dan sarana penunjang ibadah secara berkala. Seluruh aset terinventarisasi
-                  secara teratur untuk memastikan operasional masjid senantiasa optimal dan transparan bagi seluruh jamaah.
-                </p>
-              </div>
+            {/* Header Konten */}
+            <div className="relative z-10 max-w-3xl">
+              <p className="flex items-center gap-2.5 text-[10px] font-black tracking-widest text-[#d4af37] uppercase">
+                <span className="h-px w-5 sm:w-6 bg-[#d4af37]" /> Manajemen Fasilitas & Sarana
+              </p>
+              <h2 className="font-serif-elegant mt-2 sm:mt-3 text-2xl sm:text-3xl md:text-5xl font-bold leading-tight text-white">
+                Kenyamanan Ibadah Jamaah Selalu Terjaga
+              </h2>
+              <p className="mt-2.5 sm:mt-3 text-xs sm:text-sm md:text-base leading-relaxed text-slate-300 font-medium">
+                Kami berkomitmen merawat seluruh sarana penunjang ibadah dan aset fisik masjid secara berkala.
+                Seluruh fasilitas terkelola dengan amanah untuk memastikan kekhusyukan dan kenyamanan ibadah seluruh jamaah.
+              </p>
+            </div>
 
-              <div className="flex items-center justify-center bg-[#071510] p-6 sm:p-8 md:w-1/3">
-                <div className="text-center">
-                  <p className="font-serif-elegant text-5xl sm:text-7xl font-bold text-white md:text-8xl">
-                    {totalFasilitas}
-                  </p>
-                  <p className="mt-2 sm:mt-3 border-t border-[#0d8a5e]/30 pt-2.5 sm:pt-3 text-[10px] font-black tracking-widest text-[#0d8a5e] uppercase">
-                    Aset Utama Tercatat
-                  </p>
-                  <div className="mt-4 sm:mt-6 flex flex-col items-center gap-2">
-                    <button
-                      onClick={() => setActiveSlide(1)}
-                      className="text-[10px] font-bold text-[#d4af37] hover:text-white uppercase tracking-wider underline flex items-center justify-center gap-1"
-                    >
-                      Buka Pratinjau Aset <ArrowRight size={12} />
-                    </button>
-                    <Link
-                      href="/fasilitas"
-                      className="text-[10px] font-bold text-emerald-400 hover:text-white uppercase tracking-wider flex items-center justify-center gap-1 bg-emerald-950/60 px-3 py-1 rounded-full border border-emerald-800/40 hover:bg-emerald-900/60 transition-colors"
-                    >
-                      <span>Lihat Halaman Detail Penuh</span>
-                      <ExternalLink size={11} />
-                    </Link>
-                  </div>
+            {/* 3 Pilar Fasilitas Masjid */}
+            <div className="relative z-10 grid gap-3 sm:gap-4 md:grid-cols-3 mt-6 sm:mt-8">
+              <div className="rounded-xl sm:rounded-2xl border border-white/10 bg-white/5 p-4 sm:p-5 backdrop-blur-xs hover:bg-white/10 transition-all">
+                <div className="mb-3 flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-emerald-500/20 text-emerald-400">
+                  <Sparkles size={18} />
                 </div>
+                <h3 className="text-sm sm:text-base font-bold text-white mb-1.5">Kebersihan & Kesucian</h3>
+                <p className="text-xs text-slate-300 leading-relaxed font-medium">
+                  Perawatan harian ruang shalat utama, hamparan karpet, serta sanitasi area wudhu dan toilet agar selalu suci dan nyaman.
+                </p>
+              </div>
+
+              <div className="rounded-xl sm:rounded-2xl border border-white/10 bg-white/5 p-4 sm:p-5 backdrop-blur-xs hover:bg-white/10 transition-all">
+                <div className="mb-3 flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-amber-500/20 text-amber-300">
+                  <ShieldCheck size={18} />
+                </div>
+                <h3 className="text-sm sm:text-base font-bold text-white mb-1.5">Inventarisasi Transparan</h3>
+                <p className="text-xs text-slate-300 leading-relaxed font-medium">
+                  Pencatatan sarana fisik dan inventaris wakaf secara digital dan teratur yang dapat dipantau langsung oleh jamaah.
+                </p>
+              </div>
+
+              <div className="rounded-xl sm:rounded-2xl border border-white/10 bg-white/5 p-4 sm:p-5 backdrop-blur-xs hover:bg-white/10 transition-all">
+                <div className="mb-3 flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl bg-teal-500/20 text-teal-300">
+                  <MessageSquareHeart size={18} />
+                </div>
+                <h3 className="text-sm sm:text-base font-bold text-white mb-1.5">Tanggap Aspirasi Sarpras</h3>
+                <p className="text-xs text-slate-300 leading-relaxed font-medium">
+                  Saluran responsif bagi jamaah untuk mengusulkan perbaikan fasilitas yang memerlukan pemeliharaan melalui Kotak Saran.
+                </p>
               </div>
             </div>
 
-            {/* SLIDE 2: Tabel Fasilitas Lengkap */}
-            <div
-              className={`p-4 sm:p-8 md:p-12 transition-all duration-700 ${
-                activeSlide === 1
-                  ? 'translate-x-0 opacity-100'
-                  : 'pointer-events-none absolute inset-0 translate-x-full opacity-0'
-              }`}
-            >
-              <div className="mb-4 sm:mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            {/* Bar Navigasi & Info Status */}
+            <div className="relative z-10 mt-6 sm:mt-8 pt-5 sm:pt-6 border-t border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="flex h-10 w-10 sm:h-11 sm:w-11 shrink-0 items-center justify-center rounded-xl bg-emerald-950/80 border border-emerald-500/30 text-emerald-400 font-mono font-bold text-base sm:text-lg shadow-inner">
+                  {totalFasilitas}
+                </div>
                 <div>
-                  <p className="text-[10px] font-black tracking-widest text-[#d4af37] uppercase">Daftar Terverifikasi</p>
-                  <h2 className="font-serif-elegant text-xl sm:text-2xl font-bold md:text-3xl text-white">Inventaris Fasilitas</h2>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Link
-                    href="/fasilitas"
-                    className="inline-flex items-center gap-1.5 rounded-full bg-[#0d8a5e] px-3.5 py-1.5 text-xs font-bold text-white hover:bg-emerald-500 shadow-md transition-all active:scale-95 whitespace-nowrap"
-                  >
-                    <span>Halaman Detail</span>
-                    <ArrowRight size={13} />
-                  </Link>
-                  <button
-                    onClick={() => setActiveSlide(0)}
-                    className="rounded-full bg-white/10 px-3.5 py-1.5 text-xs font-bold text-white hover:bg-white/20 transition-colors whitespace-nowrap"
-                  >
-                    Kembali
-                  </button>
+                  <p className="text-xs sm:text-sm font-bold text-white">
+                    {totalFasilitas > 0 ? `${totalFasilitas} Aset Fisik Terdata` : 'Inventarisasi Digital Terpadu'}
+                  </p>
+                  <p className="text-[11px] sm:text-xs text-slate-400">
+                    Sarana dan aset fisik masjid dipelihara berkala oleh pengurus DKM
+                  </p>
                 </div>
               </div>
 
-              {fasilitas.length === 0 ? (
-                <div className="rounded-xl sm:rounded-2xl border border-white/10 bg-white/5 p-6 sm:p-8 text-center backdrop-blur-xs">
-                  <div className="mx-auto mb-2.5 flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-xl bg-white/10 text-emerald-400">
-                    <Sparkles size={20} />
-                  </div>
-                  <p className="text-sm sm:text-base font-bold text-white">Data Inventaris Sedang Diperbarui</p>
-                  <p className="mt-1 text-xs text-slate-300 max-w-sm mx-auto leading-relaxed">
-                    Aset fisik dan fasilitas masjid dicatat secara berkala untuk memastikan kenyamanan ibadah seluruh jamaah.
-                  </p>
-                  <div className="mt-4">
-                    <button
-                      onClick={() => setActiveSlide(0)}
-                      className="inline-flex items-center gap-1.5 rounded-full bg-white/10 px-3.5 py-1.5 text-xs font-bold text-slate-200 hover:bg-white/20 transition-colors"
-                    >
-                      ← Kembali ke Ringkasan
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <>
-                  {/* Tampilan Mobile Card List (sm:hidden) */}
-                  <div className="space-y-2.5 sm:hidden">
-                    {fasilitas.slice(0, 5).map((item, idx) => (
-                      <div key={idx} className="rounded-xl border border-white/10 bg-white/5 p-3 text-xs">
-                        <div className="flex items-start justify-between gap-2 mb-1.5">
-                          <p className="font-bold text-white leading-snug">{item.nama_barang}</p>
-                          <span
-                            className={`shrink-0 rounded-md px-2 py-0.5 text-[9px] font-black uppercase ${
-                              item.kondisi === 'baik'
-                                ? 'bg-emerald-500/20 text-emerald-300'
-                                : 'bg-amber-500/20 text-amber-300'
-                            }`}
-                          >
-                            {item.kondisi}
-                          </span>
-                        </div>
-                        <div className="flex items-center justify-between text-[11px] text-slate-300">
-                          <span className="font-mono text-emerald-400 font-semibold">{item.jumlah} Unit</span>
-                          <span className="truncate max-w-[170px] text-slate-400">{item.lokasi || '-'}</span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Tampilan Desktop Table (hidden sm:block) */}
-                  <div className="hidden sm:block overflow-x-auto rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xs">
-                    <table className="w-full text-left text-xs">
-                      <thead>
-                        <tr className="border-b border-white/10 bg-white/5 text-[9px] font-black tracking-widest text-slate-400 uppercase">
-                          <th className="p-4">Nama Barang</th>
-                          <th className="p-4 text-center">Jumlah</th>
-                          <th className="p-4 text-center">Kondisi</th>
-                          <th className="p-4">Lokasi Penempatan</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-white/5">
-                        {fasilitas.slice(0, 5).map((item, idx) => (
-                          <tr key={idx} className="hover:bg-white/5 transition-colors">
-                            <td className="p-4 font-bold text-white">{item.nama_barang}</td>
-                            <td className="p-4 text-center font-mono">{item.jumlah} Unit</td>
-                            <td className="p-4 text-center">
-                              <span
-                                className={`rounded-md px-2.5 py-1 text-[9px] font-black uppercase ${
-                                  item.kondisi === 'baik'
-                                    ? 'bg-emerald-500/20 text-emerald-300'
-                                    : 'bg-amber-500/20 text-amber-300'
-                                }`}
-                              >
-                                {item.kondisi}
-                              </span>
-                            </td>
-                            <td className="p-4 text-slate-300">{item.lokasi}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </>
-              )}
+              <div className="flex items-center gap-2.5 flex-wrap">
+                <a
+                  href="#saran"
+                  className="rounded-full bg-white/10 hover:bg-white/20 px-4 py-2 text-xs font-bold text-white transition-colors whitespace-nowrap"
+                >
+                  Usulkan Perbaikan
+                </a>
+                <Link
+                  href="/fasilitas"
+                  className="inline-flex items-center gap-2 rounded-full bg-[#0d8a5e] hover:bg-emerald-500 px-4 sm:px-5 py-2 text-xs sm:text-sm font-bold text-white shadow-lg shadow-emerald-950/50 transition-all active:scale-95 whitespace-nowrap"
+                >
+                  <span>Buka Direktori Fasilitas</span>
+                  <ArrowRight size={14} />
+                </Link>
+              </div>
             </div>
           </div>
         </section>
