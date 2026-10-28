@@ -896,7 +896,7 @@ export default function HomePage() {
 
         {/* --- 2. KHUTBAH & KAJIAN --- */}
         <section id="khutbah" className="scroll-mt-16">
-          <div className="mb-8 md:mb-14 flex flex-col md:flex-row md:items-end justify-between gap-3 text-center md:text-left">
+          <div className="mb-6 md:mb-10 text-center md:text-left">
             <div>
               <p className="mb-2 text-[10px] font-black tracking-widest text-[#d4af37] uppercase">Syiar Agama</p>
               <h2 className="font-serif-elegant text-2xl sm:text-3xl font-bold text-[#0a1f18] md:text-5xl">
@@ -906,54 +906,80 @@ export default function HomePage() {
                 Jadwal kajian dan ceramah terdekat untuk mempertebal keimanan dan wawasan keislaman.
               </p>
             </div>
-            {jadwal.length > 1 && (
-              <span className="inline-flex md:hidden items-center justify-center gap-1 text-[10px] font-bold text-emerald-800 bg-emerald-50 px-3 py-1 rounded-full self-center md:self-auto border border-emerald-100">
-                <span>Geser ke samping</span>
-                <ArrowRight size={12} />
-              </span>
-            )}
           </div>
 
           {/* Highlight Petugas Shalat Jumat Terdekat */}
           {nextJumat && (
             <div className="mb-8 md:mb-12 overflow-hidden rounded-2xl sm:rounded-3xl border border-emerald-100/90 bg-gradient-to-br from-emerald-50/80 via-white to-teal-50/40 p-4 sm:p-6 md:p-7 shadow-lg shadow-emerald-950/5">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-emerald-100/70">
-                <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 sm:h-11 sm:w-11 rounded-2xl bg-[#0d8a5e] text-white flex items-center justify-center shadow-md shadow-emerald-700/20 shrink-0">
-                    <UserCheck size={22} />
+              {/* Header Card: 1 baris rapi dan proporsional di mobile & desktop */}
+              <div className="flex items-center justify-between gap-2.5 pb-3.5 border-b border-emerald-100/70">
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <div className="h-9 w-9 sm:h-11 sm:w-11 rounded-xl sm:rounded-2xl bg-[#0d8a5e] text-white flex items-center justify-center shadow-md shadow-emerald-700/20 shrink-0">
+                    <UserCheck size={18} className="sm:hidden" />
+                    <UserCheck size={22} className="hidden sm:block" />
                   </div>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <h3 className="font-bold text-base sm:text-lg text-[#0a1f18]">
-                        Petugas Shalat Jumat Terdekat
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <h3 className="font-bold text-sm sm:text-lg text-[#0a1f18] truncate">
+                        Petugas Shalat Jumat
                       </h3>
-                      <span className="hidden sm:inline-flex px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-100 text-[#0d8a5e] border border-emerald-200">
+                      <span className="px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-extrabold bg-emerald-100 text-[#0d8a5e] border border-emerald-200 shrink-0">
                         Pekan Ini
                       </span>
                     </div>
-                    <p className="text-xs text-slate-500 font-medium flex items-center gap-1.5 mt-0.5">
-                      <CalendarDays size={13} className="text-[#0d8a5e]" />
-                      <span>
+                    <p className="text-[11px] sm:text-xs text-slate-500 font-medium flex items-center gap-1 mt-0.5">
+                      <CalendarDays size={12} className="text-[#0d8a5e] shrink-0" />
+                      <span className="truncate">
                         Jumat, {new Date(nextJumat.tanggal).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
                       </span>
                     </p>
                   </div>
                 </div>
-                <div className="flex items-center justify-between sm:justify-end gap-2">
-                  <span className="sm:hidden px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-100 text-[#0d8a5e] border border-emerald-200">
-                    Pekan Ini
-                  </span>
-                  <Link
-                    href="/agenda"
-                    className="inline-flex items-center gap-1.5 text-xs font-bold text-[#0d8a5e] hover:text-emerald-800 transition-colors bg-white px-3 py-1.5 rounded-xl border border-emerald-200/80 shadow-2xs hover:shadow-xs"
-                  >
-                    <span>Semua Agenda</span>
-                    <ArrowRight size={13} />
-                  </Link>
+
+                <Link
+                  href="/agenda"
+                  className="inline-flex items-center gap-1 text-[11px] sm:text-xs font-bold text-[#0d8a5e] hover:text-emerald-800 transition-colors bg-white px-2.5 py-1.5 sm:px-3 sm:py-1.5 rounded-lg sm:rounded-xl border border-emerald-200/80 shadow-2xs hover:shadow-xs shrink-0"
+                >
+                  <span>Agenda</span>
+                  <ArrowRight size={12} />
+                </Link>
+              </div>
+
+              {/* Tampilan Mobile: 3 Baris Kompak & Elegan (Hemat ruang & nama tidak terpotong) */}
+              <div className="space-y-2 sm:hidden pt-3">
+                <div className="flex items-center justify-between p-2.5 rounded-xl bg-white border border-emerald-100/80 shadow-2xs">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-black uppercase tracking-wider text-[#0d8a5e] bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200/60 shrink-0">
+                      Khotib
+                    </span>
+                    <span className="text-[11px] text-slate-400">Penceramah</span>
+                  </div>
+                  <span className="font-bold text-xs text-[#0a1f18] text-right truncate max-w-[170px]">{nextJumat.khatib}</span>
+                </div>
+
+                <div className="flex items-center justify-between p-2.5 rounded-xl bg-white border border-emerald-100/80 shadow-2xs">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-black uppercase tracking-wider text-teal-700 bg-teal-50 px-2 py-0.5 rounded-md border border-teal-200/60 shrink-0">
+                      Imam
+                    </span>
+                    <span className="text-[11px] text-slate-400">Imam Shalat</span>
+                  </div>
+                  <span className="font-bold text-xs text-[#0a1f18] text-right truncate max-w-[170px]">{nextJumat.imam || nextJumat.khatib}</span>
+                </div>
+
+                <div className="flex items-center justify-between p-2.5 rounded-xl bg-white border border-emerald-100/80 shadow-2xs">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-black uppercase tracking-wider text-slate-700 bg-slate-100 px-2 py-0.5 rounded-md border border-slate-200/60 shrink-0">
+                      Muadzin
+                    </span>
+                    <span className="text-[11px] text-slate-400">Adzan</span>
+                  </div>
+                  <span className="font-bold text-xs text-[#0a1f18] text-right truncate max-w-[170px]">{nextJumat.muadzin || '-'}</span>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 pt-4">
+              {/* Tampilan Desktop & Tablet: Grid 3 Kolom Mewah */}
+              <div className="hidden sm:grid sm:grid-cols-3 gap-3 sm:gap-4 pt-4">
                 <div className="rounded-xl sm:rounded-2xl bg-white p-3.5 sm:p-4 border border-emerald-100/70 shadow-2xs transition-all hover:border-[#0d8a5e]/30 hover:shadow-xs">
                   <span className="text-[10px] font-extrabold text-slate-400 block uppercase tracking-wider">Khotib Jumat</span>
                   <p className="font-bold text-[#0a1f18] text-sm sm:text-base mt-1 line-clamp-1">{nextJumat.khatib}</p>
@@ -972,6 +998,19 @@ export default function HomePage() {
               </div>
             </div>
           )}
+
+          {/* Sub-Header Kajian & Indikator Geser khusus mobile */}
+          <div className="mb-4 flex items-center justify-between">
+            <h3 className="font-bold text-sm sm:text-base text-slate-800">
+              Agenda Kajian & Khutbah
+            </h3>
+            {jadwal.length > 1 && (
+              <span className="inline-flex md:hidden items-center justify-center gap-1 text-[10px] font-bold text-emerald-800 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-100">
+                <span>Geser ke samping</span>
+                <ArrowRight size={11} />
+              </span>
+            )}
+          </div>
 
           {loading ? (
             <div className="text-center font-bold text-slate-400 py-12 flex justify-center items-center gap-2">

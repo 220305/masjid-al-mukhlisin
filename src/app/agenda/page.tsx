@@ -219,38 +219,78 @@ export default function AgendaPublicPage() {
       <main className="relative z-10 mx-auto max-w-7xl px-3.5 sm:px-6 md:px-8 py-8 sm:py-10 space-y-8">
         {/* Highlight Petugas Jumat Terdekat */}
         {nextJumat && (
-          <div className="rounded-2xl bg-white p-5 sm:p-6 border border-slate-200/90 shadow-sm space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2.5">
-                <div className="h-9 w-9 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-800">
-                  <UserCheck size={20} />
+          <div className="rounded-2xl sm:rounded-3xl bg-white p-4 sm:p-6 border border-slate-200/90 shadow-sm space-y-3.5">
+            <div className="flex items-center justify-between gap-2 pb-3 border-b border-slate-100">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="h-9 w-9 sm:h-10 sm:w-10 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-800 shrink-0">
+                  <UserCheck size={18} className="sm:hidden" />
+                  <UserCheck size={20} className="hidden sm:block" />
                 </div>
-                <div>
-                  <h3 className="font-bold text-sm sm:text-base text-slate-800">
-                    Petugas Shalat Jumat Terdekat
-                  </h3>
-                  <p className="text-[11px] text-slate-500">
-                    Jumat, {new Date(nextJumat.tanggal).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
+                <div className="min-w-0">
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <h3 className="font-bold text-sm sm:text-base text-slate-800 truncate">
+                      Petugas Shalat Jumat
+                    </h3>
+                    <span className="px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold bg-emerald-100 text-emerald-800 shrink-0">
+                      Pekan Ini
+                    </span>
+                  </div>
+                  <p className="text-[11px] sm:text-xs text-slate-500 font-medium flex items-center gap-1 mt-0.5">
+                    <CalendarDays size={12} className="text-emerald-700 shrink-0" />
+                    <span className="truncate">
+                      Jumat, {new Date(nextJumat.tanggal).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
+                    </span>
                   </p>
                 </div>
               </div>
-              <span className="px-3 py-1 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">
-                Pekan Ini
-              </span>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs">
-              <div className="rounded-xl bg-slate-50 p-3 border border-slate-100">
+            {/* Mobile View: 3 Baris Rapi & Hemat Ruang */}
+            <div className="space-y-2 sm:hidden">
+              <div className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50/80 border border-slate-100">
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-black uppercase tracking-wider text-emerald-800 bg-emerald-100/70 px-2 py-0.5 rounded-md shrink-0">
+                    Khotib
+                  </span>
+                  <span className="text-[11px] text-slate-400">Penceramah</span>
+                </div>
+                <span className="font-bold text-xs text-slate-800 text-right truncate max-w-[170px]">{nextJumat.khatib}</span>
+              </div>
+
+              <div className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50/80 border border-slate-100">
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-black uppercase tracking-wider text-teal-800 bg-teal-100/70 px-2 py-0.5 rounded-md shrink-0">
+                    Imam
+                  </span>
+                  <span className="text-[11px] text-slate-400">Imam Shalat</span>
+                </div>
+                <span className="font-bold text-xs text-slate-800 text-right truncate max-w-[170px]">{nextJumat.imam || nextJumat.khatib}</span>
+              </div>
+
+              <div className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50/80 border border-slate-100">
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-black uppercase tracking-wider text-slate-700 bg-slate-200/70 px-2 py-0.5 rounded-md shrink-0">
+                    Muadzin
+                  </span>
+                  <span className="text-[11px] text-slate-400">Adzan</span>
+                </div>
+                <span className="font-bold text-xs text-slate-800 text-right truncate max-w-[170px]">{nextJumat.muadzin || '-'}</span>
+              </div>
+            </div>
+
+            {/* Desktop & Tablet View: 3 Kolom */}
+            <div className="hidden sm:grid sm:grid-cols-3 gap-3 text-xs">
+              <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-100">
                 <span className="text-[10px] font-bold text-slate-400 block uppercase">Khotib Jumat</span>
                 <p className="font-bold text-slate-800 text-sm mt-0.5">{nextJumat.khatib}</p>
                 <p className="text-[11px] text-slate-500 mt-1">Penceramah Utama</p>
               </div>
-              <div className="rounded-xl bg-slate-50 p-3 border border-slate-100">
+              <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-100">
                 <span className="text-[10px] font-bold text-slate-400 block uppercase">Imam Shalat</span>
                 <p className="font-bold text-slate-800 text-sm mt-0.5">{nextJumat.imam || nextJumat.khatib}</p>
                 <p className="text-[11px] text-slate-500 mt-1">Imam Rawatib / Tamu</p>
               </div>
-              <div className="rounded-xl bg-slate-50 p-3 border border-slate-100">
+              <div className="rounded-xl bg-slate-50 p-3.5 border border-slate-100">
                 <span className="text-[10px] font-bold text-slate-400 block uppercase">Muadzin</span>
                 <p className="font-bold text-slate-800 text-sm mt-0.5">{nextJumat.muadzin || '-'}</p>
                 <p className="text-[11px] text-slate-500 mt-1">Adzan & Pengumuman</p>
