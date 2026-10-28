@@ -282,63 +282,79 @@ export default function UnduhApkPage() {
         </section>
 
         {/* --- PANDUAN INSTALASI --- */}
-        <section className="py-12 px-4 sm:px-6 lg:px-8 bg-white border-y border-slate-200/80">
+        <section className="py-6 sm:py-12 px-3 sm:px-6 lg:px-8 bg-white border-y border-slate-200/80">
           <div className="mx-auto max-w-4xl">
-            <div className="text-center mb-10">
-              <span className="text-[11px] font-black tracking-widest text-[#0d8a5e] uppercase">
+            <div className="text-center mb-4 sm:mb-8">
+              <span className="text-[10px] sm:text-[11px] font-black tracking-widest text-[#0d8a5e] uppercase">
                 PANDUAN PRAKTIS
               </span>
-              <h3 className="font-serif-elegant text-2xl sm:text-3xl font-bold text-[#0a1f18] mt-1">
+              <h3 className="font-serif-elegant text-lg sm:text-2xl md:text-3xl font-bold text-[#0a1f18] mt-0.5 sm:mt-1">
                 4 Langkah Mudah Memasang APK di HP Android
               </h3>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="bg-[#f4f7f6] p-5 rounded-2xl border border-slate-200 relative">
-                <span className="w-8 h-8 rounded-full bg-[#0d8a5e] text-white font-bold flex items-center justify-center text-sm mb-3">
-                  1
-                </span>
-                <h5 className="font-bold text-sm text-[#0a1f18] mb-1">Unduh APK</h5>
-                <p className="text-xs text-slate-600">
-                  Klik tombol <strong>Unduh APK</strong> di atas dan tunggu proses unduhan selesai.
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-4">
+              <div className="bg-[#f4f7f6] p-3 sm:p-5 rounded-xl sm:rounded-2xl border border-slate-200">
+                <div className="flex items-center gap-2 mb-1 sm:mb-2">
+                  <span className="w-5 h-5 sm:w-7 sm:h-7 rounded-full bg-[#0d8a5e] text-white font-bold flex items-center justify-center text-[10px] sm:text-xs shrink-0">
+                    1
+                  </span>
+                  <h5 className="font-bold text-xs sm:text-sm text-[#0a1f18] leading-tight">
+                    Unduh APK
+                  </h5>
+                </div>
+                <p className="text-[10px] sm:text-xs text-slate-600 leading-snug">
+                  Klik tombol <strong>Unduh APK</strong> dan tunggu unduhan selesai.
                 </p>
               </div>
 
-              <div className="bg-[#f4f7f6] p-5 rounded-2xl border border-slate-200 relative">
-                <span className="w-8 h-8 rounded-full bg-[#0d8a5e] text-white font-bold flex items-center justify-center text-sm mb-3">
-                  2
-                </span>
-                <h5 className="font-bold text-sm text-[#0a1f18] mb-1">Buka File</h5>
-                <p className="text-xs text-slate-600">
-                  Buka notifikasi unduhan atau cari file <code>.apk</code> di folder <em>Download</em> HP Anda.
+              <div className="bg-[#f4f7f6] p-3 sm:p-5 rounded-xl sm:rounded-2xl border border-slate-200">
+                <div className="flex items-center gap-2 mb-1 sm:mb-2">
+                  <span className="w-5 h-5 sm:w-7 sm:h-7 rounded-full bg-[#0d8a5e] text-white font-bold flex items-center justify-center text-[10px] sm:text-xs shrink-0">
+                    2
+                  </span>
+                  <h5 className="font-bold text-xs sm:text-sm text-[#0a1f18] leading-tight">
+                    Buka File
+                  </h5>
+                </div>
+                <p className="text-[10px] sm:text-xs text-slate-600 leading-snug">
+                  Buka notifikasi atau file <code>.apk</code> di folder <em>Download</em> HP.
                 </p>
               </div>
 
-              <div className="bg-[#f4f7f6] p-5 rounded-2xl border border-slate-200 relative">
-                <span className="w-8 h-8 rounded-full bg-[#0d8a5e] text-white font-bold flex items-center justify-center text-sm mb-3">
-                  3
-                </span>
-                <h5 className="font-bold text-sm text-[#0a1f18] mb-1">Izinkan Sumber</h5>
-                <p className="text-xs text-slate-600">
-                  Jika muncul peringatan, pilih <strong>Setelan</strong> &rarr; aktifkan <strong>Izinkan dari sumber ini</strong> / <strong>Tetap Install</strong>.
+              <div className="bg-[#f4f7f6] p-3 sm:p-5 rounded-xl sm:rounded-2xl border border-slate-200">
+                <div className="flex items-center gap-2 mb-1 sm:mb-2">
+                  <span className="w-5 h-5 sm:w-7 sm:h-7 rounded-full bg-[#0d8a5e] text-white font-bold flex items-center justify-center text-[10px] sm:text-xs shrink-0">
+                    3
+                  </span>
+                  <h5 className="font-bold text-xs sm:text-sm text-[#0a1f18] leading-tight">
+                    Izinkan Sumber
+                  </h5>
+                </div>
+                <p className="text-[10px] sm:text-xs text-slate-600 leading-snug">
+                  Jika ada notif keamanan, pilih <strong>Setelan</strong> &rarr; <strong>Tetap Install</strong>.
                 </p>
               </div>
 
-              <div className="bg-[#f4f7f6] p-5 rounded-2xl border border-slate-200 relative">
-                <span className="w-8 h-8 rounded-full bg-[#0d8a5e] text-white font-bold flex items-center justify-center text-sm mb-3">
-                  4
-                </span>
-                <h5 className="font-bold text-sm text-[#0a1f18] mb-1">Selesai!</h5>
-                <p className="text-xs text-slate-600">
-                  Ikon aplikasi Masjid Al-Mukhlisin siap dibuka di beranda ponsel Anda.
+              <div className="bg-[#f4f7f6] p-3 sm:p-5 rounded-xl sm:rounded-2xl border border-slate-200">
+                <div className="flex items-center gap-2 mb-1 sm:mb-2">
+                  <span className="w-5 h-5 sm:w-7 sm:h-7 rounded-full bg-[#0d8a5e] text-white font-bold flex items-center justify-center text-[10px] sm:text-xs shrink-0">
+                    4
+                  </span>
+                  <h5 className="font-bold text-xs sm:text-sm text-[#0a1f18] leading-tight">
+                    Selesai!
+                  </h5>
+                </div>
+                <p className="text-[10px] sm:text-xs text-slate-600 leading-snug">
+                  Aplikasi Masjid Al-Mukhlisin siap dibuka di ponsel Anda.
                 </p>
               </div>
             </div>
 
-            <div className="mt-8 p-4 rounded-2xl bg-amber-50 border border-amber-200/80 flex items-start gap-3">
-              <AlertCircle size={20} className="text-amber-600 shrink-0 mt-0.5" />
-              <div className="text-xs text-amber-900 leading-relaxed">
-                <strong>Catatan Keamanan Android:</strong> Karena aplikasi diunduh langsung tanpa melalui Google Play Store, Android akan menampilkan peringatan standar <em>"File mungkin berbahaya"</em> atau <em>"Install unknown apps"</em>. Hal ini wajar untuk semua file APK mandiri. Anda dapat melanjutkan dengan aman dengan menekan <strong>Tetap Download / Tetap Install</strong>.
+            <div className="mt-3.5 sm:mt-6 p-2.5 sm:p-4 rounded-xl sm:rounded-2xl bg-amber-50 border border-amber-200/80 flex items-start gap-2.5">
+              <AlertCircle size={16} className="text-amber-600 shrink-0 mt-0.5 sm:w-5 sm:h-5" />
+              <div className="text-[10px] sm:text-xs text-amber-900 leading-snug">
+                <strong>Catatan Keamanan Android:</strong> Peringatan <em>"File mungkin berbahaya"</em> atau <em>"Install unknown apps"</em> adalah standar keamanan Android untuk APK mandiri. Aman melanjutkan dengan memilih <strong>Tetap Download / Tetap Install</strong>.
               </div>
             </div>
           </div>
