@@ -154,6 +154,9 @@ export const DataService = {
         if (!error && data) {
           const merged = { ...stored, ...(data as IdentitasMasjid) };
           setStored('masjid_identitas_data', merged);
+          if (typeof document !== 'undefined' && merged.nama && document.title.includes('Al-Mukhlisin')) {
+            document.title = document.title.replace('Al-Mukhlisin', merged.nama);
+          }
           return merged;
         }
       } catch (err) {
@@ -185,6 +188,9 @@ export const DataService = {
     setStored('masjid_identitas_data', updated);
     if (typeof window !== 'undefined') {
       window.dispatchEvent(new CustomEvent('masjid_identitas_updated', { detail: updated }));
+      if (typeof document !== 'undefined' && updated.nama) {
+        document.title = document.title.replace(/Masjid\s+[^\s|•-]+/i, `Masjid ${updated.nama}`);
+      }
     }
     return updated;
   },
