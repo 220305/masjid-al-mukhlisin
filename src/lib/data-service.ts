@@ -173,14 +173,19 @@ export const DataService = {
       try {
         const { data, error } = await supabase
           .from('identitas_masjid')
-          .upsert({ id: 1, ...payload })
+          .upsert({ id: 1, ...payload }, { onConflict: 'id' })
           .select()
           .single();
         if (!error && data) {
           savedData = data as IdentitasMasjid;
         }
+        if (error) {
+          console.error('Supabase updateIdentitas error:', error);
+          throw new Error(`Gagal menyimpan ke Supabase: ${error.message} (Cek RLS table identitas_masjid)`);
+        }
       } catch (err) {
-        console.warn('Supabase updateIdentitas fallback to localStorage:', err);
+        console.error('Supabase updateIdentitas error:', err);
+        throw err;
       }
     }
     const current = getStored<IdentitasMasjid>('masjid_identitas_data', INITIAL_IDENTITAS);
