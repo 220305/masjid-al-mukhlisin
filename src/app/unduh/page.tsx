@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import {
   ArrowLeft,
@@ -27,7 +27,7 @@ import { IdentitasMasjid } from '@/types';
 
 export default function UnduhApkPage() {
   const [identitas, setIdentitas] = useState<IdentitasMasjid | null>(null);
-  React.useEffect(() => {
+  useEffect(() => {
     DataService.getIdentitas().then((d) => {
       if (d) setIdentitas(d);
     });

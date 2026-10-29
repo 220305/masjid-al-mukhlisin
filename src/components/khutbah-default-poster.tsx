@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { CalendarDays, MapPin, Clock } from 'lucide-react';
 
 export interface KhutbahDefaultPosterProps {
@@ -75,8 +75,8 @@ export default function KhutbahDefaultPoster({
   className = '',
   namaMasjid,
 }: KhutbahDefaultPosterProps) {
-  const [dynamicNama, setDynamicNama] = React.useState<string>(namaMasjid || 'Al-Mukhlisin');
-  React.useEffect(() => {
+  const [dynamicNama, setDynamicNama] = useState<string>(namaMasjid || 'Al-Mukhlisin');
+  useEffect(() => {
     if (namaMasjid) {
       setDynamicNama(namaMasjid);
     } else if (typeof window !== 'undefined') {
