@@ -153,6 +153,9 @@ export const DataService = {
           .maybeSingle();
         if (!error && data) {
           const merged = { ...stored, ...(data as IdentitasMasjid) };
+          if (stored.logo_url && !data.logo_url) {
+            merged.logo_url = stored.logo_url;
+          }
           setStored('masjid_identitas_data', merged);
           if (typeof document !== 'undefined' && merged.nama && document.title.includes('Al-Mukhlisin')) {
             document.title = document.title.replace('Al-Mukhlisin', merged.nama);
@@ -171,17 +174,29 @@ export const DataService = {
     let savedData: IdentitasMasjid | null = null;
     if (isSupabaseConfigured && supabase) {
       try {
-        const { data, error } = await supabase
+        let res = await supabase
           .from('identitas_masjid')
           .upsert({ id: 1, ...payload }, { onConflict: 'id' })
           .select()
-          .single();
-        if (!error && data) {
-          savedData = data as IdentitasMasjid;
+          .maybeSingle();
+
+        // Fallback jika kolom logo_url belum dibuat di Supabase
+        if (res.error && (res.error.message?.includes('logo_url') || res.error.code === 'PGRST204')) {
+          console.warn('Column logo_url missing in Supabase, retrying without logo_url...');
+          const { logo_url: _logo, ...payloadWithoutLogo } = payload;
+          res = await supabase
+            .from('identitas_masjid')
+            .upsert({ id: 1, ...payloadWithoutLogo }, { onConflict: 'id' })
+            .select()
+            .maybeSingle();
         }
-        if (error) {
-          console.error('Supabase updateIdentitas error:', error);
-          throw new Error(`Gagal menyimpan ke Supabase: ${error.message} (Cek RLS table identitas_masjid)`);
+
+        if (!res.error && res.data) {
+          savedData = res.data as IdentitasMasjid;
+        }
+        if (res.error) {
+          console.error('Supabase updateIdentitas error:', res.error);
+          throw new Error(`Gagal menyimpan ke Supabase: ${res.error.message}`);
         }
       } catch (err) {
         console.error('Supabase updateIdentitas error:', err);
