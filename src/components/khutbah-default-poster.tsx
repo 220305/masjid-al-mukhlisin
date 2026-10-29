@@ -86,7 +86,7 @@ export default function KhutbahDefaultPoster({
           const parsed = JSON.parse(stored);
           if (parsed?.nama) setDynamicNama(parsed.nama);
         }
-      } catch {}
+      } catch { }
     }
   }, [namaMasjid]);
   // Thumbnail for Table List (compact square)
