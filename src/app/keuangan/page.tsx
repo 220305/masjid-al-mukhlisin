@@ -15,6 +15,7 @@ import {
   Shield,
   X,
   PieChart,
+  QrCode,
 } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import { DataService } from '@/lib/data-service';
@@ -22,6 +23,7 @@ import { getHijriDateString } from '@/lib/hijri';
 import { KasItem, IdentitasMasjid } from '@/types';
 import MobileBottomNav from '@/components/layout/mobile-bottom-nav';
 import CustomDropdown, { DropdownOption } from '@/components/ui/custom-dropdown';
+import QrisDonationModal from '@/components/qris-donation-modal';
 
 export default function KeuanganDetailPage() {
   const [dataKas, setDataKas] = useState<KasItem[]>([]);
@@ -37,6 +39,7 @@ export default function KeuanganDetailPage() {
 
   // Modals
   const [selectedTrx, setSelectedTrx] = useState<KasItem | null>(null);
+  const [showQrisModal, setShowQrisModal] = useState(false);
 
   // Dates
   const [todayDateStr, setTodayDateStr] = useState('');
@@ -545,6 +548,16 @@ export default function KeuanganDetailPage() {
 
             <div className="flex items-center gap-2.5 flex-wrap">
               <button
+                type="button"
+                onClick={() => setShowQrisModal(true)}
+                className="flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-4 py-2.5 text-xs font-bold shadow-md shadow-emerald-950/20 transition-all hover:scale-105 active:scale-95 cursor-pointer"
+                title="Salurkan Infaq Digital via QRIS"
+              >
+                <QrCode size={15} />
+                <span>Infaq QRIS</span>
+              </button>
+
+              <button
                 onClick={handleExportExcel}
                 className="flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-bold text-slate-700 shadow-2xs transition-colors hover:border-emerald-600 hover:text-emerald-700"
                 title="Ekspor ke Excel"
@@ -870,6 +883,13 @@ export default function KeuanganDetailPage() {
           </div>
         </div>
       )}
+
+      {/* QRIS Donation Modal */}
+      <QrisDonationModal
+        isOpen={showQrisModal}
+        onClose={() => setShowQrisModal(false)}
+        identitas={identitas}
+      />
 
       {/* Mobile Bottom Navigation Bar (7 Tabs: Beranda, Kas, Jamaah, Agenda, Zakat, Aset, Laporan) */}
       <MobileBottomNav variant="public" />

@@ -24,6 +24,8 @@ const INITIAL_IDENTITAS: IdentitasMasjid = {
   ketua_dkm: 'Ustadz H. Ahmad Sobari',
   bendahara: 'H. Mulyadi, S.E.',
   logo_url: null,
+  qris_url: null,
+  rekening_bank: null,
 };
 
 const INITIAL_KAS: KasItem[] = [];
@@ -180,13 +182,13 @@ export const DataService = {
           .select()
           .maybeSingle();
 
-        // Fallback jika kolom logo_url belum dibuat di Supabase
-        if (res.error && (res.error.message?.includes('logo_url') || res.error.code === 'PGRST204')) {
-          console.warn('Column logo_url missing in Supabase, retrying without logo_url...');
-          const { logo_url: _logo, ...payloadWithoutLogo } = payload;
+        // Fallback jika kolom baru (logo_url, qris_url, rekening_bank) belum dibuat di Supabase
+        if (res.error && (res.error.code === 'PGRST204' || res.error.message?.includes('column') || res.error.message?.includes('logo_url'))) {
+          console.warn('Columns missing in Supabase identitas_masjid, retrying with base columns...', res.error.message);
+          const { logo_url: _logo, qris_url: _qris, rekening_bank: _rek, ...payloadBase } = payload as any;
           res = await supabase
             .from('identitas_masjid')
-            .upsert({ id: 1, ...payloadWithoutLogo }, { onConflict: 'id' })
+            .upsert({ id: 1, ...payloadBase }, { onConflict: 'id' })
             .select()
             .maybeSingle();
         }
@@ -712,6 +714,71 @@ export const DataService = {
       try {
         const ext = file.name.split('.').pop() || 'png';
         const cleanFileName = `logo_${Date.now()}.${ext}`;
+        const { error: uploadError } = await supabase.storage
+          .from('khutbah-images')
+          .upload(cleanFileName, file);
+
+        if (!uploadError) {
+          const { data: publicUrlData } = supabase.storage
+            .from('khutbah-images')
+            .getPublicUrl(cleanFileName);
+          if (publicUrlData?.publicUrl) {
+            return publicUrlData.publicUrl;
+          }
+        }
+      } catch (err) {
+        console.warn('Storage upload fallback to compressed image:', err);
+      }
+    }
+
+    return compressedDataUrl;
+  },
+
+  async uploadQrisImage(file: File): Promise<string> {
+    // 1. Client-side image compression: max dimension 900px, high quality (0.95) so QR barcode stays razor sharp
+    const compressedDataUrl = await new Promise<string>((resolve) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          let width = img.width;
+          let height = img.height;
+          const maxDim = 900;
+          if (width > height) {
+            if (width > maxDim) {
+              height = Math.round((height * maxDim) / width);
+              width = maxDim;
+            }
+          } else {
+            if (height > maxDim) {
+              width = Math.round((width * maxDim) / height);
+              height = maxDim;
+            }
+          }
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          if (ctx) {
+            ctx.imageSmoothingQuality = 'high';
+            ctx.drawImage(img, 0, 0, width, height);
+            const isPng = file.type === 'image/png' || file.name.toLowerCase().endsWith('.png');
+            resolve(canvas.toDataURL(isPng ? 'image/png' : 'image/jpeg', 0.95));
+          } else {
+            resolve(e.target?.result as string);
+          }
+        };
+        img.onerror = () => resolve(e.target?.result as string);
+        img.src = e.target?.result as string;
+      };
+      reader.readAsDataURL(file);
+    });
+
+    // 2. Coba upload ke Supabase Storage jika terhubung
+    if (isSupabaseConfigured && supabase) {
+      try {
+        const ext = file.name.split('.').pop() || 'png';
+        const cleanFileName = `qris_${Date.now()}.${ext}`;
         const { error: uploadError } = await supabase.storage
           .from('khutbah-images')
           .upload(cleanFileName, file);
