@@ -245,21 +245,36 @@ export default function KeuanganDetailPage() {
 
   // Export to Excel
   const handleExportExcel = () => {
+    if (rowsWithBalance.length === 0) {
+      alert('Tidak ada data transaksi untuk diekspor');
+      return;
+    }
+
     const exportData = rowsWithBalance.map((item, idx) => ({
       No: idx + 1,
       Tanggal: item.tanggal,
       Kategori: item.kategori || '-',
       Keterangan: item.keterangan,
       Tipe: item.tipe === 'masuk' ? 'PEMASUKAN' : 'PENGELUARAN',
-      Nominal: Number(item.nominal),
-      'Saldo Berjalan': item.runningBalance,
+      'Nominal (Rp)': Number(item.nominal),
+      'Saldo Berjalan (Rp)': item.runningBalance,
     }));
 
     const ws = XLSX.utils.json_to_sheet(exportData);
+    ws['!cols'] = [
+      { wch: 6 },
+      { wch: 14 },
+      { wch: 18 },
+      { wch: 32 },
+      { wch: 16 },
+      { wch: 18 },
+      { wch: 20 },
+    ];
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Buku Kas Transparansi');
     const dateStr = new Date().toISOString().split('T')[0];
-    XLSX.writeFile(wb, `Buku_Kas_Masjid_Al_Mukhlisin_${dateStr}.xlsx`);
+    const safeNama = (identitas?.nama || 'Al-Mukhlisin').replace(/[^a-zA-Z0-9_-]/g, '_');
+    XLSX.writeFile(wb, `Buku_Kas_${safeNama}_${dateStr}.xlsx`);
   };
 
   return (

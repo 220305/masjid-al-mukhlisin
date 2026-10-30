@@ -143,6 +143,11 @@ export default function FasilitasDetailPage() {
 
   // Export to Excel
   const handleExportExcel = () => {
+    if (filteredInventories.length === 0) {
+      alert('Tidak ada data fasilitas untuk diekspor');
+      return;
+    }
+
     const dataToExport = filteredInventories.map((item, idx) => ({
       No: idx + 1,
       'Kode Aset': `AST-MKH-${String(item.id).padStart(4, '0')}`,
@@ -154,11 +159,21 @@ export default function FasilitasDetailPage() {
     }));
 
     const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+    worksheet['!cols'] = [
+      { wch: 6 },
+      { wch: 16 },
+      { wch: 28 },
+      { wch: 14 },
+      { wch: 16 },
+      { wch: 22 },
+      { wch: 16 },
+    ];
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Inventaris Fasilitas');
+    const safeNama = (identitas?.nama || 'Al-Mukhlisin').replace(/[^a-zA-Z0-9_-]/g, '_');
     XLSX.writeFile(
       workbook,
-      `Inventaris_Fasilitas_Masjid_Al-Mukhlisin_${new Date().toISOString().split('T')[0]}.xlsx`
+      `Inventaris_Fasilitas_${safeNama}_${new Date().toISOString().split('T')[0]}.xlsx`
     );
   };
 

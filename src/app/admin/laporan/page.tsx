@@ -279,9 +279,10 @@ export default function LaporanPage() {
     }));
     XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(pjData), 'Petugas_Jumat');
 
+    const safeNama = (identitas.nama || 'Al-Mukhlisin').replace(/[^a-zA-Z0-9_-]/g, '_');
     XLSX.writeFile(
       wb,
-      `Laporan_Lengkap_Masjid_Al_Mukhlisin_${new Date().toISOString().split('T')[0]}.xlsx`
+      `Laporan_Lengkap_${safeNama}_${new Date().toISOString().split('T')[0]}.xlsx`
     );
   };
 

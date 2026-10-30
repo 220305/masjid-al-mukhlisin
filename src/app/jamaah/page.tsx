@@ -100,6 +100,11 @@ export default function JamaahPublicPage() {
 
   // Export to Excel
   const handleExportExcel = () => {
+    if (filteredData.length === 0) {
+      alert('Tidak ada data jamaah untuk diekspor');
+      return;
+    }
+
     const exportData = filteredData.map((item, index) => ({
       No: index + 1,
       Nama: item.nama,
@@ -110,10 +115,19 @@ export default function JamaahPublicPage() {
     }));
 
     const ws = XLSX.utils.json_to_sheet(exportData);
+    ws['!cols'] = [
+      { wch: 6 },
+      { wch: 25 },
+      { wch: 18 },
+      { wch: 30 },
+      { wch: 18 },
+      { wch: 16 },
+    ];
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Data Jamaah');
     const dateStr = new Date().toISOString().split('T')[0];
-    XLSX.writeFile(wb, `Data_Jamaah_Al_Mukhlisin_${dateStr}.xlsx`);
+    const safeNama = (identitas?.nama || 'Al-Mukhlisin').replace(/[^a-zA-Z0-9_-]/g, '_');
+    XLSX.writeFile(wb, `Data_Jamaah_${safeNama}_${dateStr}.xlsx`);
   };
 
   const getRoleBadgeStyle = (peran: string) => {

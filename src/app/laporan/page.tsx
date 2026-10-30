@@ -199,7 +199,8 @@ export default function LaporanPublicPage() {
     const wsKas = XLSX.utils.json_to_sheet(kasData);
     XLSX.utils.book_append_sheet(wb, wsKas, 'Arus Kas');
 
-    XLSX.writeFile(wb, `Laporan_Resmi_Masjid_Al_Mukhlisin_${new Date().toISOString().split('T')[0]}.xlsx`);
+    const safeNama = (identitas.nama || 'Al-Mukhlisin').replace(/[^a-zA-Z0-9_-]/g, '_');
+    XLSX.writeFile(wb, `Laporan_Resmi_${safeNama}_${new Date().toISOString().split('T')[0]}.xlsx`);
   };
 
   return (
